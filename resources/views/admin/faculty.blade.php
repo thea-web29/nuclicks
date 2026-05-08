@@ -65,11 +65,11 @@
             <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class="ri-dashboard-line"></i> Dashboard
             </a>
-            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                <i class="ri-team-line"></i> Users
-            </a>
             <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
                 <i class="ri-user-add-line"></i> Account Creation
+            </a>
+            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                <i class="ri-team-line"></i> Users
             </a>
             <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
                 <i class="ri-user-star-line"></i> Faculty
