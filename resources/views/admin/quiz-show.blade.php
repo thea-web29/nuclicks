@@ -31,11 +31,13 @@
                     <i class="ri-book-line mr-3"></i>
                     <span>Courses</span>
                 </a>
-                <a href="{{ route('admin.quizzes') }}" class="flex items-center px-6 py-3 bg-indigo-900">
-                    <i class="ri-quiz-line mr-3"></i>
-                    <span>Quizzes</span>
-                </a>
-                <a href="{{ route('admin.analytics') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
+                <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
+            </a>
+            <a href="{{ route('admin.analytics') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
                     <i class="ri-bar-chart-line mr-3"></i>
                     <span>Analytics</span>
                 </a>

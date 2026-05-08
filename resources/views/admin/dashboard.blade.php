@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Admin Dashboard - NU Clicks LMS</title>
+    <title>Admin Dashboard - NU Horizon</title>
     <!-- Google Fonts + Remix Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
@@ -357,7 +357,7 @@
     <div class="sidebar-logo">
         <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
         <div class="logo-text">
-            <h1>NU <span>CLICKS</span> LMS</h1>
+            <h1>NU <span>Horizon</span></h1>
             <p>Admin Portal</p>
         </div>
     </div>
@@ -392,8 +392,11 @@
         </div>
         <div class="nav-section">
             <div class="nav-section-title">Assessment</div>
-            <a href="{{ route('admin.quizzes') }}" class="nav-item {{ request()->routeIs('admin.quizzes*') ? 'active' : '' }}">
-                <i class="ri-list-check"></i> Quizzes
+            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
             </a>
             <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
                 <i class="ri-bar-chart-line"></i> Analytics
@@ -408,7 +411,7 @@
     </div>
 
     <div class="sidebar-footer">
-        <div class="profile-info">
+        <div class="profile-info" onclick="window.location='{{ route('admin.profile') }}'" style="cursor:pointer;">
             <div class="avatar">
                 <i class="ri-user-line"></i>
             </div>
@@ -471,22 +474,22 @@
             <div class="stat-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">Total Quizzes</p>
-                        <p class="text-3xl font-bold text-yellow-600">{{ number_format($totalQuizzes) }}</p>
+                        <p class="text-gray-500 text-sm">Faculty Evaluations</p>
+                        <p class="text-3xl font-bold text-yellow-600">{{ number_format($totalEvaluations) }}</p>
                     </div>
                     <div class="bg-yellow-100 p-3 rounded-full">
-                        <i class="ri-quiz-line text-yellow-600 text-xl"></i>
+                        <i class="ri-star-smile-line text-yellow-600 text-xl"></i>
                     </div>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">Active Quizzes</p>
-                        <p class="text-3xl font-bold text-orange-600">{{ number_format($activeQuizzes) }}</p>
+                        <p class="text-gray-500 text-sm">Admin Files</p>
+                        <p class="text-3xl font-bold text-orange-600">{{ number_format($totalFiles) }}</p>
                     </div>
                     <div class="bg-orange-100 p-3 rounded-full">
-                        <i class="ri-play-circle-line text-orange-600 text-xl"></i>
+                        <i class="ri-folder-3-line text-orange-600 text-xl"></i>
                     </div>
                 </div>
             </div>
@@ -537,6 +540,35 @@
                         @endforeach
                     </div>
                 </div>
+            </div>
+        </div>
+
+
+        <!-- Top Performing Faculty -->
+        <div class="dashboard-card mb-8">
+            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <i class="ri-trophy-line" style="color: var(--gold);"></i> Top 5 Performing Faculty
+                </h3>
+                <a href="{{ route('admin.faculty-evaluations') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">View evaluations</a>
+            </div>
+            <div class="p-5">
+                @if(isset($topFaculty) && $topFaculty->count() > 0)
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        @foreach($topFaculty as $index => $faculty)
+                            <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="w-8 h-8 rounded-full bg-[#0A1F44] text-white flex items-center justify-center font-bold">{{ $index + 1 }}</span>
+                                    <span class="text-yellow-600 font-bold">{{ number_format($faculty->faculty_evaluations_received_avg_rating ?? 0, 2) }}/5</span>
+                                </div>
+                                <p class="font-bold text-gray-800 truncate">{{ $faculty->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $faculty->faculty_evaluations_received_count }} evaluation(s)</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-gray-500 text-center py-4">No faculty evaluations yet. Once students submit feedback, top performers will appear here.</p>
+                @endif
             </div>
         </div>
 

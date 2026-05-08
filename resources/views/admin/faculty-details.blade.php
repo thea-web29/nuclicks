@@ -402,8 +402,11 @@
         </div>
         <div class="nav-section">
             <div class="nav-section-title">Assessment</div>
-            <a href="{{ route('admin.quizzes') }}" class="nav-item {{ request()->routeIs('admin.quizzes*') ? 'active' : '' }}">
-                <i class="ri-list-check"></i> Quizzes
+            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
             </a>
             <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
                 <i class="ri-bar-chart-line"></i> Analytics
@@ -418,7 +421,7 @@
     </div>
 
     <div class="sidebar-footer">
-        <div class="profile-info">
+        <div class="profile-info" onclick="window.location='{{ route('admin.profile') }}'" style="cursor:pointer;">
             <div class="avatar"><i class="ri-user-line"></i></div>
             <div class="profile-details">
                 <p>{{ Auth::user()->name }}</p>

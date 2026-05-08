@@ -32,11 +32,13 @@
                     <i class="ri-book-line mr-3"></i>
                     <span>Courses</span>
                 </a>
-                <a href="{{ route('admin.quizzes') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
-                    <i class="ri-quiz-line mr-3"></i>
-                    <span>Quizzes</span>
-                </a>
-                <a href="{{ route('admin.analytics') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
+                <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
+            </a>
+            <a href="{{ route('admin.analytics') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
                     <i class="ri-bar-chart-line mr-3"></i>
                     <span>Analytics</span>
                 </a>
@@ -70,6 +72,12 @@
             </div>
 
             <div class="p-6">
+                @if(session('error'))
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 @if(session('success'))
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                         {{ session('success') }}
@@ -207,6 +215,35 @@
                                     <div class="flex justify-end">
                                         <button type="submit" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition">
                                             Change Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Delete Account -->
+                        <div class="bg-white rounded-lg shadow mt-6 border border-red-200">
+                            <div class="border-b p-6 bg-red-50">
+                                <h3 class="text-lg font-semibold text-red-700 flex items-center gap-2">
+                                    <i class="ri-alert-line"></i> Delete Admin Account
+                                </h3>
+                                <p class="text-sm text-red-600 mt-1">Warning: this permanently removes your admin account. This cannot be undone.</p>
+                            </div>
+                            <div class="p-6">
+                                <form action="{{ route('admin.profile.delete') }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this admin account? This cannot be undone.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Enter Password to Confirm</label>
+                                        <input type="password" name="password" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-red-500">
+                                    </div>
+                                    <label class="flex items-start gap-2 text-sm text-gray-700 mb-4">
+                                        <input type="checkbox" name="confirm_delete" value="1" required class="mt-1">
+                                        <span>I understand that this will permanently delete my admin account.</span>
+                                    </label>
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">
+                                            Delete My Account
                                         </button>
                                     </div>
                                 </form>

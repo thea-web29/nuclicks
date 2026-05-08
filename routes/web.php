@@ -160,6 +160,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+    // Admin profile
+    Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
+    Route::put('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/avatar', [AdminController::class, 'updateAvatar'])->name('avatar.update');
+    Route::put('/profile/password', [AdminController::class, 'changePassword'])->name('password.change');
+    Route::delete('/profile/delete', [AdminController::class, 'deleteAccount'])->name('profile.delete');
+
     // Users
     Route::get('/users',                        [AdminController::class, 'users'])->name('users');
     Route::get('/users/create',                 [AdminController::class, 'createUser'])->name('users.create');
@@ -205,17 +212,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/courses/{id}',                 [AdminController::class, 'showCourse'])->name('courses.show');
     Route::get('/courses',                      [AdminController::class, 'courses'])->name('courses');
 
-    // Quizzes
-    Route::get('/quizzes',                      [AdminController::class, 'quizzes'])->name('quizzes');
-    Route::get('/quizzes/{id}',                 [AdminController::class, 'showQuiz'])->name('quizzes.show');
-    Route::get('/quizzes/{id}/edit',            [AdminController::class, 'editQuiz'])->name('quizzes.edit');
-    Route::put('/quizzes/{id}',                 [AdminController::class, 'updateQuiz'])->name('quizzes.update');
-    Route::delete('/quizzes/{id}',              [AdminController::class, 'deleteQuiz'])->name('quizzes.delete');
-    Route::get('/quizzes/{id}/edit-data',       [AdminController::class, 'getQuizData'])->name('quizzes.edit-data');
+    // Quizzes are intentionally not routed in the admin portal. They remain under Faculty and Student portals.
 
     // Analytics & export
     Route::get('/analytics',                    [AdminController::class, 'analytics'])->name('analytics');
     Route::get('/export-results',               [AdminController::class, 'exportResults'])->name('export.results');
+
+    // Faculty evaluation
+    Route::get('/faculty-evaluations', [AdminController::class, 'facultyEvaluations'])->name('faculty-evaluations');
+
+    // Folder & files
+    Route::get('/folder-files', [AdminController::class, 'folderFiles'])->name('folder-files');
+    Route::post('/folder-files/folders', [AdminController::class, 'storeFolder'])->name('folder-files.folders.store');
+    Route::post('/folder-files/upload', [AdminController::class, 'uploadAdminFile'])->name('folder-files.upload');
+    Route::get('/folder-files/{file}/download', [AdminController::class, 'downloadAdminFile'])->name('folder-files.download');
+    Route::patch('/folder-files/{file}/archive', [AdminController::class, 'archiveAdminFile'])->name('folder-files.archive');
 
     // Settings & security
     Route::get('/settings',                     [AdminController::class, 'settings'])->name('settings');

@@ -13,6 +13,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'role',
         'student_id',
@@ -82,6 +83,21 @@ class User extends Authenticatable
     public function otps()
     {
         return $this->hasMany(Otp::class);
+    }
+
+    public function facultyEvaluationsReceived()
+    {
+        return $this->hasMany(FacultyEvaluation::class, 'faculty_id');
+    }
+
+    public function facultyEvaluationsGiven()
+    {
+        return $this->hasMany(FacultyEvaluation::class, 'student_id');
+    }
+
+    public function uploadedAdminFiles()
+    {
+        return $this->hasMany(AdminFile::class, 'uploaded_by');
     }
 
     public function getEnrolledCoursesCountAttribute(): int

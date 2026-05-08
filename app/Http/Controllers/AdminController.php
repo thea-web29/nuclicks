@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 //use App\Mail\CourseCodeMail;
 use App\Models\AccessLog;
 use App\Models\ActivityLog;
+use App\Models\AdminFile;
+use App\Models\FacultyEvaluation;
 use App\Models\Course;
+use App\Models\CourseMaterial;
 use App\Models\Department;
 use App\Models\Enrollment;
 use App\Models\LoginHistory;
@@ -19,6 +22,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class AdminController extends Controller
@@ -30,6 +35,8 @@ class AdminController extends Controller
         $totalStudents = User::where('role', 'student')->count();
         $totalFaculty = User::where('role', 'faculty')->count();
         $totalCourses = Course::count();
+        $totalEvaluations = class_exists(FacultyEvaluation::class) ? FacultyEvaluation::count() : 0;
+        $totalFiles = class_exists(AdminFile::class) ? AdminFile::where('type', 'file')->whereNull('archived_at')->count() : 0;
         $totalQuizzes = Quiz::count();
         $activeQuizzes = Quiz::where('is_active', true)->count();
 
@@ -61,12 +68,16 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
+        $topFaculty = $this->getTopPerformingFaculty(5);
+
         $monthlyStats = $this->getMonthlyStats();
 
         return view('admin.dashboard', compact(
             'totalStudents',
             'totalFaculty',
             'totalCourses',
+            'totalEvaluations',
+            'totalFiles',
             'totalQuizzes',
             'activeQuizzes',
             'totalAttempts',
@@ -75,6 +86,7 @@ class AdminController extends Controller
             'recentEnrollments',
             'recentAttempts',
             'recentActivities',
+            'topFaculty',
             'monthlyStats'
         ));
     }
@@ -96,6 +108,23 @@ class AdminController extends Controller
                     ->count(),
             ];
         });
+    }
+
+
+    private function getTopPerformingFaculty(int $limit = 5)
+    {
+        if (!class_exists(FacultyEvaluation::class)) {
+            return collect();
+        }
+
+        return User::where('role', 'faculty')
+            ->withCount('facultyEvaluationsReceived')
+            ->withAvg('facultyEvaluationsReceived', 'rating')
+            ->having('faculty_evaluations_received_count', '>', 0)
+            ->orderByDesc('faculty_evaluations_received_avg_rating')
+            ->orderByDesc('faculty_evaluations_received_count')
+            ->limit($limit)
+            ->get();
     }
 
     // ==================== USER MANAGEMENT ====================
@@ -1306,14 +1335,273 @@ class AdminController extends Controller
         return view('admin.logs', compact('logs'));
     }
 
+
+    // ==================== ADMIN PROFILE ====================
+
+    public function profile()
+    {
+        $user = Auth::user();
+        $memberSince = optional($user->created_at)->format('M d, Y') ?? 'N/A';
+        $totalUsers = User::whereIn('role', ['student', 'faculty'])->count();
+        $totalLogins = LoginHistory::where('user_id', $user->id)->count();
+        $totalActions = ActivityLog::where('user_id', $user->id)->count();
+        $recentActivities = ActivityLog::where('user_id', $user->id)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('admin.profile', compact(
+            'user',
+            'memberSince',
+            'totalUsers',
+            'totalLogins',
+            'totalActions',
+            'recentActivities'
+        ));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'department' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $user->update($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => 'Updated admin profile',
+        ]);
+
+        return redirect()->route('admin.profile')->with('success', 'Profile updated successfully.');
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+        ]);
+
+        $user = Auth::user();
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $path = $request->file('avatar')->store('avatars/admins', 'public');
+        $user->update(['avatar' => $path]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => 'Updated admin profile picture',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile picture updated successfully.',
+            'avatar_url' => asset('storage/' . $path),
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required'],
+            'new_password' => ['required', 'min:8', 'confirmed'],
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($validated['current_password'], $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
+
+        $user->update(['password' => Hash::make($validated['new_password'])]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => 'Changed admin password',
+        ]);
+
+        return redirect()->route('admin.profile')->with('success', 'Password changed successfully.');
+    }
+
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => ['required'],
+            'confirm_delete' => ['required', 'accepted'],
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return redirect()->back()->withErrors(['password' => 'Password is incorrect.']);
+        }
+
+        if (User::where('role', 'admin')->where('id', '!=', $user->id)->count() === 0) {
+            return redirect()->back()->with('error', 'You cannot delete the only remaining admin account.');
+        }
+
+        $name = $user->name;
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->delete();
+
+        return redirect()->route('login')->with('success', "Admin account {$name} has been deleted.");
+    }
+
+    // ==================== FACULTY EVALUATION ====================
+
+    public function facultyEvaluations()
+    {
+        $faculty = User::where('role', 'faculty')
+            ->withCount('facultyEvaluationsReceived')
+            ->withAvg('facultyEvaluationsReceived', 'rating')
+            ->orderByDesc('faculty_evaluations_received_avg_rating')
+            ->orderBy('name')
+            ->get();
+
+        $evaluations = FacultyEvaluation::with(['faculty', 'student', 'course'])
+            ->latest()
+            ->paginate(15);
+
+        $totalEvaluations = FacultyEvaluation::count();
+        $averageRating = FacultyEvaluation::avg('rating') ?? 0;
+        $topFaculty = $this->getTopPerformingFaculty(5);
+
+        return view('admin.faculty-evaluations', compact(
+            'faculty',
+            'evaluations',
+            'totalEvaluations',
+            'averageRating',
+            'topFaculty'
+        ));
+    }
+
+    // ==================== FOLDER & FILES ====================
+
+    public function folderFiles(Request $request)
+    {
+        $folder = $request->get('folder');
+
+        $folders = AdminFile::where('type', 'folder')
+            ->whereNull('archived_at')
+            ->orderBy('name')
+            ->get();
+
+        $files = AdminFile::with(['uploader', 'facultyUploader', 'folder'])
+            ->where('type', 'file')
+            ->when($folder, fn ($query) => $query->where('parent_id', $folder))
+            ->whereNull('archived_at')
+            ->latest()
+            ->paginate(15);
+
+        $facultyMaterials = CourseMaterial::with(['course.faculty'])
+            ->latest()
+            ->paginate(10, ['*'], 'materials_page');
+
+        $archivedFiles = AdminFile::with(['uploader', 'folder'])
+            ->whereNotNull('archived_at')
+            ->latest('archived_at')
+            ->limit(20)
+            ->get();
+
+        return view('admin.folder-files', compact(
+            'folders',
+            'files',
+            'facultyMaterials',
+            'archivedFiles',
+            'folder'
+        ));
+    }
+
+    public function storeFolder(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        AdminFile::create([
+            'name' => $validated['name'],
+            'type' => 'folder',
+            'uploaded_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.folder-files')->with('success', 'Folder created successfully.');
+    }
+
+    public function uploadAdminFile(Request $request)
+    {
+        $maxMb = (int) SystemSetting::getValue('max_upload_size_mb', 20);
+        $maxKb = max($maxMb, 1) * 1024;
+
+        $validated = $request->validate([
+            'folder_id' => ['nullable', 'exists:admin_files,id'],
+            'file' => ['required', 'file', 'max:' . $maxKb],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('admin-files', 'public');
+
+        AdminFile::create([
+            'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            'original_name' => $file->getClientOriginalName(),
+            'type' => 'file',
+            'parent_id' => $validated['folder_id'] ?? null,
+            'path' => $path,
+            'mime_type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'description' => $validated['description'] ?? null,
+            'uploaded_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('admin.folder-files')->with('success', 'File uploaded successfully.');
+    }
+
+    public function downloadAdminFile(AdminFile $file)
+    {
+        abort_if($file->type !== 'file' || !$file->path, 404);
+
+        if (!Storage::disk('public')->exists($file->path)) {
+            return redirect()->back()->with('error', 'File not found in storage.');
+        }
+
+        return Storage::disk('public')->download($file->path, $file->original_name ?? $file->name);
+    }
+
+    public function archiveAdminFile(AdminFile $file)
+    {
+        $file->update(['archived_at' => now()]);
+
+        return redirect()->route('admin.folder-files')->with('success', 'File archived successfully.');
+    }
+
     // ==================== SETTINGS ====================
 
     public function settings()
     {
-        $gradingSettings = SystemSetting::where('group', 'grading')->get();
-        $quizSettings = SystemSetting::where('group', 'quiz')->get();
-        $academicSettings = SystemSetting::where('group', 'academic')->get();
-        $fileSettings = SystemSetting::where('group', 'file')->get();
+        $this->ensureDefaultSettings();
+
+        $gradingSettings = SystemSetting::where('group', 'grading')->orderBy('id')->get();
+        $quizSettings = SystemSetting::where('group', 'quiz')->orderBy('id')->get();
+        $academicSettings = SystemSetting::where('group', 'academic')->orderBy('id')->get();
+        $fileSettings = SystemSetting::where('group', 'file')->orderBy('id')->get();
 
         return view('admin.settings', compact(
             'gradingSettings',
@@ -1325,20 +1613,27 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
-        foreach ($request->except('_token') as $key => $value) {
+        $this->ensureDefaultSettings();
+
+        $booleanKeys = SystemSetting::where('type', 'boolean')->pluck('key')->toArray();
+        $submitted = $request->except('_token');
+
+        foreach ($booleanKeys as $key) {
+            $submitted[$key] = $request->has($key) ? '1' : '0';
+        }
+
+        foreach ($submitted as $key => $value) {
             $setting = SystemSetting::where('key', $key)->first();
 
-            if ($setting) {
-                if ($setting->type === 'boolean') {
-                    $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-                } elseif ($setting->type === 'json' && is_array($value)) {
-                    $value = json_encode($value);
-                }
-
-                $setting->update([
-                    'value' => $value,
-                ]);
+            if (!$setting) {
+                continue;
             }
+
+            if ($setting->type === 'json') {
+                $value = is_array($value) ? json_encode(array_values($value)) : $value;
+            }
+
+            $setting->update(['value' => $value]);
         }
 
         ActivityLog::create([
@@ -1348,6 +1643,24 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.settings')->with('success', 'Settings updated successfully!');
+    }
+
+    private function ensureDefaultSettings(): void
+    {
+        $defaults = [
+            ['group' => 'grading', 'key' => 'passing_grade', 'value' => '75', 'type' => 'number', 'description' => 'Minimum passing grade percentage'],
+            ['group' => 'grading', 'key' => 'grade_scale', 'value' => '[{"label":"Excellent","min":"90","max":"100"},{"label":"Very Good","min":"85","max":"89"},{"label":"Good","min":"80","max":"84"},{"label":"Passed","min":"75","max":"79"},{"label":"Failed","min":"0","max":"74"}]', 'type' => 'json', 'description' => 'Grade scale labels and ranges'],
+            ['group' => 'quiz', 'key' => 'default_quiz_duration', 'value' => '60', 'type' => 'number', 'description' => 'Default quiz duration in minutes'],
+            ['group' => 'quiz', 'key' => 'allow_late_submissions', 'value' => '0', 'type' => 'boolean', 'description' => 'Allow late quiz submissions'],
+            ['group' => 'academic', 'key' => 'school_name', 'value' => 'NU Clicks LMS', 'type' => 'text', 'description' => 'School or system display name'],
+            ['group' => 'academic', 'key' => 'current_term', 'value' => 'Term 1', 'type' => 'text', 'description' => 'Current academic term'],
+            ['group' => 'file', 'key' => 'max_upload_size_mb', 'value' => '20', 'type' => 'number', 'description' => 'Maximum upload size in MB'],
+            ['group' => 'file', 'key' => 'allowed_file_types', 'value' => 'pdf,doc,docx,ppt,pptx,xls,xlsx,jpg,jpeg,png,zip', 'type' => 'text', 'description' => 'Comma-separated allowed file extensions'],
+        ];
+
+        foreach ($defaults as $setting) {
+            SystemSetting::firstOrCreate(['key' => $setting['key']], $setting);
+        }
     }
 
     // ==================== SECURITY ====================
