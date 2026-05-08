@@ -282,11 +282,6 @@
             <h2 class="page-title text-lg md:text-xl">User Management</h2>
             <p class="text-sm text-gray-500 hidden md:block">Manage students and faculty accounts</p>
         </div>
-        <a href="{{ route('admin.users.create') }}"
-           class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
-           style="background: var(--blue-deep); color: white; text-decoration: none;">
-            <i class="ri-add-line text-base"></i> Create New User
-        </a>
     </div>
 
     <div class="p-4 md:p-6">
