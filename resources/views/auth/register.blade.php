@@ -2,586 +2,615 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Register - NU Clicks LMS</title>
-    <!-- Google Fonts + Font Awesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Register – NU Horizon LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <style>
-        /* ---------- RESET & FULL RESPONSIVE (NO BREAKS) ---------- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ══ TOKENS (mirrored from login) ══ */
+        :root {
+            --navy:      #0A1F44;
+            --navy-mid:  #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
+            --gold:      #FFD70F;
+            --gold-d:    #C49A00;
+            --gold-mid:  #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg:        #F8F6F1;
+            --white:     #FFFFFF;
+            --txt-1:     #0A1F44;
+            --txt-2:     #2C3E5C;
+            --txt-3:     #637089;
+            --bdr:       rgba(10,31,68,0.10);
+            --ease:      cubic-bezier(0.22,1,0.36,1);
+            --spring:    cubic-bezier(0.34,1.56,0.64,1);
+            --t:         0.26s var(--ease);
         }
 
-        html, body {
-            height: 100%;
-            overflow: auto;  /* scrolling allowed but scrollbar hidden */
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* hide scrollbar everywhere but keep functionality */
-        body::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
-        }
         body {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0A1F44 0%, #1A3A6E 50%, #0E2A55 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--navy);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            min-height: 100vh;
-            padding: 1rem;
+            padding: 2rem 1rem;
+            overflow-x: hidden;
         }
 
-        /* decorative circles - responsive scaling */
-        body::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            right: -10%;
-            width: min(380px, 50vw);
-            height: min(380px, 50vw);
-            background: radial-gradient(circle, rgba(255,215,15,0.08) 0%, rgba(255,215,15,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: -15%;
-            left: -5%;
-            width: min(400px, 55vw);
-            height: min(400px, 55vw);
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* BACK BUTTON - fixed, always accessible */
-        .back-button {
+        /* ══ BACKGROUND ══ */
+        .bg-layer {
             position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            font-size: 0.8rem;
-            letter-spacing: 0.3px;
-            transition: all 0.25s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: #FFD70F;
-            border: 1px solid rgba(255, 215, 15, 0.5);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            white-space: nowrap;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 15% 50%, rgba(63,95,160,0.45) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 70% at 85% 20%, rgba(255,215,15,0.07) 0%, transparent 55%),
+                var(--navy);
+            z-index: 0;
         }
 
-        .back-button i {
-            font-size: 0.75rem;
-            color: #FFD70F;
+        .bg-layer::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 48px 48px;
         }
 
-        .back-button:hover {
-            background: #FFD70F;
-            color: #0A1F44;
-            transform: translateX(-3px);
-        }
-
-        .back-button:hover i {
-            color: #0A1F44;
-        }
-
-        /* registration container - fully responsive, centered, scrollable inner */
-        .register-container {
-            width: 100%;
-            max-width: 550px;
-            margin: 0 auto;
-            padding: 0.5rem;
-            animation: fadeSlideUp 0.4s ease;
-            z-index: 2;
-            position: relative;
-            max-height: 90vh;
-            overflow-y: auto;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .register-container::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
-        }
-
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* main card - flexible */
+        /* ══ CARD ══ */
         .register-card {
-            background: #FFFFFF;
-            border-radius: 1.5rem;
-            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25);
+            position: relative;
+            z-index: 1;
+            width: min(560px, 96vw);
+            border-radius: 20px;
             overflow: hidden;
-            border: 1px solid rgba(255, 215, 15, 0.3);
+            box-shadow:
+                0 32px 80px rgba(0,0,0,0.55),
+                0 0 0 1px rgba(255,215,15,0.12);
+            animation: cardIn .7s var(--ease) both;
         }
 
-        .card-accent {
-            height: 4px;
-            background: linear-gradient(90deg, #FFD70F, #FFE484, #FFD70F);
+        @keyframes cardIn {
+            from { opacity:0; transform:translateY(28px) scale(0.97); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
         }
 
-        .card-inner {
-            padding: 1.2rem 1.5rem 1.8rem;
+        /* ══ GOLD TOP BAR ══ */
+        .gold-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
+            z-index: 2;
         }
 
-        /* brand */
-        .brand {
-            text-align: center;
-            margin-bottom: 0.8rem;
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
         }
 
-        .logo {
-            font-size: clamp(1.4rem, 6vw, 1.8rem);
-            font-weight: 800;
-            letter-spacing: -0.3px;
-            background: linear-gradient(135deg, #0A1F44 20%, #1E3A6B 80%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        /* ══ FORM PANEL ══ */
+        .panel-right {
+            background: var(--bg);
+            padding: 3rem 3rem 2.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: relative;
         }
 
-        .logo span {
-            color: #FFD70F;
-            background: none;
+        .panel-right::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 100% 0%, rgba(255,215,15,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 0% 100%, rgba(10,31,68,0.04) 0%, transparent 50%);
+            pointer-events: none;
         }
 
-        /* heading */
-        .auth-heading {
-            text-align: center;
-            margin-bottom: 1rem;
+        /* ══ FORM HEADER ══ */
+        .form-header {
+            margin-bottom: 1.5rem;
+            position: relative;
         }
-
-        .auth-heading h2 {
-            font-size: clamp(1.3rem, 5vw, 1.6rem);
+        .form-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 1.65rem;
             font-weight: 700;
-            color: #0A1F44;
+            color: var(--navy);
+            letter-spacing: -.02em;
+            line-height: 1;
+            margin-bottom: .35rem;
+        }
+        .form-logo em { color: var(--gold-d); font-style: normal; }
+
+        .form-tagline {
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--txt-3);
+            letter-spacing: .06em;
+            text-transform: uppercase;
         }
 
-        .auth-heading p {
-            font-size: 0.75rem;
-            color: #5B6E8C;
-            margin-top: 0.2rem;
+        .form-subtitle {
+            font-size: .82rem;
+            color: var(--txt-3);
+            margin-top: .6rem;
+            line-height: 1.5;
         }
-
-        .auth-heading a {
-            color: #FFD70F;
+        .form-subtitle a {
+            color: var(--navy-mid);
             font-weight: 600;
             text-decoration: none;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 1px;
+            transition: color var(--t);
+        }
+        .form-subtitle a:hover { color: var(--gold-d); }
+
+        .form-rule {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--bdr) 0%, transparent 100%);
+            margin: 1.25rem 0;
         }
 
-        /* error alert */
-        .error-alert {
-            background-color: #FFF5F5;
-            border-left: 4px solid #E53E3E;
-            border-radius: 0.8rem;
-            padding: 0.5rem 0.8rem;
-            margin-bottom: 1rem;
-            font-size: 0.7rem;
+        /* ══ ALERTS ══ */
+        .alert {
+            padding: .75rem 1rem;
+            border-radius: 8px;
+            font-size: .8rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: .55rem;
+            line-height: 1.5;
+        }
+        .alert-error {
+            background: #fef2f2;
             color: #b91c1c;
+            border: 1px solid rgba(185,28,28,0.18);
+            border-left: 3px solid #dc2626;
         }
-        .error-alert ul {
-            margin-left: 1rem;
+        .alert-icon { font-size: .9rem; margin-top: .05rem; flex-shrink: 0; }
+
+        /* ══ FORM ELEMENTS ══ */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .9rem;
         }
 
-        /* form groups - responsive spacing */
         .form-group {
-            margin-bottom: 0.9rem;
+            margin-bottom: 1rem;
+            position: relative;
         }
 
         .form-label {
-            font-weight: 600;
-            font-size: 0.7rem;
-            margin-bottom: 0.25rem;
-            color: #0A1F44;
             display: block;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--txt-2);
+            margin-bottom: .45rem;
+            letter-spacing: .04em;
+            text-transform: uppercase;
         }
 
-        .input-icon-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
+        .input-wrap { position: relative; }
 
-        .input-icon-wrapper i {
+        .input-icon {
             position: absolute;
-            left: 0.8rem;
-            color: #5B6E8C;
-            font-size: 0.8rem;
+            left: .9rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--txt-3);
+            font-size: .8rem;
             pointer-events: none;
+            transition: color var(--t);
         }
 
-        .input-icon-wrapper input, 
-        .input-icon-wrapper select {
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
             width: 100%;
-            padding: 0.6rem 0.8rem 0.6rem 2rem;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            border: 1.5px solid #E9EEF5;
-            border-radius: 1rem;
-            background: #FFFFFF;
-            transition: all 0.2s;
-            color: #1E2A44;
-            font-weight: 500;
+            padding: .78rem 1rem .78rem 2.5rem;
+            border: 1.5px solid var(--bdr);
+            border-radius: 9px;
+            font-size: .9rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             outline: none;
-        }
-
-        .input-icon-wrapper select {
+            background: var(--white);
+            color: var(--txt-1);
+            transition: border-color var(--t), box-shadow var(--t);
+            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
+            -webkit-appearance: none;
             appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%235B6E8C" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23637089' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.8rem center;
-            padding-right: 2rem;
+            background-position: right .9rem center;
+            background-color: var(--white);
+            padding-right: 2.5rem;
         }
 
-        .input-icon-wrapper input:focus,
-        .input-icon-wrapper select:focus {
-            border-color: #FFD70F;
-            box-shadow: 0 0 0 3px rgba(255, 215, 15, 0.2);
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            border-color: var(--gold-d);
+            box-shadow: 0 0 0 3px rgba(196,154,0,0.14), 0 1px 4px rgba(10,31,68,0.06);
         }
 
-        /* password wrapper */
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
+        .input-wrap:focus-within .input-icon { color: var(--gold-d); }
 
-        .password-wrapper i.field-icon {
+        /* Password toggle */
+        .pw-toggle {
             position: absolute;
-            left: 0.8rem;
-            color: #5B6E8C;
-            font-size: 0.8rem;
-            pointer-events: none;
-        }
-
-        .password-wrapper input {
-            width: 100%;
-            padding: 0.6rem 2rem 0.6rem 2rem;
-            font-size: 0.8rem;
-            border: 1.5px solid #E9EEF5;
-            border-radius: 1rem;
-            background: #FFFFFF;
-            outline: none;
-        }
-
-        .password-wrapper input:focus {
-            border-color: #FFD70F;
-            box-shadow: 0 0 0 3px rgba(255, 215, 15, 0.2);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 0.8rem;
-            cursor: pointer;
-            color: #5B6E8C;
-            font-size: 0.8rem;
+            right: .9rem;
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
-            padding: 0;
-        }
-
-        .toggle-password:hover {
-            color: #FFD70F;
-        }
-
-        /* register button */
-        .btn-register {
-            background: #0A1F44;
-            color: white;
-            font-weight: 700;
-            font-size: 0.85rem;
-            padding: 0.7rem 1rem;
-            border: none;
-            width: 100%;
-            border-radius: 1.8rem;
+            color: var(--txt-3);
+            font-size: .82rem;
             cursor: pointer;
-            transition: all 0.2s;
+            padding: .2rem;
+            transition: color var(--t);
+            outline: none;
+        }
+        .pw-toggle:hover { color: var(--navy); }
+
+        /* Section separator */
+        .section-sep {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            margin: .25rem 0 1rem;
+        }
+        .section-sep-line {
+            flex: 1;
+            height: 1px;
+            background: var(--bdr);
+        }
+        .section-sep-label {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            color: var(--txt-3);
+            white-space: nowrap;
+        }
+
+        /* Submit button */
+        .btn-register {
+            width: 100%;
+            padding: .88rem;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-size: .9rem;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            letter-spacing: .02em;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+            gap: .55rem;
+            position: relative;
+            overflow: hidden;
+            transition: background var(--t), transform var(--t), box-shadow var(--t);
+            box-shadow: 0 4px 18px rgba(10,31,68,0.30);
+            margin-top: .25rem;
         }
 
-        .btn-register i {
-            color: #FFD70F;
+        .btn-register::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,15,0.18), transparent);
+            transition: left .55s var(--ease);
         }
-
+        .btn-register:hover::before { left: 160%; }
         .btn-register:hover {
-            background: #122d5c;
-            transform: translateY(-2px);
+            background: var(--navy-mid);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(10,31,68,0.40);
+        }
+        .btn-register:active { transform: translateY(0); }
+
+        /* Footer */
+        .form-footer {
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--bdr);
+            text-align: center;
+        }
+        .form-footer p {
+            font-size: .72rem;
+            color: var(--txt-3);
+            line-height: 1.5;
+        }
+        .form-footer a {
+            color: var(--navy-mid);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 1px;
+            transition: color var(--t);
+        }
+        .form-footer a:hover { color: var(--gold-d); }
+
+        /* ══ BACK LINK ══ */
+        .back-link {
+            position: fixed;
+            top: 1.25rem;
+            left: 1.25rem;
+            z-index: 50;
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            font-size: .78rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            text-decoration: none;
+            padding: .45rem .9rem;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(8px);
+            transition: all var(--t);
+        }
+        .back-link:hover {
+            color: #fff;
+            border-color: rgba(255,215,15,0.35);
+            background: rgba(255,215,15,0.08);
         }
 
-        /* extra small devices (<= 480px) */
+        /* ══ RESPONSIVE ══ */
         @media (max-width: 480px) {
-            body {
-                padding: 0.5rem;
-            }
-            .card-inner {
-                padding: 1rem;
-            }
-            .back-button {
-                top: 0.7rem;
-                left: 0.7rem;
-                padding: 0.4rem 0.8rem;
-                font-size: 0.7rem;
-            }
-            .form-group {
-                margin-bottom: 0.8rem;
-            }
-            .btn-register {
-                padding: 0.6rem;
-                font-size: 0.8rem;
-            }
+            .panel-right { padding: 2.5rem 1.75rem; }
+            .form-row { grid-template-columns: 1fr; }
         }
 
-        /* landscape mode on small heights */
-        @media (max-height: 650px) {
-            .register-container {
-                max-height: 95vh;
-            }
-            .card-inner {
-                padding: 0.8rem 1rem 1rem;
-            }
-            .form-group {
-                margin-bottom: 0.6rem;
-            }
-            .brand {
-                margin-bottom: 0.3rem;
-            }
+        /* Stagger-in animations */
+        .fade-in { animation: fadeUp .5s var(--ease) both; }
+        .fd1 { animation-delay: .12s; }
+        .fd2 { animation-delay: .20s; }
+        .fd3 { animation-delay: .28s; }
+        .fd4 { animation-delay: .34s; }
+        .fd5 { animation-delay: .40s; }
+        .fd6 { animation-delay: .46s; }
+        .fd7 { animation-delay: .52s; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <!-- BACK button outside container, fixed -->
-    <a href="/login" class="back-button">
-        <i class="fas fa-arrow-left"></i> BACK
-    </a>
 
-    <div class="register-container">
-        <div class="register-card">
-            <div class="card-accent"></div>
-            <div class="card-inner">
-                <div class="brand">
-                    <div class="logo">NU <span>CLICKS</span> LMS</div>
+<div class="bg-layer"></div>
+
+<a href="/login" class="back-link">
+    <i>←</i> Back to Login
+</a>
+
+<div class="register-card">
+    <div class="gold-bar"></div>
+
+    <div class="panel-right">
+
+        <div class="form-header fade-in fd1">
+            <div class="form-logo">NU Horizon <em>LMS</em></div>
+            <div class="form-tagline">Intelligent Learning Platform</div>
+            <p class="form-subtitle">
+                Create your account &nbsp;·&nbsp;
+                Already have one? <a href="/login">Sign in</a>
+            </p>
+            <div class="form-rule"></div>
+        </div>
+
+        @if($errors->any())
+            <div class="alert alert-error fade-in fd1">
+                <span class="alert-icon">⚠</span>
+                <div>
+                    @foreach($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
                 </div>
+            </div>
+        @endif
 
-                <div class="auth-heading">
-                    <h2>Create an account</h2>
-                    <p>Already have an account? 
-                        <a href="/login">sign in <i class="fas fa-arrow-right" style="font-size: 0.6rem;"></i></a>
-                    </p>
+        <form method="POST" action="/register">
+            @csrf
+
+            {{-- Personal Info --}}
+            <div class="section-sep fade-in fd2">
+                <div class="section-sep-line"></div>
+                <span class="section-sep-label">Personal Info</span>
+                <div class="section-sep-line"></div>
+            </div>
+
+            <div class="form-group fade-in fd2">
+                <label class="form-label" for="name">Full Name</label>
+                <div class="input-wrap">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="name" name="name"
+                           value="{{ old('name') }}" placeholder="Juan Dela Cruz"
+                           required autofocus>
                 </div>
+            </div>
 
-                @if($errors->any())
-                <div class="error-alert">
-                    <ul>
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+            <div class="form-group fade-in fd2">
+                <label class="form-label" for="email">Email Address</label>
+                <div class="input-wrap">
+                    <span class="input-icon">✉</span>
+                    <input type="email" id="email" name="email"
+                           value="{{ old('email') }}" placeholder="yourname@national-u.edu.ph"
+                           required>
                 </div>
-                @endif
+            </div>
 
-                <form method="POST" action="/register">
-                    @csrf
-                    
-                    <!-- Full Name -->
+            {{-- Account Details --}}
+            <div class="section-sep fade-in fd3">
+                <div class="section-sep-line"></div>
+                <span class="section-sep-label">Account Details</span>
+                <div class="section-sep-line"></div>
+            </div>
+
+            <div class="form-row fade-in fd3">
+                <div class="form-group">
+                    <label class="form-label" for="role">Role</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">💼</span>
+                        <select name="role" id="role" required>
+                            <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
+                            <option value="faculty" {{ old('role') == 'faculty' ? 'selected' : '' }}>Faculty</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="department">Department</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🏫</span>
+                        <input type="text" id="department" name="department"
+                               value="{{ old('department') }}" placeholder="e.g. Computer Science">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Student Fields --}}
+            <div id="studentFields">
+                <div class="form-row fade-in fd4">
                     <div class="form-group">
-                        <label class="form-label" for="name">Full Name</label>
-                        <div class="input-icon-wrapper">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="name" name="name" required value="{{ old('name') }}" placeholder="Juan Dela Cruz">
+                        <label class="form-label" for="student_id">Student ID</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">🪪</span>
+                            <input type="text" id="student_id" name="student_id"
+                                   value="{{ old('student_id') }}" placeholder="2024-12345">
                         </div>
                     </div>
-
-                    <!-- Email -->
                     <div class="form-group">
-                        <label class="form-label" for="email">Email address</label>
-                        <div class="input-icon-wrapper">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" name="email" required value="{{ old('email') }}" placeholder="you@example.com">
-                        </div>
-                    </div>
-
-                    <!-- Role -->
-                    <div class="form-group">
-                        <label class="form-label" for="role">Role</label>
-                        <div class="input-icon-wrapper">
-                            <i class="fas fa-briefcase"></i>
-                            <select name="role" id="role" required>
-                                <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                                <option value="faculty" {{ old('role') == 'faculty' ? 'selected' : '' }}>Faculty</option>
+                        <label class="form-label" for="year_level">Year Level</label>
+                        <div class="input-wrap">
+                            <span class="input-icon">📅</span>
+                            <select name="year_level" id="year_level">
+                                <option value="1" {{ old('year_level') == '1' ? 'selected' : '' }}>1st Year</option>
+                                <option value="2" {{ old('year_level') == '2' ? 'selected' : '' }}>2nd Year</option>
+                                <option value="3" {{ old('year_level') == '3' ? 'selected' : '' }}>3rd Year</option>
+                                <option value="4" {{ old('year_level') == '4' ? 'selected' : '' }}>4th Year</option>
+                                <option value="5" {{ old('year_level') == '5' ? 'selected' : '' }}>5th Year</option>
                             </select>
                         </div>
                     </div>
-
-                    <!-- Dynamic: Student Fields -->
-                    <div id="studentFields">
-                        <div class="form-group">
-                            <label class="form-label" for="student_id">Student ID</label>
-                            <div class="input-icon-wrapper">
-                                <i class="fas fa-id-card"></i>
-                                <input type="text" id="student_id" name="student_id" value="{{ old('student_id') }}" placeholder="2024-12345">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="year_level">Year Level</label>
-                            <div class="input-icon-wrapper">
-                                <i class="fas fa-calendar-alt"></i>
-                                <select name="year_level" id="year_level">
-                                    <option value="1">1st Year</option>
-                                    <option value="2">2nd Year</option>
-                                    <option value="3">3rd Year</option>
-                                    <option value="4">4th Year</option>
-                                    <option value="5">5th Year</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Dynamic: Faculty Fields -->
-                    <div id="facultyFields" style="display: none;">
-                        <div class="form-group">
-                            <label class="form-label" for="faculty_id">Faculty ID</label>
-                            <div class="input-icon-wrapper">
-                                <i class="fas fa-id-badge"></i>
-                                <input type="text" id="faculty_id" name="faculty_id" value="{{ old('faculty_id') }}" placeholder="FAC-2024-001">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Department -->
-                    <div class="form-group">
-                        <label class="form-label" for="department">Department</label>
-                        <div class="input-icon-wrapper">
-                            <i class="fas fa-building"></i>
-                            <input type="text" id="department" name="department" value="{{ old('department') }}" placeholder="Computer Science">
-                        </div>
-                    </div>
-
-                    <!-- Password with toggle -->
-                    <div class="form-group">
-                        <label class="form-label" for="password">Password</label>
-                        <div class="password-wrapper">
-                            <i class="fas fa-lock field-icon"></i>
-                            <input type="password" id="password" name="password" required placeholder="Create password">
-                            <button type="button" class="toggle-password" data-target="password" aria-label="Show/Hide">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password with toggle -->
-                    <div class="form-group">
-                        <label class="form-label" for="password_confirmation">Confirm Password</label>
-                        <div class="password-wrapper">
-                            <i class="fas fa-lock field-icon"></i>
-                            <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Confirm password">
-                            <button type="button" class="toggle-password" data-target="password_confirmation" aria-label="Show/Hide">
-                                <i class="fas fa-eye-slash"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-register">
-                        <i class="fas fa-user-plus"></i> Register
-                    </button>
-                </form>
+                </div>
             </div>
+
+            {{-- Faculty Fields --}}
+            <div id="facultyFields" style="display:none;">
+                <div class="form-group fade-in fd4">
+                    <label class="form-label" for="faculty_id">Faculty ID</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🪪</span>
+                        <input type="text" id="faculty_id" name="faculty_id"
+                               value="{{ old('faculty_id') }}" placeholder="FAC-2024-001">
+                    </div>
+                </div>
+            </div>
+
+            {{-- Security --}}
+            <div class="section-sep fade-in fd5">
+                <div class="section-sep-line"></div>
+                <span class="section-sep-label">Security</span>
+                <div class="section-sep-line"></div>
+            </div>
+
+            <div class="form-group fade-in fd5">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" name="password"
+                           placeholder="Create a strong password" required>
+                    <button type="button" class="pw-toggle"
+                            onclick="togglePw('password','pw-btn-1')" id="pw-btn-1"
+                            title="Show/hide password">👁</button>
+                </div>
+            </div>
+
+            <div class="form-group fade-in fd6">
+                <label class="form-label" for="password_confirmation">Confirm Password</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password_confirmation" name="password_confirmation"
+                           placeholder="Repeat your password" required>
+                    <button type="button" class="pw-toggle"
+                            onclick="togglePw('password_confirmation','pw-btn-2')" id="pw-btn-2"
+                            title="Show/hide password">👁</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register fade-in fd7">
+                <span>→</span>
+                Create Account
+            </button>
+        </form>
+
+        <div class="form-footer fade-in fd7">
+            <p>Having trouble? Contact <a href="mailto:support@national-u.edu.ph">IT Support</a></p>
+            <p style="margin-top:.5rem;">NU Horizon LMS &copy; {{ date('Y') }} · National University</p>
         </div>
+
     </div>
+</div>
 
-    <script>
-        // Toggle Student / Faculty fields
-        const roleSelect = document.getElementById('role');
-        const studentDiv = document.getElementById('studentFields');
-        const facultyDiv = document.getElementById('facultyFields');
-        const studentIdInput = document.getElementById('student_id');
-        const facultyIdInput = document.getElementById('faculty_id');
-
-        function toggleFields() {
-            const isStudent = roleSelect.value === 'student';
-            if (isStudent) {
-                studentDiv.style.display = 'block';
-                facultyDiv.style.display = 'none';
-                if (studentIdInput) studentIdInput.required = true;
-                if (facultyIdInput) facultyIdInput.required = false;
-                if (facultyIdInput) facultyIdInput.value = '';
-            } else {
-                studentDiv.style.display = 'none';
-                facultyDiv.style.display = 'block';
-                if (studentIdInput) studentIdInput.required = false;
-                if (facultyIdInput) facultyIdInput.required = true;
-                if (studentIdInput) studentIdInput.value = '';
-            }
+<script>
+    function togglePw(inputId, btnId) {
+        const input = document.getElementById(inputId);
+        const btn   = document.getElementById(btnId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            btn.textContent = '👁';
         }
+    }
 
-        if (roleSelect) {
-            roleSelect.addEventListener('change', toggleFields);
-            toggleFields();
-        }
+    const roleSelect   = document.getElementById('role');
+    const studentDiv   = document.getElementById('studentFields');
+    const facultyDiv   = document.getElementById('facultyFields');
+    const studentInput = document.getElementById('student_id');
+    const facultyInput = document.getElementById('faculty_id');
 
-        // Password visibility toggle
-        const toggleButtons = document.querySelectorAll('.toggle-password');
-        toggleButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                const targetId = this.getAttribute('data-target');
-                const inputField = document.getElementById(targetId);
-                if (inputField) {
-                    const type = inputField.type === 'password' ? 'text' : 'password';
-                    inputField.type = type;
-                    const icon = this.querySelector('i');
-                    if (type === 'text') {
-                        icon.classList.remove('fa-eye-slash');
-                        icon.classList.add('fa-eye');
-                    } else {
-                        icon.classList.remove('fa-eye');
-                        icon.classList.add('fa-eye-slash');
-                    }
-                }
-            });
-        });
+    function toggleFields() {
+        const isStudent = roleSelect.value === 'student';
+        studentDiv.style.display = isStudent ? 'block' : 'none';
+        facultyDiv.style.display = isStudent ? 'none'  : 'block';
+        if (studentInput) { studentInput.required = isStudent;  if (!isStudent) studentInput.value = ''; }
+        if (facultyInput) { facultyInput.required = !isStudent; if (isStudent)  facultyInput.value = ''; }
+    }
 
-        // Preserve old role after validation error
-        const oldRole = "{{ old('role') }}";
-        if (oldRole && roleSelect && (oldRole === 'student' || oldRole === 'faculty')) {
-            roleSelect.value = oldRole;
-            toggleFields();
-        }
-    </script>
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleFields);
+        const oldRole = "{{ old('role', 'student') }}";
+        if (oldRole === 'student' || oldRole === 'faculty') roleSelect.value = oldRole;
+        toggleFields();
+    }
+</script>
 </body>
 </html>

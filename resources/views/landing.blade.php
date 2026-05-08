@@ -787,7 +787,7 @@
 
         <!-- Main headline -->
         <h1 class="hero-h1 a2">
-            Elevate <em>digital</em> excellence<br>
+            Elevate <em>Digital</em> excellence<br>
             with <span class="hi">NU Horizon LMS</span>
         </h1>
 
@@ -966,7 +966,7 @@
             <span class="eyebrow-tag" style="background:rgba(255,215,15,.10);border-color:rgba(255,215,15,.24);color:var(--gold);">
                 <i class="fas fa-map-signs text-xs"></i> Getting Started
             </span>
-            <h2 class="sec-h2" style="color:#fff;">Up &amp; running in <em style="color:var(--gold);">three steps</em></h2>
+            <h2 class="sec-h2" style="color:#fff;">Up and running in <em style="color:var(--gold);">three steps</em></h2>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6 relative">
@@ -1003,7 +1003,7 @@
 
             <div class="flex-1 order-2 lg:order-1 reveal">
                 <span class="eyebrow-tag"><i class="fas fa-flask text-xs"></i> Research-Driven Platform</span>
-                <h2 class="sec-h2">Intelligent analytics &amp;<br><em>predictive insights</em></h2>
+                <h2 class="sec-h2">Intelligent analytics and<br><em>predictive insights</em></h2>
                 <p class="sec-p">
                     NU Horizon LMS harnesses learning analytics to identify at-risk students, personalize intervention strategies, and continuously improve curriculum effectiveness — all while maintaining FERPA &amp; GDPR compliance.
                 </p>
