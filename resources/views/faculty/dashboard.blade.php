@@ -3,50 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Faculty Dashboard - NU Clicks LMS</title>
+    <title>Faculty Dashboard - NU Horizon LMS</title>
     <!-- Google Fonts + Font Awesome + Remix Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Tailwind CSS CDN (for utility classes used in dashboard) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Custom override to ensure Tailwind doesn't conflict with sidebar styles -->
     <script>
         tailwind.config = {
-            corePlugins: {
-                preflight: false, // prevent global reset conflict with existing styles
-            }
+            corePlugins: { preflight: false }
         }
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #F5F7FB;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #F8F6F1;
             overflow-x: hidden;
         }
 
-        /* ===== CUSTOM COLOR VARIABLES ===== */
+        /* ===== LANDING PAGE COLOR VARIABLES ===== */
         :root {
-            --blue-deep: #0A1F44;
+            --navy: #0A1F44;
+            --navy-mid: #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
             --gold: #FFD70F;
-            --gold-dark: #e5c20c;
-            --gray-light: #F8FAFF;
-            --gray-border: #E9EDF2;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            --gold-d: #C49A00;
+            --gold-mid: #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg: #F8F6F1;
+            --bg-2: #F2EEE5;
+            --white: #FFFFFF;
+            --txt-1: #0A1F44;
+            --txt-2: #2C3E5C;
+            --txt-3: #637089;
+            --bdr: rgba(10,31,68,0.09);
+            --bdr-gold: rgba(196,154,0,0.28);
+            --card-shadow: 0 8px 20px rgba(10,31,68,0.05);
             --transition: all 0.25s ease;
             --danger-red: #dc2626;
             --danger-dark: #b91c1c;
+            --ease: cubic-bezier(0.22,1,0.36,1);
+            --spring: cubic-bezier(0.34,1.56,0.64,1);
         }
 
-        /* Sidebar styles */
+        /* Sidebar styles - matching landing page */
         .sidebar {
-            background-color: var(--blue-deep);
+            background-color: var(--navy);
             width: 280px;
             position: fixed;
             top: 0;
@@ -61,15 +67,9 @@
         }
 
         @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .main-content { margin-left: 0 !important; }
         }
 
         .sidebar-logo {
@@ -79,35 +79,31 @@
             align-items: center;
             gap: 0.75rem;
         }
-        .sidebar-logo-img {
-            height: 45px;
-            width: auto;
-        }
+        .sidebar-logo-img { height: 45px; width: auto; }
         .logo-text h1 {
+            font-family: 'Fraunces', serif;
             font-size: 1.3rem;
             font-weight: 800;
             color: white;
             letter-spacing: -0.3px;
         }
-        .logo-text span {
-            color: var(--gold);
-        }
+        .logo-text span { color: var(--gold); }
         .logo-text p {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
+            font-size: 0.55rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
         }
 
-        .nav-section {
-            padding: 0 1rem;
-            margin-top: 1.5rem;
-        }
+        .nav-section { padding: 0 1rem; margin-top: 1.5rem; }
         .nav-section-title {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255,215,15,0.6);
+            letter-spacing: 0.1em;
+            color: rgba(255,215,15,0.5);
             margin-bottom: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
         }
         .nav-item {
             display: flex;
@@ -115,82 +111,22 @@
             gap: 0.75rem;
             padding: 0.7rem 1rem;
             border-radius: 12px;
-            color: rgba(255,255,255,0.85);
+            color: rgba(255,255,255,0.75);
             transition: var(--transition);
             margin-bottom: 0.25rem;
             font-weight: 500;
-            text-decoration: none;   /* REMOVE UNDERLINE */
+            text-decoration: none;
         }
-        .nav-item i {
-            font-size: 1.2rem;
-            width: 1.5rem;
-        }
-        .nav-item:hover {
-            background: rgba(255,215,15,0.15);
-            color: white;
-        }
-        .nav-item.active {
-            background: var(--gold);
-            color: var(--blue-deep);
-        }
-        .nav-item.active i {
-            color: var(--blue-deep);
-        }
+        .nav-item i { font-size: 1.2rem; width: 1.5rem; }
+        .nav-item:hover { background: rgba(255,215,15,0.12); color: white; }
+        .nav-item.active { background: var(--gold); color: var(--navy); }
+        .nav-item.active i { color: var(--navy); }
 
+        /* Sidebar footer removed - profile/logout moved to header */
         .sidebar-footer {
             margin-top: auto;
             padding: 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.2);
-        }
-        .profile-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-        .avatar {
-            width: 42px;
-            height: 42px;
-            background: rgba(255,215,15,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gold);
-        }
-        .profile-details p {
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .profile-details span {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.7rem;
-        }
-        
-        /* ===== RED LOGOUT BUTTON (SIDEBAR) ===== */
-        .logout-btn {
-            width: 100%;
-            background: rgba(220, 38, 38, 0.15);
-            border: none;
-            padding: 0.6rem;
-            border-radius: 40px;
-            color: #fca5a5;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .logout-btn:hover {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-        }
-        .logout-btn i {
-            font-size: 1.1rem;
+            border-top: 1px solid rgba(255,215,15,0.12);
         }
 
         /* Main content */
@@ -199,111 +135,221 @@
             transition: margin-left 0.3s ease;
             min-height: 100vh;
         }
+
+        /* ===== NEW HEADER WITH PROFILE ON RIGHT ===== */
         .top-bar {
             background: white;
-            padding: 1rem 2rem;
+            padding: 0.75rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border-bottom: 1px solid var(--gray-border);
+            border-bottom: 1px solid var(--bdr);
             position: sticky;
             top: 0;
             z-index: 20;
         }
-        .menu-toggle {
-            display: none;
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--navy); }
+        .page-title { font-weight: 700; color: var(--navy); font-family: 'Fraunces', serif; }
+        
+        /* Right Header Profile Section */
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-search {
+            display: flex;
+            align-items: center;
+            background: #F5F7FB;
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            gap: 0.5rem;
+            border: 1px solid var(--bdr);
+        }
+        .header-search i {
+            color: var(--txt-3);
+            font-size: 0.9rem;
+        }
+        .header-search input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 0.8rem;
+            width: 160px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .header-search input::placeholder {
+            color: var(--txt-3);
+        }
+        .header-avatar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            transition: background 0.2s;
+        }
+        .header-avatar:hover {
+            background: #F5F7FB;
+        }
+        .header-avatar-img {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+        }
+        .header-avatar-info {
+            text-align: right;
+        }
+        .header-avatar-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--navy);
+        }
+        .header-avatar-role {
+            font-size: 0.65rem;
+            color: var(--txt-3);
+        }
+        .header-logout-btn {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            color: var(--txt-3);
+            font-size: 1.1rem;
             cursor: pointer;
-            color: var(--blue-deep);
+            padding: 0.3rem;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .page-title {
-            font-weight: 700;
-            color: var(--blue-deep);
+        .header-logout-btn:hover {
+            color: var(--danger-red);
+            background: rgba(220,38,38,0.1);
         }
+        
         @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+            .menu-toggle { display: block; }
+            .main-content { margin-left: 0; }
+            .header-search input { width: 100px; }
+            .header-avatar-info { display: none; }
+        }
+        @media (max-width: 640px) {
+            .header-search { display: none; }
         }
 
-        /* Enhanced Dashboard Component Styles */
+        /* Dashboard Cards - Matching landing */
         .stat-card {
             background: white;
             border-radius: 1.2rem;
             padding: 1.2rem;
             box-shadow: var(--card-shadow);
             transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid var(--bdr);
         }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(10,31,68,0.1);
-        }
-        .gold-accent {
-            border-left: 4px solid var(--gold);
-        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(10,31,68,0.08); }
+        .gold-accent { border-left: 4px solid var(--gold); }
         .badge-gold {
-            background: rgba(255,215,15,0.2);
-            color: #856404;
+            background: var(--gold-pale);
+            color: var(--gold-d);
             padding: 0.25rem 0.7rem;
             border-radius: 30px;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 700;
         }
         .course-card {
             border-radius: 1rem;
             transition: var(--transition);
             background: white;
+            border: 1px solid var(--bdr);
         }
-        .course-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-        }
+        .course-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
         
-        .dashboard-section {
-            margin-bottom: 2rem;
-        }
+        .dashboard-section { margin-bottom: 2rem; }
         .section-title {
             font-weight: 700;
             font-size: 1.25rem;
-            color: var(--blue-deep);
+            color: var(--navy);
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-family: 'Fraunces', serif;
         }
-        .section-title i {
-            color: var(--gold);
-            font-size: 1.4rem;
-        }
+        .section-title i { color: var(--gold); font-size: 1.4rem; }
         .empty-state {
             text-align: center;
             padding: 2.5rem 1rem;
-            background: #F9FAFE;
+            background: var(--bg-2);
             border-radius: 1.2rem;
-            color: #6c757d;
+            color: var(--txt-3);
         }
-        .recent-item {
-            transition: background 0.2s ease;
-            border-radius: 0.75rem;
-        }
-        .recent-item:hover {
-            background: #F8FAFF;
-        }
+        .recent-item { transition: background 0.2s ease; border-radius: 0.75rem; }
+        .recent-item:hover { background: var(--navy-pale); }
 
-        /* ===== MODAL STYLES (THEMED: gold/blue, only confirm button red) ===== */
+        /* Welcome header */
+        .welcome-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.8rem;
+            color: white;
+        }
+        .welcome-badge {
+            background: rgba(255,215,15,0.18);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+        .date-chip {
+            background: rgba(255,255,255,0.12);
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-size: 0.8rem;
+        }
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+        }
+        .quick-action-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.9rem 0.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            border: 1px solid var(--bdr);
+            cursor: pointer;
+        }
+        .quick-action-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--gold);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+        }
+        .quick-action-icon { font-size: 1.5rem; color: var(--navy); margin-bottom: 0.4rem; display: block; }
+        .quick-action-label { font-size: 0.7rem; font-weight: 600; color: var(--txt-2); }
+
+        .today-classes-card {
+            background: white;
+            border-radius: 1.2rem;
+            border: 1px solid var(--bdr);
+        }
+        .recent-lesson-item { border-left: 3px solid var(--gold); transition: all 0.2s; }
+        .recent-lesson-item:hover { background: var(--navy-pale); }
+
+        /* Modal */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(10, 31, 68, 0.75);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(10,31,68,0.85);
             backdrop-filter: blur(4px);
             z-index: 1000;
             display: flex;
@@ -313,26 +359,20 @@
             opacity: 0;
             transition: visibility 0.2s, opacity 0.2s ease;
         }
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
         .confirmation-modal {
             background: white;
             max-width: 450px;
             width: 90%;
             border-radius: 1.5rem;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.2);
             overflow: hidden;
             transform: scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: transform 0.2s var(--spring);
         }
-        .modal-overlay.active .confirmation-modal {
-            transform: scale(1);
-        }
-        /* Modal header uses theme: blue-deep background + gold border-bottom */
+        .modal-overlay.active .confirmation-modal { transform: scale(1); }
         .modal-header {
-            background: var(--blue-deep);
+            background: var(--navy);
             padding: 1.25rem 1.5rem;
             display: flex;
             align-items: center;
@@ -347,42 +387,20 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            font-family: 'Fraunces', serif;
         }
-        .modal-header h3 i {
-            color: var(--gold);
-            font-size: 1.4rem;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            font-size: 1.6rem;
-            cursor: pointer;
-            transition: color 0.2s;
-            line-height: 1;
-            padding: 0;
-        }
-        .modal-close:hover {
-            color: var(--gold);
-        }
-        .modal-body {
-            padding: 1.8rem 1.5rem;
-            background: white;
-            text-align: center;
-        }
-        .modal-body p {
-            font-size: 1rem;
-            color: #1f2937;
-            font-weight: 500;
-            margin-bottom: 0;
-        }
+        .modal-header h3 i { color: var(--gold); font-size: 1.4rem; }
+        .modal-close { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 1.6rem; cursor: pointer; }
+        .modal-close:hover { color: var(--gold); }
+        .modal-body { padding: 1.8rem 1.5rem; background: white; text-align: center; }
+        .modal-body p { font-size: 1rem; color: var(--txt-1); font-weight: 500; }
         .modal-footer {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            padding: 1rem 1.5rem 1.5rem;
             display: flex;
             gap: 0.75rem;
             justify-content: flex-end;
             background: #f9fafb;
-            border-top: 1px solid var(--gray-border);
+            border-top: 1px solid var(--bdr);
         }
         .modal-btn {
             padding: 0.6rem 1.25rem;
@@ -392,36 +410,13 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: none;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .modal-btn-cancel {
-            background: #eef2ff;
-            color: #1e293b;
-        }
-        .modal-btn-cancel:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px);
-        }
-        /* Only the confirm button is red */
-        .modal-btn-confirm {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .modal-btn-confirm:hover {
-            background: var(--danger-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.2);
-        }
-        @media (max-width: 500px) {
-            .modal-footer {
-                flex-direction: column-reverse;
-            }
-            .modal-btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
+        .modal-btn-cancel { background: #eef2ff; color: #1e293b; }
+        .modal-btn-cancel:hover { background: #e2e8f0; transform: translateY(-1px); }
+        .modal-btn-confirm { background: var(--danger-red); color: white; }
+        .modal-btn-confirm:hover { background: var(--danger-dark); transform: translateY(-1px); }
+        @media (max-width: 500px) { .modal-footer { flex-direction: column-reverse; } .modal-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -429,9 +424,9 @@
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
+        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img" onerror="this.src='https://placehold.co/45x45/0A1F44/FFD70F?text=NU'">
         <div class="logo-text">
-            <h1>NU <span>CLICKS</span> LMS</h1>
+            <h1>NU <span>HORIZON</span></h1>
             <p>Faculty Portal</p>
         </div>
     </div>
@@ -473,79 +468,132 @@
             </a>
         </div>
     </div>
-
-    <div class="sidebar-footer">
-        <div class="profile-info">
-            <div class="avatar">
-                <i class="ri-user-line"></i>
-            </div>
-            <div class="profile-details">
-                <p>{{ Auth::user()->name }}</p>
-                <span>{{ Auth::user()->email }}</span>
-            </div>
-        </div>
-        <!-- Logout form with full account logout -->
-        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-            @csrf
-            <button type="button" id="logoutButton" class="logout-btn">
-                <i class="ri-logout-box-r-line"></i> Sign Out
-            </button>
-        </form>
-    </div>
 </aside>
 
 <!-- Main Content -->
 <div class="main-content" id="mainContent">
+    <!-- Top Bar with Profile on Right Side -->
     <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="ri-menu-line"></i>
-        </button>
-        <h2 class="page-title text-lg md:text-xl">Dashboard</h2>
-        <div class="w-8"></div>
+        <div class="flex items-center gap-3">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="ri-menu-line"></i>
+            </button>
+            <h2 class="page-title text-lg md:text-xl">Dashboard</h2>
+        </div>
+        
+        <!-- Right side: Search + Profile + Logout -->
+        <div class="header-profile">
+            <div class="header-search">
+                <i class="ri-search-line"></i>
+                <input type="text" placeholder="Search files...">
+            </div>
+            <div class="header-avatar" id="headerAvatar">
+                <div class="header-avatar-img">
+                    <i class="ri-user-line"></i>
+                </div>
+                <div class="header-avatar-info">
+                    <div class="header-avatar-name">{{ Auth::user()->name ?? 'BABYLYN P BARTE' }}</div>
+                    <div class="header-avatar-role">Faculty</div>
+                </div>
+            </div>
+            <button class="header-logout-btn" id="logoutButtonHeader" title="Sign Out">
+                <i class="ri-logout-box-r-line"></i>
+            </button>
+        </div>
     </div>
 
     <div class="p-4 md:p-6">
+        <!-- Welcome Header -->
+        <div class="welcome-header">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3 flex-wrap mb-2">
+                        <h1 class="text-2xl md:text-3xl font-bold" style="font-family:'Fraunces',serif">Welcome, {{ Auth::user()->name ?? 'BABYLYN P BARTE' }}</h1>
+                        <span class="welcome-badge"><i class="ri-star-fill mr-1"></i> Faculty · All Grade</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-white/80 text-sm">
+                        <i class="ri-calendar-line"></i>
+                        <span class="date-chip" id="currentDate">Friday, May 8, 2026</span>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <div class="bg-white/10 rounded-full px-3 py-1.5 text-xs font-medium flex items-center gap-1 backdrop-blur-sm">
+                        <i class="ri-notification-3-line" style="color:var(--gold)"></i> Notifications
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Classes + Quick Actions Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div class="today-classes-card p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                        <i class="ri-calendar-todo-line text-xl" style="color: var(--gold);"></i> Today's Classes
+                    </h3>
+                    <i class="ri-more-2-fill text-gray-400"></i>
+                </div>
+                <div class="empty-state py-6 bg-gray-50/50 rounded-xl">
+                    <i class="ri-calendar-close-line text-3xl text-gray-300"></i>
+                    <p class="text-gray-400 text-sm mt-2">No classes scheduled for Friday.</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-4">
+                    <i class="ri-flashlight-line text-xl" style="color: var(--gold);"></i> Quick Actions
+                </h3>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-item" onclick="window.location.href='{{ route('faculty.quiz.create') }}'">
+                        <i class="ri-upload-cloud-line quick-action-icon"></i>
+                        <span class="quick-action-label">Upload Lesson</span>
+                    </div>
+                    <div class="quick-action-item" onclick="window.location.href='{{ route('faculty.courses') }}'">
+                        <i class="ri-book-open-line quick-action-icon"></i>
+                        <span class="quick-action-label">Manage Class</span>
+                    </div>
+                    <div class="quick-action-item" onclick="window.location.href='{{ route('faculty.students') }}'">
+                        <i class="ri-calendar-line quick-action-icon"></i>
+                        <span class="quick-action-label">My Schedule</span>
+                    </div>
+                    <div class="quick-action-item" onclick="window.location.href='{{ route('faculty.quizzes.list') }}'">
+                        <i class="ri-file-copy-line quick-action-icon"></i>
+                        <span class="quick-action-label">Submissions</span>
+                    </div>
+                    <div class="quick-action-item">
+                        <i class="ri-robot-line quick-action-icon"></i>
+                        <span class="quick-action-label">AI Tutor</span>
+                    </div>
+                    <div class="quick-action-item">
+                        <i class="ri-folder-chart-line quick-action-icon"></i>
+                        <span class="quick-action-label">Content</span>
+                    </div>
+                    <div class="quick-action-item">
+                        <i class="ri-folder-line quick-action-icon"></i>
+                        <span class="quick-action-label">My Files</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Key Metrics Cards -->
         <div class="dashboard-section">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <div class="stat-card flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium">Total Students</p>
-                        <p class="text-3xl font-extrabold text-gray-800">{{ $totalStudents ?? 0 }}</p>
-                    </div>
-                    <div class="bg-blue-50 p-3 rounded-full">
-                        <i class="ri-user-line text-blue-600 text-2xl"></i>
-                    </div>
+                    <div><p class="text-gray-500 text-sm font-medium">Total Students</p><p class="text-3xl font-extrabold text-gray-800">{{ $totalStudents ?? 0 }}</p></div>
+                    <div class="bg-blue-50 p-3 rounded-full"><i class="ri-user-line text-blue-600 text-2xl"></i></div>
                 </div>
                 <div class="stat-card flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium">Total Courses</p>
-                        <p class="text-3xl font-extrabold text-gray-800">{{ $totalCourses ?? 0 }}</p>
-                    </div>
-                    <div class="bg-green-50 p-3 rounded-full">
-                        <i class="ri-book-line text-green-600 text-2xl"></i>
-                    </div>
+                    <div><p class="text-gray-500 text-sm font-medium">Total Courses</p><p class="text-3xl font-extrabold text-gray-800">{{ $totalCourses ?? 0 }}</p></div>
+                    <div class="bg-green-50 p-3 rounded-full"><i class="ri-book-line text-green-600 text-2xl"></i></div>
                 </div>
                 <div class="stat-card flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium">Total Quizzes</p>
-                        <p class="text-3xl font-extrabold text-gray-800">
-                            {{ $totalQuizzes ?? 0 }}
-                        </p>
-                    </div>
-
-                    <div class="bg-purple-50 p-3 rounded-full">
-                        <i class="ri-file-list-3-line text-purple-600 text-2xl"></i>
-                    </div>
+                    <div><p class="text-gray-500 text-sm font-medium">Total Quizzes</p><p class="text-3xl font-extrabold text-gray-800">{{ $totalQuizzes ?? 0 }}</p></div>
+                    <div class="bg-purple-50 p-3 rounded-full"><i class="ri-file-list-3-line text-purple-600 text-2xl"></i></div>
                 </div>
                 <div class="stat-card flex items-center justify-between gold-accent">
-                    <div>
-                        <p class="text-gray-500 text-sm font-medium">Avg. Score</p>
-                        <p class="text-3xl font-extrabold text-gray-800">{{ $avgScore ?? 0 }}%</p>
-                    </div>
-                    <div class="bg-yellow-50 p-3 rounded-full">
-                        <i class="ri-percent-line text-yellow-600 text-2xl"></i>
-                    </div>
+                    <div><p class="text-gray-500 text-sm font-medium">Avg. Score</p><p class="text-3xl font-extrabold text-gray-800">{{ $avgScore ?? 0 }}%</p></div>
+                    <div class="bg-yellow-50 p-3 rounded-full"><i class="ri-percent-line text-yellow-600 text-2xl"></i></div>
                 </div>
             </div>
         </div>
@@ -554,10 +602,9 @@
         <div class="dashboard-section">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-white to-gray-50/30">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i class="ri-user-add-line text-xl" style="color:var(--gold)"></i> 
-                            Recent Enrollments
+                            <i class="ri-user-add-line text-xl" style="color:var(--gold)"></i> Recent Enrollments
                         </h3>
                         <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Latest activity</span>
                     </div>
@@ -589,12 +636,11 @@
                 </div>
 
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-white to-gray-50/30">
+                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                         <h3 class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i class="ri-quiz-line text-xl" style="color:var(--gold)"></i> 
-                            Recent Quizzes
+                            <i class="ri-quiz-line text-xl" style="color:var(--gold)"></i> Recent Quizzes
                         </h3>
-                        <a href="{{ route('faculty.quizzes.list') }}" class="text-sm font-medium flex items-center gap-1 hover:underline" style="color:var(--blue-deep)">
+                        <a href="{{ route('faculty.quizzes.list') }}" class="text-sm font-medium flex items-center gap-1 hover:underline" style="color:var(--navy)">
                             View All <i class="ri-arrow-right-line"></i>
                         </a>
                     </div>
@@ -640,6 +686,42 @@
             </div>
         </div>
 
+        <!-- Recent Lessons & Top Students -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                        <i class="ri-history-line" style="color: var(--gold);"></i> Recent Lessons
+                    </h3>
+                    <span class="text-xs text-gray-400">Latest updates</span>
+                </div>
+                <div class="p-4">
+                    <div class="recent-lesson-item p-3 rounded-lg mb-2 bg-gray-50/30">
+                        <p class="font-medium text-gray-800">Media and Information Litera...</p>
+                        <p class="text-xs text-gray-500 mt-1">OOP-11 - Object Oriented Programming · 5 days ago</p>
+                    </div>
+                    <div class="text-center text-xs text-gray-400 mt-2">
+                        <i class="ri-folder-line"></i> 2 more lessons available
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="px-5 py-4 border-b border-gray-100">
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                        <i class="ri-medal-line" style="color: var(--gold);"></i> Top 5 Students
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="empty-state py-6">
+                        <i class="ri-emotion-sad-line text-3xl text-gray-300"></i>
+                        <p class="text-gray-400 mt-2">Rejected</p>
+                        <p class="text-xs text-gray-400">No student rankings available yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- My Courses -->
         <div class="dashboard-section">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -649,7 +731,7 @@
                         <span>My Courses</span>
                     </div>
                     @if(isset($courses) && $courses->count() > 0)
-                        <a href="{{ route('faculty.courses') }}" class="text-sm font-medium flex items-center gap-1 hover:underline" style="color:var(--blue-deep)">
+                        <a href="{{ route('faculty.courses') }}" class="text-sm font-medium flex items-center gap-1 hover:underline" style="color:var(--navy)">
                             Manage all <i class="ri-arrow-right-line"></i>
                         </a>
                     @endif
@@ -658,7 +740,7 @@
                     @if(isset($courses) && $courses->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                             @foreach($courses as $course)
-                                <div class="course-card border border-gray-100 p-4 rounded-xl hover:shadow-md transition-all duration-200 bg-white">
+                                <div class="course-card p-4 rounded-xl hover:shadow-md transition-all duration-200">
                                     <div class="flex justify-between items-start">
                                         <div>
                                             <div class="flex items-center gap-2 mb-1">
@@ -675,13 +757,10 @@
                                         <span class="flex items-center gap-1"><i class="ri-file-line"></i> Materials: {{ $course->materials->count() ?? 0 }}</span>
                                     </div>
                                     <div class="mt-5 flex gap-2">
-                                        <a href="{{ route('faculty.quiz.create.for.course', $course->id) }}" 
-                                           class="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-sm hover:shadow" 
-                                           style="background:#0A1F44; color:white;">
+                                        <a href="{{ route('faculty.quiz.create.for.course', $course->id) }}" class="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-sm hover:shadow" style="background:var(--navy); color:white;">
                                             <i class="ri-quiz-line mr-1"></i> Create Quiz
                                         </a>
-                                        <a href="{{ route('faculty.course.details', $course->id) }}" 
-                                           class="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg border border-gray-300 hover:border-gold transition-all hover:bg-gray-50">
+                                        <a href="{{ route('faculty.course.details', $course->id) }}" class="flex-1 text-center text-xs font-semibold py-2.5 rounded-lg border border-gray-300 hover:border-gold transition-all hover:bg-gray-50">
                                             Manage
                                         </a>
                                     </div>
@@ -704,14 +783,11 @@
     </div>
 </div>
 
-<!-- ======================= THEMED CONFIRMATION MODAL (Only confirm button is red) ======================= -->
+<!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="modal-overlay">
     <div class="confirmation-modal">
         <div class="modal-header">
-            <h3>
-                <i class="ri-logout-box-r-line"></i> 
-                Confirm Sign Out
-            </h3>
+            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
             <button class="modal-close" id="closeModalBtn">&times;</button>
         </div>
         <div class="modal-body">
@@ -726,15 +802,16 @@
 </div>
 
 <script>
-    // Mobile sidebar toggle
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateElem = document.getElementById('currentDate');
+    if (dateElem) dateElem.innerText = new Date().toLocaleDateString('en-US', options);
+
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
     if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('mobile-open');
-        });
+        menuToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
     }
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', (event) => {
         const isMobile = window.innerWidth <= 1024;
         if (isMobile && sidebar.classList.contains('mobile-open')) {
             if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
@@ -743,7 +820,6 @@
         }
     });
 
-    // Active nav highlighting
     const currentUrl = window.location.pathname;
     document.querySelectorAll('.nav-item').forEach(item => {
         const href = item.getAttribute('href');
@@ -754,46 +830,29 @@
         }
     });
 
-    // Logout modal logic (full account logout)
-    const logoutButton = document.getElementById('logoutButton');
+    // Logout modal logic - using header logout button
+    const logoutButton = document.getElementById('logoutButtonHeader');
     const logoutModal = document.getElementById('logoutModal');
     const confirmBtn = document.getElementById('confirmLogoutBtn');
     const cancelBtn = document.getElementById('cancelLogoutBtn');
     const closeModalBtn = document.getElementById('closeModalBtn');
     const logoutForm = document.getElementById('logoutForm');
 
-    function openModal() {
-        logoutModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeModal() {
-        logoutModal.classList.remove('active');
-        document.body.style.overflow = '';
-    }
+    function openModal() { logoutModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeModal() { logoutModal.classList.remove('active'); document.body.style.overflow = ''; }
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            openModal();
-        });
-    }
-    if (confirmBtn) {
-        confirmBtn.addEventListener('click', () => {
-            if (logoutForm) {
-                logoutForm.submit();
-            } else {
-                window.location.href = "{{ route('logout') }}";
-            }
-        });
-    }
+    if (logoutButton) logoutButton.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+    if (confirmBtn) confirmBtn.addEventListener('click', () => { if (logoutForm) logoutForm.submit(); else window.location.href = "{{ route('logout') }}"; });
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
     if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    logoutModal.addEventListener('click', (e) => {
-        if (e.target === logoutModal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && logoutModal.classList.contains('active')) closeModal();
-    });
+    logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && logoutModal.classList.contains('active')) closeModal(); });
 </script>
+
+<!-- Hidden logout form -->
+<form method="POST" action="{{ route('logout') }}" id="logoutForm" style="display: none;">
+    @csrf
+</form>
+
 </body>
 </html>

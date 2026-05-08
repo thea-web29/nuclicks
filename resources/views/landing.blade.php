@@ -624,6 +624,82 @@
         .f-copy-lnk:hover { color:var(--gold); }
 
         *:focus-visible { outline:2.5px solid var(--gold-d); outline-offset:3px; border-radius:3px; }
+
+        /* ══════════════════════════════════
+           ANNOUNCEMENTS SECTION - EMPTY STATE
+        ══════════════════════════════════ */
+        .announcements-section {
+            background: var(--white);
+            border-bottom: 1px solid var(--bdr);
+        }
+        .announcements-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .announcements-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .announcements-title i {
+            font-size: 1.5rem;
+            color: var(--gold-d);
+            background: var(--gold-pale);
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            border: 1px solid var(--bdr-gold);
+        }
+        .announcements-title h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: -0.02em;
+        }
+        .view-all-link {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--navy-mid);
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 2px;
+            transition: gap 0.26s var(--ease);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .view-all-link:hover {
+            gap: 0.6rem;
+            color: var(--navy);
+        }
+        .empty-announcements {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--bg-2);
+            border-radius: 20px;
+            border: 1px dashed var(--bdr);
+        }
+        .empty-announcements i {
+            font-size: 2.5rem;
+            color: var(--txt-4);
+            margin-bottom: 1rem;
+        }
+        .empty-announcements p {
+            color: var(--txt-3);
+            font-size: 0.9rem;
+        }
+        .empty-announcements .empty-title {
+            font-weight: 700;
+            color: var(--txt-2);
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -646,6 +722,7 @@
                 <a href="#platform" class="nav-link"><i class="fas fa-th-large text-xs opacity-50 mr-1"></i>Platform</a>
                 <a href="#solutions" class="nav-link"><i class="fas fa-lightbulb text-xs opacity-50 mr-1"></i>Solutions</a>
                 <a href="#research" class="nav-link"><i class="fas fa-flask text-xs opacity-50 mr-1"></i>Research</a>
+                <a href="#announcements" class="nav-link"><i class="fas fa-bullhorn text-xs opacity-50 mr-1"></i>Announcements</a>
                 <a href="#support" class="nav-link"><i class="fas fa-life-ring text-xs opacity-50 mr-1"></i>Support</a>
                 <div class="flex items-center gap-2.5 pl-5 border-l border-white/10">
                     <a href="/login" class="hdr-login"><i class="fas fa-sign-in-alt text-xs"></i> Log in</a>
@@ -666,6 +743,7 @@
             <a href="#platform" class="text-white/60 hover:text-white py-2 text-sm font-medium flex items-center gap-2.5"><i class="fas fa-th-large text-xs w-4 text-center opacity-50"></i>Platform</a>
             <a href="#solutions" class="text-white/60 hover:text-white py-2 text-sm font-medium flex items-center gap-2.5"><i class="fas fa-lightbulb text-xs w-4 text-center opacity-50"></i>Solutions</a>
             <a href="#research" class="text-white/60 hover:text-white py-2 text-sm font-medium flex items-center gap-2.5"><i class="fas fa-flask text-xs w-4 text-center opacity-50"></i>Research</a>
+            <a href="#announcements" class="text-white/60 hover:text-white py-2 text-sm font-medium flex items-center gap-2.5"><i class="fas fa-bullhorn text-xs w-4 text-center opacity-50"></i>Announcements</a>
             <a href="#support" class="text-white/60 hover:text-white py-2 text-sm font-medium flex items-center gap-2.5"><i class="fas fa-life-ring text-xs w-4 text-center opacity-50"></i>Support</a>
             <div class="flex gap-3 pt-3">
                 <a href="/login" class="mob-login"><i class="fas fa-sign-in-alt text-xs"></i> Login</a>
@@ -746,7 +824,7 @@
     <div class="marquee-track">
         <div class="marquee-item"><i class="fas fa-graduation-cap"></i>Student Experience<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-chart-bar"></i>Real-time Analytics<span class="sep">◆</span></div>
-        <div class="marquee-item"><i class="fas fa-robot"></i>AI-Powered Learning<span class="sep">◆</span></div>
+        <div class="marquee-item"><i class="fas fa-brain"></i>Data-Driven Insights<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-shield-alt"></i>ISO 27001 Security<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-chalkboard-teacher"></i>Faculty Empowerment<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-mobile-alt"></i>Mobile First<span class="sep">◆</span></div>
@@ -755,7 +833,7 @@
         <!-- duplicate for seamless loop -->
         <div class="marquee-item"><i class="fas fa-graduation-cap"></i>Student Experience<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-chart-bar"></i>Real-time Analytics<span class="sep">◆</span></div>
-        <div class="marquee-item"><i class="fas fa-robot"></i>AI-Powered Learning<span class="sep">◆</span></div>
+        <div class="marquee-item"><i class="fas fa-brain"></i>Data-Driven Insights<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-shield-alt"></i>ISO 27001 Security<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-chalkboard-teacher"></i>Faculty Empowerment<span class="sep">◆</span></div>
         <div class="marquee-item"><i class="fas fa-mobile-alt"></i>Mobile First<span class="sep">◆</span></div>
@@ -810,7 +888,7 @@
                     <h3 class="sol-h">Student Experience</h3>
                     <p class="sol-p">Personalized dashboards, adaptive assignments, peer collaboration, and mobile‑first access to lectures &amp; grades.</p>
                     <ul class="sol-list">
-                        <li><i class="fas fa-check-circle"></i>AI study recommendations</li>
+                        <li><i class="fas fa-check-circle"></i>Personalized study recommendations</li>
                         <li><i class="fas fa-check-circle"></i>Real‑time grade analytics</li>
                         <li><i class="fas fa-check-circle"></i>Integrated library &amp; resources</li>
                         <li><i class="fas fa-check-circle"></i>Mobile app for iOS &amp; Android</li>
@@ -851,6 +929,30 @@
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<hr class="sec-sep">
+
+<!-- ══════════ LATEST ANNOUNCEMENTS SECTION — EMPTY STATE ══════════ -->
+<section id="announcements" class="announcements-section py-20">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
+        
+        <div class="announcements-header reveal">
+            <div class="announcements-title">
+                <i class="fas fa-newspaper"></i>
+                <h2>Latest Announcements</h2>
+            </div>
+            <a href="#" class="view-all-link">VIEW ALL ANNOUNCEMENTS <i class="fas fa-arrow-right text-xs"></i></a>
+        </div>
+
+        <!-- Empty State - No Announcements (matches your screenshot) -->
+        <div class="empty-announcements reveal">
+            <i class="fas fa-bullhorn"></i>
+            <p class="empty-title">No Announcements Available</p>
+            <p>There are currently no announcements to display. Check back later for updates from the university administration.</p>
+        </div>
+
     </div>
 </section>
 
@@ -912,8 +1014,8 @@
                         <div><div class="af-h">Real-time Dashboards</div><div class="af-p">Track engagement, completion, and performance metrics</div></div>
                     </div>
                     <div class="af-item">
-                        <div class="af-icon"><i class="fas fa-robot"></i></div>
-                        <div><div class="af-h">AI Recommendations</div><div class="af-p">Adaptive learning paths tailored for each student</div></div>
+                        <div class="af-icon"><i class="fas fa-chart-line"></i></div>
+                        <div><div class="af-h">Predictive Analytics</div><div class="af-p">Identify at-risk students with data-driven models</div></div>
                     </div>
                     <div class="af-item">
                         <div class="af-icon"><i class="fas fa-bell"></i></div>
