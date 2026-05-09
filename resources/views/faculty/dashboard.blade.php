@@ -443,6 +443,9 @@
             <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
                 <i class="ri-book-line"></i> Courses
             </a>
+            <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Files & Folders
+            </a>
         </div>
 
         <div class="nav-section">
@@ -456,6 +459,10 @@
             <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
                 <i class="ri-database-2-line"></i> Question Bank
             </a>
+            
+            <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
+                <i class="ri-graduation-cap-line"></i> Grading
+            </a>
         </div>
 
         <div class="nav-section">
@@ -463,8 +470,8 @@
             <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
                 <i class="ri-bar-chart-line"></i> Results & Analytics
             </a>
-            <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
-                <i class="ri-graduation-cap-line"></i> Grading
+            <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> My Evaluation
             </a>
         </div>
     </div>
@@ -561,14 +568,10 @@
                         <span class="quick-action-label">Submissions</span>
                     </div>
                     <div class="quick-action-item">
-                        <i class="ri-robot-line quick-action-icon"></i>
-                        <span class="quick-action-label">AI Tutor</span>
-                    </div>
-                    <div class="quick-action-item">
                         <i class="ri-folder-chart-line quick-action-icon"></i>
                         <span class="quick-action-label">Content</span>
                     </div>
-                    <div class="quick-action-item">
+                    <div class="quick-action-item" onclick="window.location.href='{{ route('faculty.folder-files') }}'">
                         <i class="ri-folder-line quick-action-icon"></i>
                         <span class="quick-action-label">My Files</span>
                     </div>
@@ -686,7 +689,7 @@
             </div>
         </div>
 
-        <!-- Recent Lessons & Top Students -->
+        <!-- Recent Lessons & My Evaluation -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -707,17 +710,44 @@
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 border-b border-gray-100">
+                <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-semibold text-gray-800 flex items-center gap-2">
-                        <i class="ri-medal-line" style="color: var(--gold);"></i> Top 5 Students
+                        <i class="ri-star-smile-line" style="color: var(--gold);"></i> My Evaluation
                     </h3>
+                    <a href="{{ route('faculty.my-evaluation') }}" class="text-sm font-medium flex items-center gap-1 hover:underline" style="color:var(--navy)">
+                        View Details <i class="ri-arrow-right-line"></i>
+                    </a>
                 </div>
-                <div class="p-4">
-                    <div class="empty-state py-6">
-                        <i class="ri-emotion-sad-line text-3xl text-gray-300"></i>
-                        <p class="text-gray-400 mt-2">Rejected</p>
-                        <p class="text-xs text-gray-400">No student rankings available yet.</p>
+                <div class="p-5">
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Average Rating</p>
+                            <p class="text-3xl font-extrabold text-gray-800">{{ number_format($averageEvaluationRating ?? 0, 2) }}/5</p>
+                            <p class="text-xs text-gray-400 mt-1">Based on {{ $evaluationCount ?? 0 }} student evaluation(s)</p>
+                        </div>
+                        <div class="w-16 h-16 rounded-2xl flex items-center justify-center" style="background: rgba(255,215,15,0.18); color: var(--navy);">
+                            <i class="ri-star-smile-line text-3xl"></i>
+                        </div>
                     </div>
+
+                    @if(isset($recentEvaluations) && $recentEvaluations->count() > 0)
+                        <div class="mt-5 space-y-3">
+                            @foreach($recentEvaluations->take(2) as $evaluation)
+                                <div class="p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="font-semibold text-sm text-gray-700">{{ $evaluation->course->name ?? 'General Evaluation' }}</span>
+                                        <span class="text-xs font-bold" style="color: var(--navy);">{{ number_format($evaluation->rating ?? 0, 1) }}/5</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 line-clamp-2">{{ $evaluation->comment ?? 'No written comment provided.' }}</p>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="empty-state py-6 mt-3">
+                            <i class="ri-chat-smile-3-line text-3xl text-gray-300"></i>
+                            <p class="text-gray-400 mt-2">No student evaluations yet.</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

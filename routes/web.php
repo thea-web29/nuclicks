@@ -88,6 +88,14 @@ Route::middleware(['auth'])->prefix('faculty')->name('faculty.')->group(function
     // Generate / resend join code (emails all eligible students)
     Route::put('/courses/{id}/generate-code',       [FacultyController::class, 'generateCourseCode'])->name('course.generate-code');
 
+
+    // Centralized Folder & Files
+    Route::get('/folder-files',                         [FacultyController::class, 'folderFiles'])->name('folder-files');
+    Route::post('/folder-files/folders',                [FacultyController::class, 'storeFolder'])->name('folder-files.folders.store');
+    Route::post('/folder-files/upload',                 [FacultyController::class, 'uploadFile'])->name('folder-files.upload');
+    Route::get('/folder-files/{id}/download',           [FacultyController::class, 'downloadFile'])->name('folder-files.download');
+    Route::patch('/folder-files/{id}/archive',          [FacultyController::class, 'archiveFile'])->name('folder-files.archive');
+
     // Materials
     Route::get('/courses/{courseId}/materials',     [FacultyController::class, 'materials'])->name('materials');
     Route::post('/courses/{courseId}/materials',    [FacultyController::class, 'uploadMaterial'])->name('upload.material');
@@ -123,6 +131,9 @@ Route::middleware(['auth'])->prefix('faculty')->name('faculty.')->group(function
     Route::get('/quizzes/{quizId}/submissions',          [FacultyController::class, 'submissions'])->name('submissions');
     Route::get('/attempts/{attemptId}/grade',            [FacultyController::class, 'gradeSubmission'])->name('grade.submission');
     Route::put('/attempts/{attemptId}',                  [FacultyController::class, 'updateGrade'])->name('update.grade');
+
+    // My Evaluation
+    Route::get('/my-evaluation',                         [FacultyController::class, 'myEvaluation'])->name('my-evaluation');
 
     // Results
     Route::get('/results',                               [FacultyController::class, 'resultsIndex'])->name('results.index');

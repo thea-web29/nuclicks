@@ -492,6 +492,9 @@
             <a href="{{ route('faculty.question.bank') }}" class="nav-item">
                 <i class="ri-database-2-line"></i> Question Bank
             </a>
+            <a href="{{ route('faculty.grading') }}" class="nav-item">
+                <i class="ri-graduation-cap-line"></i> Grading
+            </a>
         </div>
 
         <div class="nav-section">
@@ -499,9 +502,10 @@
             <a href="{{ route('faculty.results.index') }}" class="nav-item">
                 <i class="ri-bar-chart-line"></i> Results & Analytics
             </a>
-            <a href="{{ route('faculty.grading') }}" class="nav-item">
-                <i class="ri-graduation-cap-line"></i> Grading
+            <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> My Evaluation
             </a>
+            
         </div>
     </div>
 

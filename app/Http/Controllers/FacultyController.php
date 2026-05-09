@@ -16,6 +16,9 @@ use App\Models\QuizAttempt;
 use App\Models\Announcement;
 use App\Models\Notification;
 use App\Models\ActivityLog;
+use App\Models\FacultyEvaluation;
+use App\Models\SystemSetting;
+use App\Models\AdminFile;
 use App\Mail\CourseCodeMail;
 use Illuminate\Support\Facades\Mail;
 
@@ -31,27 +34,49 @@ class FacultyController extends Controller
     {
         $user = Auth::user();
         $courses = Course::where('faculty_id', $user->id)->get();
+        $courseIds = $courses->pluck('id');
 
-        $totalStudents = Enrollment::whereIn('course_id', $courses->pluck('id'))->count();
+        $totalStudents = Enrollment::whereIn('course_id', $courseIds)->count();
         $totalCourses = $courses->count();
-        $totalQuizzes = Quiz::whereIn('course_id', $courses->pluck('id'))->count();
+        $totalQuizzes = Quiz::whereIn('course_id', $courseIds)->count();
 
-        // Recent activities
         $recentEnrollments = Enrollment::with(['student', 'course'])
-            ->whereIn('course_id', $courses->pluck('id'))
+            ->whereIn('course_id', $courseIds)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
-        $recentQuizzes = Quiz::whereIn('course_id', $courses->pluck('id'))
+        $recentQuizzes = Quiz::whereIn('course_id', $courseIds)
             ->with('course')
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
+        $averageEvaluationRating = FacultyEvaluation::where('faculty_id', $user->id)->avg('rating') ?? 0;
+
+        $recentEvaluations = FacultyEvaluation::with(['student', 'course'])
+            ->where('faculty_id', $user->id)
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        $totalEvaluationCount = FacultyEvaluation::where('faculty_id', $user->id)->count();
+
+        $totalCentralFiles = AdminFile::where('type', 'file')
+            ->whereNull('archived_at')
+            ->count();
+
         return view('faculty.dashboard', compact(
-            'totalStudents', 'totalCourses', 'totalQuizzes',
-            'recentEnrollments', 'recentQuizzes', 'courses'
+            'totalStudents',
+            'totalCourses',
+            'totalQuizzes',
+            'recentEnrollments',
+            'recentQuizzes',
+            'courses',
+            'averageEvaluationRating',
+            'recentEvaluations',
+            'totalEvaluationCount',
+            'totalCentralFiles'
         ));
     }
 
@@ -1336,6 +1361,202 @@ public function addEligibleStudentsToClass($id)
 
         return redirect()->route('faculty.courses')
             ->with('success', 'Course deleted successfully.');
+    }
+
+    // ==================== MY EVALUATION ====================
+
+    public function myEvaluation()
+    {
+        $user = Auth::user();
+
+        $evaluations = FacultyEvaluation::with(['student', 'course'])
+            ->where('faculty_id', $user->id)
+            ->latest()
+            ->paginate(15);
+
+        $totalEvaluations = FacultyEvaluation::where('faculty_id', $user->id)->count();
+        $averageRating = FacultyEvaluation::where('faculty_id', $user->id)->avg('rating') ?? 0;
+
+        $ratingBreakdown = collect([5, 4, 3, 2, 1])->mapWithKeys(function ($rating) use ($user) {
+            return [
+                $rating => FacultyEvaluation::where('faculty_id', $user->id)
+                    ->whereBetween('rating', [$rating, $rating + 0.99])
+                    ->count()
+            ];
+        });
+
+        $courseAverages = FacultyEvaluation::select('course_id')
+            ->selectRaw('AVG(rating) as average_rating')
+            ->selectRaw('COUNT(*) as evaluation_count')
+            ->where('faculty_id', $user->id)
+            ->whereNotNull('course_id')
+            ->groupBy('course_id')
+            ->with('course')
+            ->orderByDesc('average_rating')
+            ->get();
+
+        return view('faculty.my-evaluation', compact(
+            'evaluations',
+            'totalEvaluations',
+            'averageRating',
+            'ratingBreakdown',
+            'courseAverages'
+        ));
+    }
+
+    // ==================== CENTRALIZED FOLDER & FILES ====================
+
+    public function folderFiles(Request $request)
+    {
+        $folder = $request->get('folder');
+
+        $folders = AdminFile::with('uploader')
+            ->where('type', 'folder')
+            ->whereNull('archived_at')
+            ->orderBy('name')
+            ->get();
+
+        $files = AdminFile::with(['uploader', 'folder'])
+            ->where('type', 'file')
+            ->whereNull('archived_at')
+            ->when($folder, fn ($query) => $query->where('parent_id', $folder))
+            ->latest()
+            ->paginate(15);
+
+        $myFiles = AdminFile::where('uploaded_by', Auth::id())
+            ->where('type', 'file')
+            ->whereNull('archived_at')
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        $archivedMyFiles = AdminFile::where('uploaded_by', Auth::id())
+            ->whereNotNull('archived_at')
+            ->latest('archived_at')
+            ->limit(10)
+            ->get();
+
+        $selectedFolder = $folder ? AdminFile::where('type', 'folder')->find($folder) : null;
+
+        return view('faculty.folder-files', compact(
+            'folders',
+            'files',
+            'myFiles',
+            'archivedMyFiles',
+            'folder',
+            'selectedFolder'
+        ));
+    }
+
+    public function storeFolder(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        AdminFile::create([
+            'name' => $validated['name'],
+            'type' => 'folder',
+            'uploaded_by' => Auth::id(),
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => 'Created centralized folder: ' . $validated['name'],
+            'metadata' => json_encode(['ip' => request()->ip()]),
+        ]);
+
+        return redirect()->route('faculty.folder-files')->with('success', 'Folder created successfully. Admin can now see this folder too.');
+    }
+
+    public function uploadFile(Request $request)
+    {
+        $maxMb = 20;
+
+        if (class_exists(SystemSetting::class) && method_exists(SystemSetting::class, 'getValue')) {
+            $maxMb = (int) SystemSetting::getValue('max_upload_size_mb', 20);
+        }
+
+        $maxKb = max($maxMb, 1) * 1024;
+
+        $validated = $request->validate([
+            'folder_id' => ['nullable', 'exists:admin_files,id'],
+            'file' => ['required', 'file', 'max:' . $maxKb],
+            'description' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        if (!empty($validated['folder_id'])) {
+            $folder = AdminFile::where('id', $validated['folder_id'])
+                ->where('type', 'folder')
+                ->whereNull('archived_at')
+                ->first();
+
+            if (!$folder) {
+                return redirect()->back()->with('error', 'Selected folder is invalid or archived.');
+            }
+        }
+
+        $file = $request->file('file');
+        $path = $file->store('admin-files', 'public');
+
+        AdminFile::create([
+            'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+            'original_name' => $file->getClientOriginalName(),
+            'type' => 'file',
+            'parent_id' => $validated['folder_id'] ?? null,
+            'path' => $path,
+            'mime_type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'description' => $validated['description'] ?? null,
+            'uploaded_by' => Auth::id(),
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => 'Uploaded centralized file: ' . $file->getClientOriginalName(),
+            'metadata' => json_encode(['ip' => request()->ip()]),
+        ]);
+
+        return redirect()->route('faculty.folder-files', array_filter(['folder' => $validated['folder_id'] ?? null]))
+            ->with('success', 'File uploaded successfully. Admin can now access this file from the centralized repository.');
+    }
+
+    public function downloadFile($id)
+    {
+        $file = AdminFile::where('id', $id)
+            ->where('type', 'file')
+            ->firstOrFail();
+
+        if (!$file->path || !Storage::disk('public')->exists($file->path)) {
+            return redirect()->back()->with('error', 'File not found in storage.');
+        }
+
+        $absolutePath = Storage::disk('public')->path($file->path);
+        $downloadName = $file->original_name ?? $file->name;
+
+        return response()->download($absolutePath, $downloadName);
+    }
+
+    public function archiveFile($id)
+    {
+        $file = AdminFile::where('id', $id)
+            ->where('uploaded_by', Auth::id())
+            ->firstOrFail();
+
+        AdminFile::where('id', $file->id)->update([
+            'archived_at' => now(),
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => 'Archived centralized file/folder: ' . $file->name,
+            'metadata' => json_encode(['ip' => request()->ip()]),
+        ]);
+
+        return redirect()->route('faculty.folder-files')->with('success', 'File or folder archived successfully.');
     }
 
     // ==================== PROFILE ====================
