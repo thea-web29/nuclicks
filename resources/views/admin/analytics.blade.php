@@ -433,17 +433,23 @@
 <!-- ========== MAIN CONTENT ========== -->
 <div class="main-content" id="mainContent">
     <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="ri-menu-line"></i>
-        </button>
-        <div>
-            <h2 class="page-title text-lg md:text-xl">Analytics & Reports</h2>
-            <p class="text-sm text-gray-500 hidden md:block">System performance insights and reports</p>
-        </div>
+    <button class="menu-toggle" id="menuToggle">
+        <i class="ri-menu-line"></i>
+    </button>
+
+    <div>
+        <h2 class="page-title text-lg md:text-xl">Analytics & Reports</h2>
+        <p class="text-sm text-gray-500 hidden md:block">System performance insights and reports</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+        @include('admin.partials.notification-bell')
+
         <button onclick="showExportModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background: #10B981; color: white;">
             <i class="ri-download-line text-base"></i> Export Report
         </button>
     </div>
+</div>
 
     <div class="p-4 md:p-6">
         <!-- System Overview Stats -->

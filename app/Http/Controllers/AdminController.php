@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 //use App\Mail\CourseCodeMail;
+use App\Models\Notification;
 use App\Models\AccessLog;
 use App\Models\ActivityLog;
 use App\Models\AdminFile;
@@ -1362,7 +1363,7 @@ class AdminController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -1371,7 +1372,12 @@ class AdminController extends Controller
             'bio' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $user->update($validated);
+        User::where('id', $user->id)->update([
+            'name' => $validated['name'],
+            'email' => strtolower(trim($validated['email'])),
+            'department' => $validated['department'] ?? null,
+            'bio' => $validated['bio'] ?? null,
+        ]);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -1388,14 +1394,17 @@ class AdminController extends Controller
             'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
         ]);
 
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
-        if ($user->avatar) {
+        if (!empty($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
         }
 
         $path = $request->file('avatar')->store('avatars/admins', 'public');
-        $user->update(['avatar' => $path]);
+
+        User::where('id', $user->id)->update([
+            'avatar' => $path,
+        ]);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -1417,13 +1426,15 @@ class AdminController extends Controller
             'new_password' => ['required', 'min:8', 'confirmed'],
         ]);
 
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         if (!Hash::check($validated['current_password'], $user->password)) {
             return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
 
-        $user->update(['password' => Hash::make($validated['new_password'])]);
+        User::where('id', $user->id)->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -1441,7 +1452,7 @@ class AdminController extends Controller
             'confirm_delete' => ['required', 'accepted'],
         ]);
 
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::id());
 
         if (!Hash::check($request->password, $user->password)) {
             return redirect()->back()->withErrors(['password' => 'Password is incorrect.']);
@@ -1451,16 +1462,19 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'You cannot delete the only remaining admin account.');
         }
 
+        $userId = $user->id;
         $name = $user->name;
+        $avatar = $user->avatar ?? null;
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
+        if (!empty($avatar)) {
+            Storage::disk('public')->delete($avatar);
         }
 
-        $user->delete();
+        User::where('id', $userId)->delete();
 
         return redirect()->route('login')->with('success', "Admin account {$name} has been deleted.");
     }
@@ -1582,14 +1596,94 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'File not found in storage.');
         }
 
-        return Storage::disk('public')->download($file->path, $file->original_name ?? $file->name);
+        $absolutePath = Storage::disk('public')->path($file->path);
+        $downloadName = $file->original_name ?? $file->name;
+
+        return response()->download($absolutePath, $downloadName);
     }
 
     public function archiveAdminFile(AdminFile $file)
     {
-        $file->update(['archived_at' => now()]);
+        AdminFile::where('id', $file->id)->update([
+            'archived_at' => now(),
+        ]);
 
         return redirect()->route('admin.folder-files')->with('success', 'File archived successfully.');
+    }
+
+
+
+    public function download($id)
+    {
+        $file = AdminFile::findOrFail($id);
+
+        abort_if($file->type !== 'file' || !$file->path, 404);
+
+        if (!Storage::disk('public')->exists($file->path)) {
+            return redirect()->back()->with('error', 'File not found in storage.');
+        }
+
+        $absolutePath = Storage::disk('public')->path($file->path);
+        $downloadName = $file->original_name ?? $file->name;
+
+        return response()->download($absolutePath, $downloadName);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $file = AdminFile::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'folder_id' => ['nullable', 'exists:admin_files,id'],
+        ]);
+
+        AdminFile::where('id', $file->id)->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+            'parent_id' => $validated['folder_id'] ?? null,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => "Updated admin file/folder: {$validated['name']}",
+        ]);
+
+        return redirect()->route('admin.folder-files')->with('success', 'File or folder updated successfully.');
+    }
+
+    public function delete($id)
+    {
+        $file = AdminFile::findOrFail($id);
+        $fileName = $file->name;
+
+        if ($file->type === 'folder') {
+            $childFiles = AdminFile::where('parent_id', $file->id)->get();
+
+            foreach ($childFiles as $child) {
+                if ($child->type === 'file' && $child->path && Storage::disk('public')->exists($child->path)) {
+                    Storage::disk('public')->delete($child->path);
+                }
+
+                AdminFile::where('id', $child->id)->delete();
+            }
+        }
+
+        if ($file->type === 'file' && $file->path && Storage::disk('public')->exists($file->path)) {
+            Storage::disk('public')->delete($file->path);
+        }
+
+        AdminFile::where('id', $file->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => "Deleted admin file/folder: {$fileName}",
+        ]);
+
+        return redirect()->route('admin.folder-files')->with('success', 'File or folder deleted successfully.');
     }
 
     // ==================== SETTINGS ====================
@@ -1749,4 +1843,42 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', $message);
     }
+    // ==================== ADMIN NOTIFICATIONS ====================
+
+public function notifications()
+{
+    $notifications = Notification::where('user_id', Auth::id())
+        ->latest()
+        ->paginate(15);
+
+    return view('admin.notifications', compact('notifications'));
+}
+
+public function markNotificationRead($id)
+{
+    $notification = Notification::where('user_id', Auth::id())
+        ->where('id', $id)
+        ->firstOrFail();
+
+    Notification::where('id', $notification->id)->update([
+        'is_read' => true,
+    ]);
+
+    if ($notification->link) {
+        return redirect($notification->link);
+    }
+
+    return redirect()->back()->with('success', 'Notification marked as read.');
+}
+
+public function markAllNotificationsRead()
+{
+    Notification::where('user_id', Auth::id())
+        ->where('is_read', false)
+        ->update([
+            'is_read' => true,
+        ]);
+
+    return redirect()->back()->with('success', 'All notifications marked as read.');
+}
 }

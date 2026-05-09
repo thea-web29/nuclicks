@@ -224,9 +224,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Folder & files
     Route::get('/folder-files', [AdminController::class, 'folderFiles'])->name('folder-files');
     Route::post('/folder-files/folders', [AdminController::class, 'storeFolder'])->name('folder-files.folders.store');
+    Route::post('/folder-files/folder', [AdminController::class, 'storeFolder'])->name('folder-files.folder.store');
     Route::post('/folder-files/upload', [AdminController::class, 'uploadAdminFile'])->name('folder-files.upload');
-    Route::get('/folder-files/{file}/download', [AdminController::class, 'downloadAdminFile'])->name('folder-files.download');
+    Route::get('/folder-files/{id}/download', [AdminController::class, 'download'])->name('folder-files.download');
     Route::patch('/folder-files/{file}/archive', [AdminController::class, 'archiveAdminFile'])->name('folder-files.archive');
+    Route::put('/folder-files/{id}', [AdminController::class, 'update'])->name('folder-files.update');
+    Route::delete('/folder-files/{id}', [AdminController::class, 'delete'])->name('folder-files.delete');
 
     // Settings & security
     Route::get('/settings',                     [AdminController::class, 'settings'])->name('settings');
@@ -234,4 +237,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/security',                     [AdminController::class, 'security'])->name('security');
     Route::get('/security/clear-logs',          [AdminController::class, 'clearLogs'])->name('security.clear-logs');
     Route::get('/logs',                         [AdminController::class, 'logs'])->name('logs');
+
+    // Admin Notifications
+    Route::get('/notifications', [AdminController::class, 'notifications'])->name('notifications');
+    Route::post('/notifications/{id}/read', [AdminController::class, 'markNotificationRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [AdminController::class, 'markAllNotificationsRead'])->name('notifications.mark-all-read');
 });

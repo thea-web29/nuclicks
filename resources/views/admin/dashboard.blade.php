@@ -433,6 +433,9 @@
             <i class="ri-menu-line"></i>
         </button>
         <h2 class="page-title text-lg md:text-xl">Dashboard</h2>
+        <div class="flex items-center gap-3">
+        @include('admin.partials.notification-bell')
+    </div>
     </div>
 
     <div class="p-4 md:p-6">
