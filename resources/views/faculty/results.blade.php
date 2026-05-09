@@ -32,7 +32,9 @@
                     <i class="ri-book-line mr-3"></i>
                     <span>Courses</span>
                 </a>
-                
+                <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Files & Folders
+            </a>
                 <!-- Quiz Management Section -->
                 <div class="px-4 mt-6 mb-4">
                     <p class="text-xs text-indigo-300 uppercase tracking-wider">Quiz Management</p>

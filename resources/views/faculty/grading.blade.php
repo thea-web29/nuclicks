@@ -411,6 +411,9 @@
             <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
                 <i class="ri-book-line"></i> Courses
             </a>
+            <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Files & Folders
+            </a>
         </div>
 
         <div class="nav-section">
