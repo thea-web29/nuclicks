@@ -278,10 +278,17 @@ class AdminController extends Controller
             ]);
         }
 
-        if ($user->role === 'faculty') {
-            Course::where('faculty_id', $user->id)->update(['faculty_id' => null]);
-            if (!empty($validated['course_ids'])) {
-                Course::whereIn('id', $validated['course_ids'])->update(['faculty_id' => $user->id]);
+        /*
+         * Faculty course/subject assignment fix:
+         * Do not automatically set courses.faculty_id to NULL when editing a faculty profile.
+         * Some databases still have courses.faculty_id as NOT NULL, which causes a 500 error.
+         * Course/subject assignment should only be changed when course_ids are actually submitted.
+         */
+        if ($user->role === 'faculty' && $request->has('course_ids')) {
+            $selectedCourseIds = $validated['course_ids'] ?? [];
+
+            if (!empty($selectedCourseIds)) {
+                Course::whereIn('id', $selectedCourseIds)->update(['faculty_id' => $user->id]);
             }
         }
 
@@ -1297,10 +1304,12 @@ class AdminController extends Controller
             'course_ids.*' => 'exists:courses,id',
         ]);
 
-        // Remove this faculty from all their current courses
-        Course::where('faculty_id', $id)->update(['faculty_id' => null]);
-
-        // Assign selected courses
+        /*
+         * Faculty course/subject assignment fix:
+         * We no longer force existing courses to NULL before assigning because older schemas
+         * may have courses.faculty_id as NOT NULL. This prevents the 500 error while still
+         * allowing selected courses/subjects to be assigned to this faculty.
+         */
         if (!empty($request->course_ids)) {
             Course::whereIn('id', $request->course_ids)->update(['faculty_id' => $id]);
         }

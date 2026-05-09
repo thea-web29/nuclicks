@@ -212,6 +212,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/departments/{id}',          [AdminController::class, 'deleteDepartment'])->name('departments.delete');
     Route::get('/departments/{id}/data',        [AdminController::class, 'getDepartmentData'])->name('departments.data');
 
+    // Sections
+    Route::get('/sections',                     [AdminController::class, 'sections'])->name('sections');
+    Route::post('/sections',                    [AdminController::class, 'storeSection'])->name('sections.store');
+    Route::put('/sections/{id}',                [AdminController::class, 'updateSection'])->name('sections.update');
+    Route::delete('/sections/{id}',             [AdminController::class, 'deleteSection'])->name('sections.delete');
+    Route::get('/sections/{id}/data',           [AdminController::class, 'getSectionData'])->name('sections.data');
+
+    // Faculty Subject Assignments
+    Route::get('/faculty-assignments',          [AdminController::class, 'facultyAssignments'])->name('faculty-assignments');
+    Route::post('/faculty-assignments',         [AdminController::class, 'storeFacultyAssignment'])->name('faculty-assignments.store');
+    Route::delete('/faculty-assignments/{id}',  [AdminController::class, 'deleteFacultyAssignment'])->name('faculty-assignments.delete');
+
     // Subjects page (same backend as courses — separate view)
     Route::get('/subjects',                     [AdminController::class, 'subjects'])->name('subjects');
 

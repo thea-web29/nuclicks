@@ -17,6 +17,7 @@ class Course extends Model
         'faculty_id',
         'program_id',
         'section',
+        'section_id',
         'join_code',
         'is_active',
     ];
@@ -37,6 +38,16 @@ class Course extends Model
     public function program()
     {
         return $this->belongsTo(Program::class);
+    }
+
+    public function sectionRecord()
+    {
+        return $this->belongsTo(Section::class, 'section_id');
+    }
+
+    public function facultySubjectAssignments()
+    {
+        return $this->hasMany(FacultySubjectAssignment::class, 'subject_id');
     }
 
     public function students()
