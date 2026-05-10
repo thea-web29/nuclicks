@@ -14,6 +14,8 @@ use App\Models\Department;
 use App\Models\Enrollment;
 use App\Models\LoginHistory;
 use App\Models\Program;
+use App\Models\Section;
+use App\Models\FacultySubjectAssignment;
 use App\Models\Quiz;
 use App\Models\QuizAttempt;
 use App\Models\SystemSetting;
@@ -279,17 +281,14 @@ class AdminController extends Controller
         }
 
         /*
-         * Faculty course/subject assignment fix:
-         * Do not automatically set courses.faculty_id to NULL when editing a faculty profile.
-         * Some databases still have courses.faculty_id as NOT NULL, which causes a 500 error.
-         * Course/subject assignment should only be changed when course_ids are actually submitted.
+         * Do not clear existing subject assignments by setting courses.faculty_id to NULL.
+         * In this LMS structure, faculty-subject assignments are managed in the
+         * Faculty Assignments module. Clearing here caused SQL errors when
+         * courses.faculty_id was not nullable and could also remove assignments
+         * unintentionally when editing a faculty profile.
          */
-        if ($user->role === 'faculty' && $request->has('course_ids')) {
-            $selectedCourseIds = $validated['course_ids'] ?? [];
-
-            if (!empty($selectedCourseIds)) {
-                Course::whereIn('id', $selectedCourseIds)->update(['faculty_id' => $user->id]);
-            }
+        if ($user->role === 'faculty' && !empty($validated['course_ids'])) {
+            Course::whereIn('id', $validated['course_ids'])->update(['faculty_id' => $user->id]);
         }
 
         ActivityLog::create([
@@ -555,23 +554,27 @@ class AdminController extends Controller
             ->with('import_errors', $errors);
     }
 
-    // ==================== PROGRAM MANAGEMENT ====================
+    // ==================== PROGRAM / COURSE MANAGEMENT ====================
 
     public function programs()
     {
-        $programs = Program::withCount(['subjects', 'students'])
+        $programs = Program::with(['department'])
+            ->withCount(['subjects', 'students', 'sections'])
             ->orderBy('name')
             ->get();
 
-        return view('admin.programs', compact('programs'));
+        $departments = Department::orderBy('name')->get();
+
+        return view('admin.programs', compact('programs', 'departments'));
     }
 
     public function storeProgram(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:20|unique:programs,code',
-            'description' => 'nullable|string',
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:programs,code'],
+            'description' => ['nullable', 'string'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
@@ -581,7 +584,7 @@ class AdminController extends Controller
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'create',
-            'description' => "Created program: {$program->code} - {$program->name}",
+            'description' => "Created program/course: {$program->code} - {$program->name}",
         ]);
 
         return response()->json([
@@ -595,19 +598,20 @@ class AdminController extends Controller
         $program = Program::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:20|unique:programs,code,' . $id,
-            'description' => 'nullable|string',
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('programs', 'code')->ignore($program->id)],
+            'description' => ['nullable', 'string'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
 
-        $program->update($validated);
+        Program::where('id', $program->id)->update($validated);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'update',
-            'description' => "Updated program: {$program->code} - {$program->name}",
+            'description' => "Updated program/course: {$validated['code']} - {$validated['name']}",
         ]);
 
         return response()->json(['success' => true]);
@@ -615,15 +619,22 @@ class AdminController extends Controller
 
     public function deleteProgram($id)
     {
-        $program = Program::findOrFail($id);
-        $name = $program->name;
+        $program = Program::withCount(['sections', 'subjects', 'students'])->findOrFail($id);
 
-        $program->delete();
+        if ($program->sections_count > 0 || $program->subjects_count > 0 || $program->students_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This program/course cannot be deleted because it has sections, subjects, or students connected to it.',
+            ], 422);
+        }
+
+        $name = $program->name;
+        Program::where('id', $program->id)->delete();
 
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'delete',
-            'description' => "Deleted program: {$name}",
+            'description' => "Deleted program/course: {$name}",
         ]);
 
         return response()->json(['success' => true]);
@@ -631,7 +642,7 @@ class AdminController extends Controller
 
     public function getProgramData($id)
     {
-        $program = Program::findOrFail($id);
+        $program = Program::with('department')->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -643,9 +654,26 @@ class AdminController extends Controller
 
     public function departments()
     {
-        $departments = Department::withCount('faculty')
+        $departments = Department::with(['programs' => function ($query) {
+                $query->withCount(['sections', 'subjects', 'students'])->orderBy('name');
+            }])
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function ($department) {
+                $assignmentFacultyCount = FacultySubjectAssignment::where('department_id', $department->id)
+                    ->distinct('faculty_id')
+                    ->count('faculty_id');
+
+                $legacyProgramFacultyCount = Course::whereIn('program_id', $department->programs->pluck('id'))
+                    ->whereNotNull('faculty_id')
+                    ->distinct('faculty_id')
+                    ->count('faculty_id');
+
+                $department->computed_faculty_count = max($assignmentFacultyCount, $legacyProgramFacultyCount);
+                $department->programs_count = $department->programs->count();
+
+                return $department;
+            });
 
         return view('admin.departments', compact('departments'));
     }
@@ -653,9 +681,9 @@ class AdminController extends Controller
     public function storeDepartment(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:20|unique:departments,code',
-            'description' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:departments,code'],
+            'description' => ['nullable', 'string'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
@@ -679,18 +707,19 @@ class AdminController extends Controller
         $department = Department::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'code' => 'required|string|max:20|unique:departments,code,' . $id,
-            'description' => 'nullable|string',
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('departments', 'code')->ignore($department->id)],
+            'description' => ['nullable', 'string'],
         ]);
 
         $validated['code'] = strtoupper(trim($validated['code']));
-        $department->update($validated);
+
+        Department::where('id', $department->id)->update($validated);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'update',
-            'description' => "Updated department: {$department->code} - {$department->name}",
+            'description' => "Updated department: {$validated['code']} - {$validated['name']}",
         ]);
 
         return response()->json(['success' => true]);
@@ -698,9 +727,17 @@ class AdminController extends Controller
 
     public function deleteDepartment($id)
     {
-        $department = Department::findOrFail($id);
+        $department = Department::withCount('programs')->findOrFail($id);
+
+        if ($department->programs_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This department cannot be deleted because it still has programs/courses under it.',
+            ], 422);
+        }
+
         $name = $department->name;
-        $department->delete();
+        Department::where('id', $department->id)->delete();
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -713,7 +750,9 @@ class AdminController extends Controller
 
     public function getDepartmentData($id)
     {
-        $department = Department::findOrFail($id);
+        $department = Department::with(['programs' => function ($query) {
+            $query->orderBy('name');
+        }])->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -721,11 +760,130 @@ class AdminController extends Controller
         ]);
     }
 
-    // ==================== SUBJECTS (alias of courses view) ====================
+    // ==================== SECTION MANAGEMENT ====================
+
+    public function sections()
+    {
+        $sections = Section::with(['program.department'])
+            ->withCount(['subjects', 'facultySubjectAssignments'])
+            ->orderBy('name')
+            ->get();
+
+        $programs = Program::with('department')->orderBy('name')->get();
+
+        return view('admin.sections', compact('sections', 'programs'));
+    }
+
+    public function storeSection(Request $request)
+    {
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'name' => ['required', 'string', 'max:100'],
+            'year_level' => ['nullable', 'string', 'max:100'],
+            'academic_year' => ['nullable', 'string', 'max:100'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['name'] = strtoupper(trim($validated['name']));
+        $validated['is_active'] = true;
+
+        $exists = Section::where('program_id', $validated['program_id'])
+            ->where('name', $validated['name'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Section already exists under this program/course. Section must be unique per program/course.',
+            ], 422);
+        }
+
+        $section = Section::create($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => "Created section: {$section->name}",
+        ]);
+
+        return response()->json(['success' => true, 'section' => $section]);
+    }
+
+    public function updateSection(Request $request, $id)
+    {
+        $section = Section::findOrFail($id);
+
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'name' => ['required', 'string', 'max:100'],
+            'year_level' => ['nullable', 'string', 'max:100'],
+            'academic_year' => ['nullable', 'string', 'max:100'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['name'] = strtoupper(trim($validated['name']));
+
+        $exists = Section::where('program_id', $validated['program_id'])
+            ->where('name', $validated['name'])
+            ->where('id', '!=', $section->id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Section already exists under this program/course. Section must be unique per program/course.',
+            ], 422);
+        }
+
+        Section::where('id', $section->id)->update($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => "Updated section: {$validated['name']}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteSection($id)
+    {
+        $section = Section::withCount(['subjects', 'facultySubjectAssignments'])->findOrFail($id);
+
+        if ($section->subjects_count > 0 || $section->faculty_subject_assignments_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This section cannot be deleted because subjects or faculty assignments are connected to it.',
+            ], 422);
+        }
+
+        $name = $section->name;
+        Section::where('id', $section->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => "Deleted section: {$name}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getSectionData($id)
+    {
+        $section = Section::with('program.department')->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'section' => $section,
+        ]);
+    }
+
+    // ==================== SUBJECTS / FACULTY ASSIGNMENT MANAGEMENT ====================
 
     public function subjects()
     {
-        $courses = Course::with(['faculty', 'program'])
+        $courses = Course::with(['faculty', 'program.department', 'sectionRecord'])
             ->withCount(['students', 'quizzes'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
@@ -735,47 +893,69 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
 
-        $programs = Program::orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
+        $programs = Program::with('department')->orderBy('name')->get();
+        $sections = Section::with('program')->where('is_active', true)->orderBy('name')->get();
 
-        return view('admin.subjects', compact('courses', 'faculties', 'programs'));
+        return view('admin.subjects', compact('courses', 'faculties', 'programs', 'departments', 'sections'));
     }
-
-    // ==================== COURSE / SUBJECT MANAGEMENT ====================
 
     public function courses()
     {
-        $courses = Course::with(['faculty', 'program'])
-            ->withCount(['students', 'quizzes'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-
-        $faculties = User::where('role', 'faculty')
-            ->where('status', 'active')
-            ->orderBy('name')
-            ->get();
-
-        $programs = Program::orderBy('name')->get();
-
-        return view('admin.courses', compact('courses', 'faculties', 'programs'));
+        return $this->subjects();
     }
 
     public function storeCourse(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:courses,code',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'credits' => 'required|integer|min:1|max:6',
-            'faculty_id' => 'nullable|exists:users,id',
-            'program_id' => 'required|exists:programs,id',
-            'section' => 'required|string|max:50',
+            'code' => ['required', 'string', 'max:50', 'unique:courses,code'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'credits' => ['required', 'integer', 'min:1', 'max:6'],
+            'faculty_id' => ['nullable', 'exists:users,id'],
+            'program_id' => ['required', 'exists:programs,id'],
+            'section_id' => ['required', 'exists:sections,id'],
         ]);
 
+        $program = Program::with('department')->findOrFail($validated['program_id']);
+        $section = Section::where('id', $validated['section_id'])
+            ->where('program_id', $program->id)
+            ->first();
+
+        if (!$section) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected section does not belong to the selected program/course.',
+            ], 422);
+        }
+
+        if (!$program->department_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected program/course must be assigned to a department before adding subjects.',
+            ], 422);
+        }
+
         $validated['code'] = strtoupper(trim($validated['code']));
-        $validated['section'] = strtoupper(trim($validated['section']));
+        $validated['section'] = $section->name;
         $validated['join_code'] = strtoupper(substr(md5(uniqid('', true)), 0, 6));
 
         $course = Course::create($validated);
+
+        if (!empty($validated['faculty_id'])) {
+            FacultySubjectAssignment::updateOrCreate(
+                [
+                    'faculty_id' => $validated['faculty_id'],
+                    'program_id' => $program->id,
+                    'section_id' => $section->id,
+                    'subject_id' => $course->id,
+                ],
+                [
+                    'department_id' => $program->department_id,
+                    'is_active' => true,
+                ]
+            );
+        }
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -794,24 +974,60 @@ class AdminController extends Controller
         $course = Course::findOrFail($id);
 
         $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:courses,code,' . $id,
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'credits' => 'required|integer|min:1|max:6',
-            'faculty_id' => 'nullable|exists:users,id',
-            'program_id' => 'required|exists:programs,id',
-            'section' => 'required|string|max:50',
+            'code' => ['required', 'string', 'max:50', Rule::unique('courses', 'code')->ignore($course->id)],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'credits' => ['required', 'integer', 'min:1', 'max:6'],
+            'faculty_id' => ['nullable', 'exists:users,id'],
+            'program_id' => ['required', 'exists:programs,id'],
+            'section_id' => ['required', 'exists:sections,id'],
         ]);
 
-        $validated['code'] = strtoupper(trim($validated['code']));
-        $validated['section'] = strtoupper(trim($validated['section']));
+        $program = Program::findOrFail($validated['program_id']);
+        $section = Section::where('id', $validated['section_id'])
+            ->where('program_id', $program->id)
+            ->first();
 
-        $course->update($validated);
+        if (!$section) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected section does not belong to the selected program/course.',
+            ], 422);
+        }
+
+        if (!$program->department_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected program/course must be assigned to a department before assigning subjects.',
+            ], 422);
+        }
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+        $validated['section'] = $section->name;
+
+        Course::where('id', $course->id)->update($validated);
+
+        FacultySubjectAssignment::where('subject_id', $course->id)->delete();
+
+        if (!empty($validated['faculty_id'])) {
+            FacultySubjectAssignment::updateOrCreate(
+                [
+                    'faculty_id' => $validated['faculty_id'],
+                    'program_id' => $program->id,
+                    'section_id' => $section->id,
+                    'subject_id' => $course->id,
+                ],
+                [
+                    'department_id' => $program->department_id,
+                    'is_active' => true,
+                ]
+            );
+        }
 
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'update',
-            'description' => "Updated subject: {$course->code} - {$course->name}",
+            'description' => "Updated subject: {$validated['code']} - {$validated['name']}",
         ]);
 
         return response()->json(['success' => true]);
@@ -822,7 +1038,8 @@ class AdminController extends Controller
         $course = Course::findOrFail($id);
         $name = $course->name;
 
-        $course->delete();
+        FacultySubjectAssignment::where('subject_id', $course->id)->delete();
+        Course::where('id', $course->id)->delete();
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -835,7 +1052,7 @@ class AdminController extends Controller
 
     public function showCourse($id)
     {
-        $course = Course::with(['faculty', 'students', 'quizzes', 'materials', 'program'])
+        $course = Course::with(['faculty', 'students', 'quizzes', 'materials', 'program.department', 'sectionRecord'])
             ->withCount(['students', 'quizzes'])
             ->findOrFail($id);
 
@@ -844,14 +1061,15 @@ class AdminController extends Controller
             ->orderBy('name')
             ->get();
 
-        $programs = Program::orderBy('name')->get();
+        $programs = Program::with('department')->orderBy('name')->get();
+        $sections = Section::where('program_id', $course->program_id)->orderBy('name')->get();
 
-        return view('admin.course-show', compact('course', 'faculties', 'programs'));
+        return view('admin.course-show', compact('course', 'faculties', 'programs', 'sections'));
     }
 
     public function getCourseData($id)
     {
-        $course = Course::findOrFail($id);
+        $course = Course::with(['program.department', 'sectionRecord'])->findOrFail($id);
 
         return response()->json([
             'success' => true,
@@ -863,10 +1081,115 @@ class AdminController extends Controller
                 'credits' => $course->credits,
                 'faculty_id' => $course->faculty_id,
                 'program_id' => $course->program_id,
+                'department_id' => optional($course->program)->department_id,
+                'section_id' => $course->section_id,
                 'section' => $course->section,
                 'join_code' => $course->join_code,
             ],
         ]);
+    }
+
+    public function facultyAssignments()
+    {
+        $assignments = FacultySubjectAssignment::with(['faculty', 'department', 'program', 'section', 'subject'])
+            ->latest()
+            ->paginate(20);
+
+        $faculties = User::where('role', 'faculty')
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        $departments = Department::orderBy('name')->get();
+        $programs = Program::with('department')->orderBy('name')->get();
+        $sections = Section::with('program')->orderBy('name')->get();
+        $subjects = Course::with('program')->orderBy('name')->get();
+
+        return view('admin.faculty-assignments', compact('assignments', 'faculties', 'departments', 'programs', 'sections', 'subjects'));
+    }
+
+    public function storeFacultyAssignment(Request $request)
+    {
+        $validated = $request->validate([
+            'faculty_id' => ['required', 'exists:users,id'],
+            'department_id' => ['required', 'exists:departments,id'],
+            'program_id' => ['required', 'exists:programs,id'],
+            'section_id' => ['required', 'exists:sections,id'],
+            'subject_id' => ['required', 'exists:courses,id'],
+        ]);
+
+        $program = Program::findOrFail($validated['program_id']);
+        $section = Section::findOrFail($validated['section_id']);
+        $subject = Course::findOrFail($validated['subject_id']);
+
+        if ((int) $program->department_id !== (int) $validated['department_id']) {
+            return response()->json(['success' => false, 'message' => 'Selected program/course does not belong to the selected department.'], 422);
+        }
+
+        if ((int) $section->program_id !== (int) $program->id) {
+            return response()->json(['success' => false, 'message' => 'Selected section does not belong to the selected program/course.'], 422);
+        }
+
+        if ((int) $subject->program_id !== (int) $program->id) {
+            return response()->json(['success' => false, 'message' => 'Selected subject does not belong to the selected program/course.'], 422);
+        }
+
+        if (!empty($subject->section_id) && (int) $subject->section_id !== (int) $section->id) {
+            return response()->json(['success' => false, 'message' => 'Selected subject does not belong to the selected section.'], 422);
+        }
+
+        $facultyDepartmentIds = FacultySubjectAssignment::where('faculty_id', $validated['faculty_id'])
+            ->where('department_id', '!=', $validated['department_id'])
+            ->distinct()
+            ->pluck('department_id');
+
+        if ($facultyDepartmentIds->isNotEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This faculty already has assignments in another department. Faculty can be in different programs/courses only within the same department.',
+            ], 422);
+        }
+
+        $assignment = FacultySubjectAssignment::updateOrCreate(
+            [
+                'faculty_id' => $validated['faculty_id'],
+                'program_id' => $validated['program_id'],
+                'section_id' => $validated['section_id'],
+                'subject_id' => $validated['subject_id'],
+            ],
+            [
+                'department_id' => $validated['department_id'],
+                'is_active' => true,
+            ]
+        );
+
+        Course::where('id', $subject->id)->update([
+            'faculty_id' => $validated['faculty_id'],
+            'section_id' => $section->id,
+            'section' => $section->name,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => 'Created faculty subject assignment.',
+        ]);
+
+        return response()->json(['success' => true, 'assignment' => $assignment]);
+    }
+
+    public function deleteFacultyAssignment($id)
+    {
+        $assignment = FacultySubjectAssignment::findOrFail($id);
+        FacultySubjectAssignment::where('id', $assignment->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => 'Deleted faculty subject assignment.',
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     // ==================== QUIZ MANAGEMENT ====================
@@ -1304,12 +1627,10 @@ class AdminController extends Controller
             'course_ids.*' => 'exists:courses,id',
         ]);
 
-        /*
-         * Faculty course/subject assignment fix:
-         * We no longer force existing courses to NULL before assigning because older schemas
-         * may have courses.faculty_id as NOT NULL. This prevents the 500 error while still
-         * allowing selected courses/subjects to be assigned to this faculty.
-         */
+        // Remove this faculty from all their current courses
+        Course::where('faculty_id', $id)->update(['faculty_id' => null]);
+
+        // Assign selected courses
         if (!empty($request->course_ids)) {
             Course::whereIn('id', $request->course_ids)->update(['faculty_id' => $id]);
         }

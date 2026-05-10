@@ -1,24 +1,908 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Faculty Assignments - NU Clicks LMS</title><link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet"><link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><style>
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#F5F7FB;overflow-x:hidden}:root{--blue-deep:#0A1F44;--gold:#FFD70F;--gray-border:#E9EDF2;--danger-red:#dc2626;--transition:all .25s ease}.sidebar{background-color:var(--blue-deep);width:280px;position:fixed;top:0;left:0;height:100%;z-index:40;display:flex;flex-direction:column;box-shadow:4px 0 20px rgba(0,0,0,.08);transition:transform .3s ease}@media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.mobile-open{transform:translateX(0)}.main-content{margin-left:0!important}}.sidebar-logo{padding:1.5rem;border-bottom:1px solid rgba(255,215,15,.2);display:flex;align-items:center;gap:.75rem}.sidebar-logo-img{height:45px;width:auto}.logo-text h1{font-size:1.3rem;font-weight:800;color:white;letter-spacing:-.3px}.logo-text h1 span{color:var(--gold)}.logo-text p{font-size:.7rem;color:rgba(255,255,255,.7)}.nav-section{padding:0 1rem;margin-top:1.5rem}.nav-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,215,15,.6);margin-bottom:.75rem;font-weight:600}.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:12px;color:rgba(255,255,255,.85);transition:var(--transition);margin-bottom:.25rem;font-weight:500;text-decoration:none}.nav-item i{font-size:1.2rem;width:1.5rem}.nav-item:hover{background:rgba(255,215,15,.15);color:white}.nav-item.active{background:var(--gold);color:var(--blue-deep)}.sidebar-footer{margin-top:auto;padding:1.2rem;border-top:1px solid rgba(255,215,15,.2)}.logout-btn{width:100%;background:rgba(220,38,38,.15);border:none;padding:.6rem;border-radius:40px;color:#fca5a5;font-weight:600;display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer}.logout-btn:hover{background:var(--danger-red);color:white}.main-content{margin-left:280px;transition:margin-left .3s ease;min-height:100vh}.top-bar{background:white;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.03);border-bottom:1px solid var(--gray-border);position:sticky;top:0;z-index:20}.menu-toggle{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--blue-deep)}@media(max-width:1024px){.menu-toggle{display:block}.main-content{margin-left:0}}.btn-icon{transition:var(--transition)}.btn-icon:hover{transform:translateY(-1px)}.table-card{background:white;border-radius:1rem;box-shadow:0 8px 20px rgba(10,31,68,.05);border:1px solid #e5e7eb;overflow:hidden}.data-table{width:100%;border-collapse:collapse}.data-table thead{background:#f9fafb}.data-table th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e5e7eb;white-space:nowrap}.data-table td{padding:1rem 1.5rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}.data-table tbody tr:hover{background:#f8fafc}.badge{display:inline-flex;align-items:center;padding:.32rem .8rem;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}.badge-navy{background:rgba(10,31,68,.1);color:var(--blue-deep)}.badge-blue{background:#dbeafe;color:#1d4ed8}.badge-green{background:#dcfce7;color:#15803d}.badge-gold{background:rgba(255,215,15,.18);color:#a16207}.modal-overlay{position:fixed;inset:0;background:rgba(10,31,68,.75);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:all .2s ease}.modal-overlay.active{visibility:visible;opacity:1}.modal-box{background:white;width:90%;max-width:650px;border-radius:1.5rem;box-shadow:0 25px 40px rgba(0,0,0,.2);overflow:hidden;transform:scale(.95);transition:transform .2s cubic-bezier(.2,.9,.4,1.1)}.modal-overlay.active .modal-box{transform:scale(1)}.modal-header{background:var(--blue-deep);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}.modal-header h3{font-size:1.1rem;font-weight:700;color:white;display:flex;align-items:center;gap:.5rem}.modal-header h3 i{color:var(--gold)}.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.6rem;cursor:pointer}input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,215,15,.2)}
-    </style></head><body>
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo"><img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img"><div class="logo-text"><h1>NU <span>CLICKS</span> LMS</h1><p>Admin Portal</p></div></div>
-    <div style="flex:1; overflow-y:auto;">
-        <div class="nav-section"><div class="nav-section-title">Main</div><a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="ri-dashboard-line"></i> Dashboard</a><a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}"><i class="ri-user-add-line"></i> Account Creation</a><a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}"><i class="ri-team-line"></i> Users</a><a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}"><i class="ri-user-star-line"></i> Faculty</a></div>
-        <div class="nav-section"><div class="nav-section-title">Academic</div><a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}"><i class="ri-building-2-line"></i> Departments</a><a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}"><i class="ri-graduation-cap-line"></i> Programs/Courses</a><a href="{{ route('admin.sections') }}" class="nav-item {{ request()->routeIs('admin.sections*') ? 'active' : '' }}"><i class="ri-layout-grid-line"></i> Sections</a><a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}"><i class="ri-book-open-line"></i> Subjects</a><a href="{{ route('admin.faculty-assignments') }}" class="nav-item {{ request()->routeIs('admin.faculty-assignments*') ? 'active' : '' }}"><i class="ri-user-settings-line"></i> Faculty Assignments</a></div>
-        <div class="nav-section"><div class="nav-section-title">Management</div><a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}"><i class="ri-star-smile-line"></i> Faculty Evaluation</a><a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}"><i class="ri-folder-3-line"></i> Folder & Files</a><a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}"><i class="ri-bar-chart-line"></i> Analytics</a><a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}"><i class="ri-history-line"></i> Activity Logs</a><a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}"><i class="ri-settings-line"></i> Settings</a></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Assignments - NU Clicks LMS</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F5F7FB;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --blue-deep: #0A1F44;
+            --gold: #FFD70F;
+            --gray-border: #E9EDF2;
+            --danger-red: #dc2626;
+            --transition: all 0.25s ease;
+        }
+
+        .sidebar {
+            background-color: var(--blue-deep);
+            width: 280px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+
+        .sidebar-logo {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 215, 15, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-logo-img {
+            height: 45px;
+            width: auto;
+        }
+
+        .logo-text h1 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.3px;
+        }
+
+        .logo-text h1 span {
+            color: var(--gold);
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 215, 15, 0.6);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            transition: var(--transition);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 1.5rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 215, 15, 0.15);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--gold);
+            color: var(--blue-deep);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1.2rem;
+            border-top: 1px solid rgba(255, 215, 15, 0.2);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(220, 38, 38, 0.15);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 40px;
+            color: #fca5a5;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--gray-border);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--blue-deep);
+        }
+
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .btn-icon {
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-1px);
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 8px 20px rgba(10, 31, 68, 0.05);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background: #f9fafb;
+        }
+
+        .data-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.32rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .badge-navy {
+            background: rgba(10, 31, 68, 0.1);
+            color: var(--blue-deep);
+        }
+
+        .badge-blue {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-green {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .badge-gold {
+            background: rgba(255, 215, 15, 0.18);
+            color: #a16207;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 31, 68, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background: white;
+            width: 90%;
+            max-width: 650px;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: var(--blue-deep);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-header h3 i {
+            color: var(--gold);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(255, 215, 15, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
+
+            <div class="logo-text">
+                <h1>NU <span>CLICKS</span> LMS</h1>
+                <p>Admin Portal</p>
+            </div>
+        </div>
+
+        <div style="flex:1; overflow-y:auto;">
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+
+                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="ri-dashboard-line"></i>
+                    Dashboard
+                </a>
+
+                <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
+                    <i class="ri-user-add-line"></i>
+                    Account Creation
+                </a>
+
+                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                    <i class="ri-team-line"></i>
+                    Users
+                </a>
+
+                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
+                    <i class="ri-user-star-line"></i>
+                    Faculty
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Academic</div>
+
+                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
+                    <i class="ri-building-2-line"></i>
+                    Departments
+                </a>
+
+                <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
+                    <i class="ri-graduation-cap-line"></i>
+                    Programs/Courses
+                </a>
+
+                <a href="{{ route('admin.sections') }}" class="nav-item {{ request()->routeIs('admin.sections*') ? 'active' : '' }}">
+                    <i class="ri-layout-grid-line"></i>
+                    Sections
+                </a>
+
+                <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
+                    <i class="ri-book-open-line"></i>
+                    Subjects
+                </a>
+
+                <a href="{{ route('admin.faculty-assignments') }}" class="nav-item {{ request()->routeIs('admin.faculty-assignments*') ? 'active' : '' }}">
+                    <i class="ri-user-settings-line"></i>
+                    Faculty Assignments
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+
+                <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                    <i class="ri-star-smile-line"></i>
+                    Faculty Evaluation
+                </a>
+
+                <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                    <i class="ri-folder-3-line"></i>
+                    Folder & Files
+                </a>
+
+                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
+                    <i class="ri-bar-chart-line"></i>
+                    Analytics
+                </a>
+
+                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
+                    <i class="ri-history-line"></i>
+                    Activity Logs
+                </a>
+
+                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                    <i class="ri-settings-line"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:1rem;">
+                <div style="width:42px;height:42px;background:rgba(255,215,15,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);">
+                    <i class="ri-user-line"></i>
+                </div>
+
+                <div>
+                    <p style="color:white;font-weight:600;font-size:.85rem;">
+                        {{ Auth::user()->name ?? 'Admin User' }}
+                    </p>
+
+                    <span style="color:rgba(255,255,255,.6);font-size:.7rem;">
+                        {{ Auth::user()->email ?? 'admin@nuclicks.edu' }}
+                    </span>
+                </div>
+            </div>
+
+            <button onclick="openLogoutModal()" class="logout-btn">
+                <i class="ri-logout-box-line"></i>
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <div class="main-content" id="mainContent">
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle">
+                <i class="ri-menu-line"></i>
+            </button>
+
+            <div>
+                <h2 style="font-weight:700;color:var(--blue-deep);font-size:1.1rem;">
+                    Faculty Subject Assignments
+                </h2>
+
+                <p class="text-sm text-gray-500 hidden md:block">
+                    Assign faculty to Department → Program/Course → Section → Subject
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                @if(View::exists('admin.partials.notification-bell'))
+                    @include('admin.partials.notification-bell')
+                @endif
+
+                <button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="background:var(--blue-deep);color:white;">
+                    <i class="ri-add-line"></i>
+                    Add Assignment
+                </button>
+            </div>
+        </div>
+
+        <div class="p-4 md:p-6">
+
+            <div class="table-card">
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Faculty</th>
+                                <th>Department</th>
+                                <th>Program/Course</th>
+                                <th>Section</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($assignments as $assignment)
+                                <tr>
+                                    <td>
+                                        <div class="font-semibold">
+                                            {{ $assignment->faculty->name ?? '—' }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ $assignment->faculty->email ?? '' }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge badge-gold">
+                                            {{ $assignment->department->code ?? '—' }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="font-semibold">
+                                            {{ $assignment->program->code ?? '—' }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ $assignment->program->name ?? '' }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge badge-navy">
+                                            {{ $assignment->section->name ?? '—' }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="font-semibold">
+                                            {{ $assignment->subject->code ?? '—' }}
+                                        </div>
+
+                                        <div class="text-xs text-gray-500">
+                                            {{ $assignment->subject->name ?? '' }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge badge-green">
+                                            {{ $assignment->is_active ? 'Active' : 'Inactive' }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <button onclick="deleteAssignment({{ $assignment->id }})" class="text-red-600" title="Delete Assignment">
+                                            <i class="ri-delete-bin-line text-lg"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="text-center py-12 text-gray-500">
+                                        No faculty assignments yet.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                {{ $assignments->links() }}
+            </div>
+        </div>
     </div>
-    <div class="sidebar-footer"><div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;"><div style="width:42px;height:42px;background:rgba(255,215,15,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);"><i class="ri-user-line"></i></div><div><p style="color:white;font-weight:600;font-size:.85rem;">{{ Auth::user()->name ?? 'Admin User' }}</p><span style="color:rgba(255,255,255,.6);font-size:.7rem;">{{ Auth::user()->email ?? 'admin@nuclicks.edu' }}</span></div></div><button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Logout</button></div>
-</aside>
 
+    <div id="assignmentModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>
+                    <i class="ri-user-settings-line"></i>
+                    Add Faculty Assignment
+                </h3>
 
-<div class="main-content" id="mainContent"><div class="top-bar"><button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button><div><h2 style="font-weight:700;color:var(--blue-deep);font-size:1.1rem;">Faculty Subject Assignments</h2><p class="text-sm text-gray-500 hidden md:block">Assign faculty to Department → Program/Course → Section → Subject</p></div><div class="flex items-center gap-3">@if(View::exists('admin.partials.notification-bell')) @include('admin.partials.notification-bell') @endif<button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="background:var(--blue-deep);color:white;"><i class="ri-add-line"></i>Add Assignment</button></div></div><div class="p-4 md:p-6"><div class="bg-yellow-50 border border-yellow-200 text-yellow-900 rounded-xl p-4 mb-6 text-sm"><strong>Rule:</strong> One faculty can handle multiple subjects and sections, but their programs/courses must be under the same department.</div><div class="table-card"><div class="overflow-x-auto"><table class="data-table"><thead><tr><th>Faculty</th><th>Department</th><th>Program/Course</th><th>Section</th><th>Subject</th><th>Status</th><th>Actions</th></tr></thead><tbody>@forelse($assignments as $assignment)<tr><td><div class="font-semibold">{{ $assignment->faculty->name ?? '—' }}</div><div class="text-xs text-gray-500">{{ $assignment->faculty->email ?? '' }}</div></td><td><span class="badge badge-gold">{{ $assignment->department->code ?? '—' }}</span></td><td><div class="font-semibold">{{ $assignment->program->code ?? '—' }}</div><div class="text-xs text-gray-500">{{ $assignment->program->name ?? '' }}</div></td><td><span class="badge badge-navy">{{ $assignment->section->name ?? '—' }}</span></td><td><div class="font-semibold">{{ $assignment->subject->code ?? '—' }}</div><div class="text-xs text-gray-500">{{ $assignment->subject->name ?? '' }}</div></td><td><span class="badge badge-green">{{ $assignment->is_active ? 'Active' : 'Inactive' }}</span></td><td><button onclick="deleteAssignment({{ $assignment->id }})" class="text-red-600"><i class="ri-delete-bin-line text-lg"></i></button></td></tr>@empty<tr><td colspan="7" class="text-center py-12 text-gray-500">No faculty assignments yet.</td></tr>@endforelse</tbody></table></div></div><div class="mt-4">{{ $assignments->links() }}</div></div></div>
-<div id="assignmentModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3><i class="ri-user-settings-line"></i>Add Faculty Assignment</h3><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="p-6"><form id="assignmentForm">@csrf<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label class="block text-sm font-semibold mb-2">Faculty *</label><select id="facultyId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Faculty</option>@foreach($faculties as $faculty)<option value="{{ $faculty->id }}">{{ $faculty->name }} - {{ $faculty->email }}</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Department *</label><select id="departmentId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Department</option>@foreach($departments as $department)<option value="{{ $department->id }}">{{ $department->code }} - {{ $department->name }}</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Program/Course *</label><select id="programId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Program/Course</option>@foreach($programs as $program)<option value="{{ $program->id }}" data-department="{{ $program->department_id }}">{{ $program->code }} - {{ $program->name }}</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Section *</label><select id="sectionId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Section</option>@foreach($sections as $section)<option value="{{ $section->id }}" data-program="{{ $section->program_id }}">{{ $section->name }} - {{ $section->program->code ?? '' }}</option>@endforeach</select></div><div class="md:col-span-2"><label class="block text-sm font-semibold mb-2">Subject *</label><select id="subjectId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Subject</option>@foreach($subjects as $subject)<option value="{{ $subject->id }}" data-program="{{ $subject->program_id }}" data-section="{{ $subject->section_id }}">{{ $subject->code }} - {{ $subject->name }}</option>@endforeach</select></div></div><div class="flex justify-end gap-3 pt-4 border-t"><button type="button" onclick="closeModal()" class="px-5 py-2.5 border rounded-xl">Cancel</button><button type="submit" class="px-6 py-2.5 rounded-xl font-semibold" style="background:var(--blue-deep);color:white;">Save Assignment</button></div></form></div></div></div>
-<script>
-function openCreateModal(){assignmentForm.reset();assignmentModal.classList.add('active');document.body.style.overflow='hidden';filterOptions()}function closeModal(){assignmentModal.classList.remove('active');document.body.style.overflow=''}function filterOptions(){const dep=departmentId.value,prog=programId.value;[...programId.options].forEach(o=>{if(!o.value)return;o.hidden=dep&&o.dataset.department!==dep});[...sectionId.options].forEach(o=>{if(!o.value)return;o.hidden=prog&&o.dataset.program!==prog});[...subjectId.options].forEach(o=>{if(!o.value)return;o.hidden=prog&&o.dataset.program!==prog})}departmentId.addEventListener('change',()=>{programId.value='';sectionId.value='';subjectId.value='';filterOptions()});programId.addEventListener('change',()=>{sectionId.value='';subjectId.value='';filterOptions()});function deleteAssignment(id){if(!confirm('Delete this assignment?'))return;fetch(`/admin/faculty-assignments/${id}`,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}',Accept:'application/json','X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||'Error deleting assignment')})}assignmentForm.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData();fd.append('_token','{{ csrf_token() }}');fd.append('faculty_id',facultyId.value);fd.append('department_id',departmentId.value);fd.append('program_id',programId.value);fd.append('section_id',sectionId.value);fd.append('subject_id',subjectId.value);fetch('/admin/faculty-assignments',{method:'POST',body:fd,headers:{'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||(d.errors?Object.values(d.errors).flat().join('\n'):'Error saving assignment'))})});assignmentModal.addEventListener('click',e=>{if(e.target.id==='assignmentModal')closeModal()});
-</script>
-<div id="logoutModal" class="modal-overlay"><div class="modal-box" style="max-width:450px;"><div class="modal-header"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">&times;</button></div><div style="padding:1.8rem 1.5rem;text-align:center;"><p>Are you sure you want to sign out?</p><p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p></div><div style="padding:1rem 1.5rem 1.5rem;display:flex;gap:.75rem;justify-content:flex-end;background:#f9fafb;border-top:1px solid var(--gray-border);"><button onclick="closeLogoutModal()" style="padding:.6rem 1.25rem;border-radius:40px;background:#eef2ff;color:#1e293b;border:none;font-weight:600;cursor:pointer;">Cancel</button><form method="POST" action="{{ route('logout') }}" style="margin:0;">@csrf<button type="submit" style="padding:.6rem 1.25rem;border-radius:40px;background:#dc2626;color:white;border:none;font-weight:600;cursor:pointer;">Yes, Sign Out</button></form></div></div></div>
-<script>
-const menuToggle=document.getElementById('menuToggle'),sidebar=document.getElementById('sidebar');if(menuToggle){menuToggle.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'))}document.addEventListener('click',e=>{const m=window.innerWidth<=1024;if(m&&sidebar&&sidebar.classList.contains('mobile-open')&&!sidebar.contains(e.target)&&!menuToggle.contains(e.target)){sidebar.classList.remove('mobile-open')}});function openLogoutModal(){document.getElementById('logoutModal').classList.add('active');document.body.style.overflow='hidden'}function closeLogoutModal(){document.getElementById('logoutModal').classList.remove('active');document.body.style.overflow=''}document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));document.body.style.overflow=''}});
-</script>
-</body></html>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="p-6">
+                <form id="assignmentForm">
+                    @csrf
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Faculty *</label>
+
+                            <select id="facultyId" required class="w-full border rounded-xl px-4 py-2.5">
+                                <option value="">Select Faculty</option>
+
+                                @foreach($faculties as $faculty)
+                                    <option value="{{ $faculty->id }}">
+                                        {{ $faculty->name }} - {{ $faculty->email }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Department *</label>
+
+                            <select id="departmentId" required class="w-full border rounded-xl px-4 py-2.5">
+                                <option value="">Select Department</option>
+
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}">
+                                        {{ $department->code }} - {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Program/Course *</label>
+
+                            <select id="programId" required class="w-full border rounded-xl px-4 py-2.5">
+                                <option value="">Select Program/Course</option>
+
+                                @foreach($programs as $program)
+                                    <option value="{{ $program->id }}" data-department="{{ $program->department_id }}">
+                                        {{ $program->code }} - {{ $program->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold mb-2">Section *</label>
+
+                            <select id="sectionId" required class="w-full border rounded-xl px-4 py-2.5">
+                                <option value="">Select Section</option>
+
+                                @foreach($sections as $section)
+                                    <option value="{{ $section->id }}" data-program="{{ $section->program_id }}">
+                                        {{ $section->name }} - {{ $section->program->code ?? '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold mb-2">Subject *</label>
+
+                            <select id="subjectId" required class="w-full border rounded-xl px-4 py-2.5">
+                                <option value="">Select Subject</option>
+
+                                @foreach($subjects as $subject)
+                                    <option value="{{ $subject->id }}" data-program="{{ $subject->program_id }}" data-section="{{ $subject->section_id }}">
+                                        {{ $subject->code }} - {{ $subject->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t">
+                        <button type="button" onclick="closeModal()" class="px-5 py-2.5 border rounded-xl">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="px-6 py-2.5 rounded-xl font-semibold" style="background:var(--blue-deep);color:white;">
+                            Save Assignment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-box" style="max-width:450px;">
+            <div class="modal-header">
+                <h3>
+                    <i class="ri-logout-box-r-line"></i>
+                    Confirm Sign Out
+                </h3>
+
+                <button class="modal-close" onclick="closeLogoutModal()">&times;</button>
+            </div>
+
+            <div style="padding:1.8rem 1.5rem;text-align:center;">
+                <p>Are you sure you want to sign out?</p>
+                <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p>
+            </div>
+
+            <div style="padding:1rem 1.5rem 1.5rem;display:flex;gap:.75rem;justify-content:flex-end;background:#f9fafb;border-top:1px solid var(--gray-border);">
+                <button onclick="closeLogoutModal()" style="padding:.6rem 1.25rem;border-radius:40px;background:#eef2ff;color:#1e293b;border:none;font-weight:600;cursor:pointer;">
+                    Cancel
+                </button>
+
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+
+                    <button type="submit" style="padding:.6rem 1.25rem;border-radius:40px;background:#dc2626;color:white;border:none;font-weight:600;cursor:pointer;">
+                        Yes, Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const assignmentModal = document.getElementById('assignmentModal');
+        const assignmentForm = document.getElementById('assignmentForm');
+        const facultyId = document.getElementById('facultyId');
+        const departmentId = document.getElementById('departmentId');
+        const programId = document.getElementById('programId');
+        const sectionId = document.getElementById('sectionId');
+        const subjectId = document.getElementById('subjectId');
+
+        function openCreateModal() {
+            assignmentForm.reset();
+            assignmentModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            filterOptions();
+        }
+
+        function closeModal() {
+            assignmentModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function filterOptions() {
+            const selectedDepartment = departmentId.value;
+            const selectedProgram = programId.value;
+            const selectedSection = sectionId.value;
+
+            [...programId.options].forEach(option => {
+                if (!option.value) {
+                    return;
+                }
+
+                option.hidden = selectedDepartment && option.dataset.department !== selectedDepartment;
+            });
+
+            [...sectionId.options].forEach(option => {
+                if (!option.value) {
+                    return;
+                }
+
+                option.hidden = selectedProgram && option.dataset.program !== selectedProgram;
+            });
+
+            [...subjectId.options].forEach(option => {
+                if (!option.value) {
+                    return;
+                }
+
+                const programMatches = !selectedProgram || option.dataset.program === selectedProgram;
+                const sectionMatches = !selectedSection || !option.dataset.section || option.dataset.section === selectedSection;
+
+                option.hidden = !(programMatches && sectionMatches);
+            });
+        }
+
+        departmentId.addEventListener('change', () => {
+            programId.value = '';
+            sectionId.value = '';
+            subjectId.value = '';
+            filterOptions();
+        });
+
+        programId.addEventListener('change', () => {
+            sectionId.value = '';
+            subjectId.value = '';
+            filterOptions();
+        });
+
+        sectionId.addEventListener('change', () => {
+            subjectId.value = '';
+            filterOptions();
+        });
+
+        function deleteAssignment(id) {
+            if (!confirm('Delete this assignment?')) {
+                return;
+            }
+
+            fetch(`/admin/faculty-assignments/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                    return;
+                }
+
+                alert(data.message || 'Error deleting assignment');
+            })
+            .catch(error => {
+                alert('Error deleting assignment: ' + error.message);
+            });
+        }
+
+        assignmentForm.addEventListener('submit', event => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('faculty_id', facultyId.value);
+            formData.append('department_id', departmentId.value);
+            formData.append('program_id', programId.value);
+            formData.append('section_id', sectionId.value);
+            formData.append('subject_id', subjectId.value);
+
+            fetch('/admin/faculty-assignments', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                    return;
+                }
+
+                const message = data.message || (
+                    data.errors
+                        ? Object.values(data.errors).flat().join('\n')
+                        : 'Error saving assignment'
+                );
+
+                alert(message);
+            })
+            .catch(error => {
+                alert('Error saving assignment: ' + error.message);
+            });
+        });
+
+        assignmentModal.addEventListener('click', event => {
+            if (event.target.id === 'assignmentModal') {
+                closeModal();
+            }
+        });
+    </script>
+
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (menuToggle) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+            });
+        }
+
+        document.addEventListener('click', event => {
+            const isMobile = window.innerWidth <= 1024;
+
+            if (
+                isMobile &&
+                sidebar &&
+                sidebar.classList.contains('mobile-open') &&
+                !sidebar.contains(event.target) &&
+                !menuToggle.contains(event.target)
+            ) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                });
+
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+</body>
+</html>
