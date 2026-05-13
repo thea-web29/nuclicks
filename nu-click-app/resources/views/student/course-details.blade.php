@@ -42,7 +42,11 @@
                         <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">{{ $unreadNotifications }}</span>
                     @endif
                 </a>
-                
+                <a href="{{ route('student.faculty.evaluation') }}" class="flex items-center px-6 py-3 {{ request()->routeIs('student.faculty.evaluation') ? 'bg-indigo-900' : 'hover:bg-indigo-700' }}">
+                    <i class="ri-star-line mr-3"></i>
+                    <span>Faculty Evaluation</span>
+                </a>
+
                 <div class="px-4 mt-6 mb-4">
                     <p class="text-xs text-indigo-300 uppercase tracking-wider">Account</p>
                 </div>

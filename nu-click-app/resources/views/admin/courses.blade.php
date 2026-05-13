@@ -458,6 +458,27 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                     <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Program <span class="text-red-500">*</span></label>
+                        <select id="program_id" name="program_id" required class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold transition bg-white">
+                            <option value="">-- Select Program --</option>
+                            @foreach($programs ?? [] as $program)
+                                <option value="{{ $program->id }}">{{ $program->code }} - {{ $program->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Section <span class="text-red-500">*</span></label>
+                        <select id="section_id" name="section_id" required class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold transition bg-white">
+                            <option value="">-- Select Section --</option>
+                            @foreach($sections ?? [] as $section)
+                                <option value="{{ $section->id }}">{{ $section->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                    <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Credits</label>
                         <input type="number" id="credits" name="credits" min="1" max="6" value="3"
                                class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold transition">
@@ -467,7 +488,7 @@
                         <select id="faculty_id" name="faculty_id" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold transition bg-white">
                             <option value="">-- Select Faculty --</option>
                             @foreach($faculties ?? [] as $faculty)
-                                <option value="{{ $faculty->id }}">{{ $faculty->name }} - {{ $faculty->department ?? 'No department' }}</option>
+                                <option value="{{ $faculty->id }}">{{ $faculty->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -484,6 +505,7 @@
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Students will use this code to join the course</p>
                 </div>
+
                 
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                     <button type="button" onclick="closeModal()" class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition">Cancel</button>
@@ -561,6 +583,8 @@
                 document.getElementById('description').value = data.course.description || '';
                 document.getElementById('credits').value = data.course.credits;
                 document.getElementById('faculty_id').value = data.course.faculty_id || '';
+                document.getElementById('program_id').value = data.course.program_id || '';
+                document.getElementById('section_id').value = data.course.section_id || '';
                 document.getElementById('join_code').value = data.course.join_code || '';
                 document.getElementById('courseModal').classList.remove('hidden');
                 document.getElementById('courseModal').classList.add('flex');
@@ -613,6 +637,8 @@
         formData.append('description', document.getElementById('description').value);
         formData.append('credits', document.getElementById('credits').value);
         formData.append('faculty_id', document.getElementById('faculty_id').value);
+        formData.append('program_id', document.getElementById('program_id').value);
+        formData.append('section_id', document.getElementById('section_id').value);
         formData.append('join_code', document.getElementById('join_code').value);
         
         fetch(url, {

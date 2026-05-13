@@ -509,6 +509,24 @@ public function courseDetails($id)
         ));
     }
     
+    // ==================== FACULTY EVALUATION ====================
+
+    public function facultyEvaluation()
+    {
+        $user = Auth::user();
+
+        // Get courses the student is enrolled in, with their faculty
+        $enrolledCourses = Enrollment::where('student_id', $user->id)
+            ->with(['course.faculty'])
+            ->get()
+            ->map(function ($enrollment) {
+                return $enrollment->course;
+            })
+            ->filter(fn($course) => $course && $course->faculty);
+
+        return view('student.evaluations.index', compact('enrolledCourses'));
+    }
+
     private function getLetterGrade($percentage)
     {
         if ($percentage >= 90) return 'A';

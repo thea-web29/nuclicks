@@ -374,11 +374,14 @@
             <a href="{{ route('student.announcements') }}" class="nav-item {{ request()->routeIs('student.announcements*') ? 'active' : '' }}">
                 <i class="ri-megaphone-line"></i> Announcements
             </a>
-            <a href="{{ route('student.notifications') }}" class="nav-item active">
+            <a href="{{ route('student.notifications') }}" class="nav-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
                 <i class="ri-notification-line"></i> Notifications
                 @if(isset($unreadNotifications) && $unreadNotifications > 0)
                     <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $unreadNotifications }}</span>
                 @endif
+            </a>
+            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
+                <i class="ri-star-line"></i> Faculty Evaluation
             </a>
         </div>
 
@@ -471,10 +474,16 @@
                                                 <i class="ri-alarm-warning-line text-xl"></i>
                                             </div>
                                             @break
-                                        @default
+                                        @case('message')
                                             <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
-                                                <i class="ri-information-line text-xl"></i>
+                                                <i class="ri-mail-line text-xl"></i>
                                             </div>
+                                            @break
+                                        @default
+                                            <div class="w-10 h-10 bg-gray-100 text-gray-600 rounded-2xl flex items-center justify-center">
+                                                <i class="ri-notification-3-line text-xl"></i>
+                                            </div>
+                                            @break
                                     @endswitch
                                 </div>
 

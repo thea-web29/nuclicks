@@ -374,6 +374,9 @@
                     <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $unreadNotifications }}</span>
                 @endif
             </a>
+            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
+                <i class="ri-star-line"></i> Faculty Evaluation
+            </a>
         </div>
 
         <div class="nav-section">

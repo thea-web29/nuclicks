@@ -494,7 +494,9 @@
                             <span class="text-sm text-gray-500 flex items-center gap-1.5">
                                 <i class="ri-building-2-line"></i> Department
                             </span>
-                            <span class="text-sm font-medium text-gray-800">{{ $faculty->department ?? 'N/A' }}</span>
+                            <span class="text-sm font-medium text-gray-800">
+                                {{ $faculty->department_id ? ($faculty->departmentRel->name ?? 'N/A') : ($faculty->department ?? 'N/A') }}
+                            </span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-500 flex items-center gap-1.5">

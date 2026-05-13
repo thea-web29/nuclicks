@@ -165,7 +165,9 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $member->faculty_id ?? '—' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $member->department ?? '—' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                {{ $member->department_id ? ($member->departmentRel->name ?? '—') : ($member->department ?? '—') }}
+                            </td>
                             <td class="px-6 py-4">
                                 @php $assigned = $courses->where('faculty_id', $member->id); @endphp
                                 @if($assigned->count())

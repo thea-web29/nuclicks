@@ -55,6 +55,20 @@
             </div>
 
             <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b flex items-center justify-between"><h3 class="font-bold text-gray-800">Folders</h3><a href="{{ route('admin.folder-files') }}" class="text-sm text-indigo-700">All Files</a></div>
+                <div class="p-6 flex flex-wrap gap-3">
+                    <a href="{{ route('admin.folder-files') }}" class="px-4 py-2 rounded-full border {{ empty($folder) ? 'bg-indigo-700 text-white' : 'bg-gray-50 text-gray-700 hover:bg-gray-100' }} transition-colors">
+                        <i class="ri-home-4-line mr-2"></i>Main Repository
+                    </a>
+                    @foreach($folders as $folderItem)
+                        <a href="{{ route('admin.folder-files', ['folder' => $folderItem->id]) }}" class="px-4 py-2 rounded-full border {{ (string) $folder === (string) $folderItem->id ? 'bg-indigo-700 text-white' : 'bg-gray-50 text-gray-700 hover:bg-gray-100' }} transition-colors">
+                            <i class="ri-folder-5-line mr-2"></i>{{ $folderItem->name }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
                 <div class="px-6 py-4 border-b flex items-center justify-between"><h3 class="font-bold text-gray-800">Admin Files</h3><a href="{{ route('admin.folder-files') }}" class="text-sm text-indigo-700">Show all</a></div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">

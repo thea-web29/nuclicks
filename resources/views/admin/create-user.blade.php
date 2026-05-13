@@ -247,10 +247,10 @@
         <!-- Tab Buttons -->
         <div class="flex gap-3 mb-6 bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit">
             <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">
-                <i class="ri-user-add-line mr-1.5"></i> Create Individual Account
+                <i class="ri-user-star-line mr-1.5"></i> Create Individual Faculty
             </button>
             <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">
-                <i class="ri-upload-cloud-line mr-1.5"></i> Bulk Import
+                <i class="ri-upload-cloud-line mr-1.5"></i> Bulk Faculty Import
             </button>
         </div>
 
@@ -267,23 +267,19 @@
             <div class="bg-white rounded-2xl shadow p-6">
                 <form action="{{ route('admin.users.store') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="role" value="faculty">
 
-                    {{-- Role + Status --}}
+                    {{-- Status --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <div>
-                            <label class="form-label">Role *</label>
-                            <select name="role" id="role" required class="form-input bg-white">
-                                <option value="student" {{ old('role','student') == 'student' ? 'selected' : '' }}>Student</option>
-                                <option value="faculty"  {{ old('role') == 'faculty'  ? 'selected' : '' }}>Faculty</option>
-                                <option value="admin"    {{ old('role') == 'admin'    ? 'selected' : '' }}>Admin</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label">Status</label>
+                            <label class="form-label">Account Status</label>
                             <select name="status" class="form-input bg-white">
                                 <option value="active" selected>Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
+                        </div>
+                        <div class="flex items-center">
+                             <p class="text-sm text-gray-500 italic mt-4"><i class="ri-shield-user-line"></i> Creating <strong>Faculty</strong> account</p>
                         </div>
                     </div>
 
@@ -291,55 +287,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
                         <div>
                             <label class="form-label">Full Name *</label>
-                            <input type="text" name="name" required value="{{ old('name') }}" class="form-input">
+                            <input type="text" name="name" required value="{{ old('name') }}" class="form-input" placeholder="e.g. Dr. John Smith">
                         </div>
                         <div>
                             <label class="form-label">Email Address *</label>
-                            <input type="email" name="email" required value="{{ old('email') }}" class="form-input">
-                        </div>
-                    </div>
-
-                    {{-- ===== STUDENT FIELDS ===== --}}
-                    <div id="studentFields">
-                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-5">
-                            <p class="text-sm text-blue-700"><i class="ri-information-line mr-1"></i>
-                            <strong>No password needed.</strong> Initial password = <strong>Student ID</strong>. Student must change it on first login via OTP email.</p>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="form-label">Student ID *</label>
-                                <input type="text" name="student_id" value="{{ old('student_id') }}" class="form-input" placeholder="e.g. 2024-0001">
-                                <p class="text-xs text-gray-500 mt-1">This will be the initial password.</p>
-                            </div>
-                            <div>
-                                <label class="form-label">Year Level</label>
-                                <select name="year_level" class="form-input bg-white">
-                                    <option value="">Select Year</option>
-                                    @for($i = 1; $i <= 6; $i++)
-                                        <option value="{{ $i }}" {{ old('year_level') == $i ? 'selected' : '' }}>{{ $i }}{{ $i==1?'st':($i==2?'nd':($i==3?'rd':'th')) }} Year</option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-5">
-                            <label class="form-label">Program *</label>
-                            <select name="program_id" class="form-input bg-white">
-                                <option value="">-- Select Program --</option>
-                                @foreach($programs as $program)
-                                    <option value="{{ $program->id }}" {{ old('program_id') == $program->id ? 'selected' : '' }}>{{ $program->code }} – {{ $program->name }}</option>
-                                @endforeach
-                            </select>
-                            @if($programs->isEmpty())
-                                <p class="text-xs text-red-500 mt-1">No programs yet. <a href="{{ route('admin.programs') }}" class="underline">Create one first.</a></p>
-                            @endif
-                            <p class="text-xs text-gray-500 mt-1">Section is assigned when student enters a join code from their faculty.</p>
+                            <input type="email" name="email" required value="{{ old('email') }}" class="form-input" placeholder="e.g. john.smith@nu.edu">
                         </div>
                     </div>
 
                     {{-- ===== FACULTY FIELDS ===== --}}
-                    <div id="facultyFields" class="hidden">
-                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 mb-5">
-                            <p class="text-sm text-green-700"><i class="ri-information-line mr-1"></i>
+                    <div id="facultyFields">
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-indigo-700"><i class="ri-information-line mr-1"></i>
                             <strong>No password needed.</strong> Initial password = <strong>Faculty ID</strong>. Faculty must change it on first login via OTP email.</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
@@ -374,24 +333,9 @@
                         <p class="text-xs text-gray-500 mb-5"><i class="ri-information-line"></i> Assign subjects to this faculty after creation via <a href="{{ route('admin.faculty') }}" class="text-blue-600 underline">Faculty Management</a>.</p>
                     </div>
 
-                    {{-- ===== ADMIN FIELDS ===== --}}
-                    <div id="adminFields" class="hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="form-label">Password *</label>
-                                <input type="password" name="password" class="form-input">
-                                <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
-                            </div>
-                            <div>
-                                <label class="form-label">Confirm Password *</label>
-                                <input type="password" name="password_confirmation" class="form-input">
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
                         <a href="{{ route('admin.users') }}" class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 text-sm font-medium">Cancel</a>
-                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">Create Account</button>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">Create Faculty Account</button>
                     </div>
                 </form>
             </div>
@@ -402,25 +346,16 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1">Upload CSV File</h2>
-                    <p class="text-sm text-gray-500 mb-5">Select account type, download the template, fill it in, then import.</p>
+                    <h2 class="text-lg font-bold text-gray-900 mb-1">Upload Faculty CSV</h2>
+                    <p class="text-sm text-gray-500 mb-5">Download the faculty template, fill it in, then import.</p>
 
                     <form method="POST" action="{{ route('admin.bulk-import.process') }}" enctype="multipart/form-data">
                         @csrf
-                        <div class="mb-5">
-                            <label class="form-label">Account Type</label>
-                            <div class="grid grid-cols-2 gap-4 mt-1">
-                                <label class="cursor-pointer border-2 border-transparent rounded-xl p-4 hover:border-blue-300 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
-                                    <input type="radio" name="type" value="students" checked class="mr-2">
-                                    <span class="font-semibold text-sm">Students</span>
-                                    <p class="text-xs text-gray-500 mt-1">Initial password = Student ID</p>
-                                </label>
-                                <label class="cursor-pointer border-2 border-transparent rounded-xl p-4 hover:border-yellow-300 has-[:checked]:border-yellow-500 has-[:checked]:bg-yellow-50">
-                                    <input type="radio" name="type" value="faculty" class="mr-2">
-                                    <span class="font-semibold text-sm">Faculty</span>
-                                    <p class="text-xs text-gray-500 mt-1">Initial password = Faculty ID</p>
-                                </label>
-                            </div>
+                        <input type="hidden" name="type" value="faculty">
+                        
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-emerald-800"><i class="ri-information-line mr-1"></i>
+                            Importing multiple <strong>Faculty</strong> accounts at once. Initial password will be set to their Faculty ID.</p>
                         </div>
 
                         <div class="mb-5">
@@ -431,19 +366,15 @@
                         </div>
 
                         <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">
-                            <i class="ri-upload-cloud-line mr-1"></i> Import Accounts
+                            <i class="ri-upload-cloud-line mr-1"></i> Import Faculty
                         </button>
                     </form>
                 </div>
 
                 <div class="space-y-4">
                     <div class="bg-white rounded-2xl shadow p-5">
-                        <h3 class="font-bold text-gray-900 mb-3 text-sm">Download Templates</h3>
+                        <h3 class="font-bold text-gray-900 mb-3 text-sm">Download Template</h3>
                         <div class="space-y-2">
-                            <a href="{{ route('admin.bulk-import.template', ['type' => 'students']) }}"
-                               class="block text-center px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">
-                               <i class="ri-download-line mr-1"></i> Students Template
-                            </a>
                             <a href="{{ route('admin.bulk-import.template', ['type' => 'faculty']) }}"
                                class="block text-center px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
                                <i class="ri-download-line mr-1"></i> Faculty Template
@@ -455,10 +386,9 @@
                         <h3 class="font-bold text-amber-800 text-sm mb-2">Important Notes</h3>
                         <ul class="text-xs text-amber-700 space-y-1 list-disc ml-4">
                             <li>Do not add password columns</li>
-                            <li>Students use Student ID as initial password</li>
                             <li>Faculty use Faculty ID as initial password</li>
                             <li>Users must change password on first login</li>
-                            <li>Program code must exist in Programs table</li>
+                            <li>Ensure Department codes match existing ones</li>
                         </ul>
                     </div>
                 </div>
@@ -466,20 +396,12 @@
 
             <!-- CSV Format Guide -->
             <div class="bg-white rounded-2xl shadow p-6 mt-5">
-                <h3 class="font-bold text-gray-900 mb-4">CSV Format Guide</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div class="border rounded-xl p-4">
-                        <h4 class="font-bold text-blue-700 text-sm mb-2">Students CSV</h4>
-                        <code class="block bg-gray-100 p-3 rounded-lg text-xs mb-2">name,email,student_id,year_level,section,program_code</code>
-                        <p class="text-xs text-gray-500 mb-1">Example:</p>
-                        <code class="block bg-gray-100 p-3 rounded-lg text-xs">Juan Dela Cruz,juan@nu.edu,2024-0001,1,A,BSCS</code>
-                    </div>
-                    <div class="border rounded-xl p-4">
-                        <h4 class="font-bold text-emerald-700 text-sm mb-2">Faculty CSV</h4>
-                        <code class="block bg-gray-100 p-3 rounded-lg text-xs mb-2">name,email,faculty_id,department,specialization</code>
-                        <p class="text-xs text-gray-500 mb-1">Example:</p>
-                        <code class="block bg-gray-100 p-3 rounded-lg text-xs">Maria Santos,maria@nu.edu,FAC-001,CCS,Software Engineering</code>
-                    </div>
+                <h3 class="font-bold text-gray-900 mb-4">Faculty CSV Format Guide</h3>
+                <div class="border rounded-xl p-4">
+                    <h4 class="font-bold text-emerald-700 text-sm mb-2">Faculty CSV</h4>
+                    <code class="block bg-gray-100 p-3 rounded-lg text-xs mb-2">name,email,faculty_id,department,specialization</code>
+                    <p class="text-xs text-gray-500 mb-1">Example:</p>
+                    <code class="block bg-gray-100 p-3 rounded-lg text-xs">Maria Santos,maria@nu.edu,FAC-001,CCS,Software Engineering</code>
                 </div>
             </div>
         </div>
@@ -523,33 +445,18 @@
         }
     });
 
-    // Role field toggles
-    const roleSelect    = document.getElementById('role');
-    const studentFields = document.getElementById('studentFields');
-    const facultyFields = document.getElementById('facultyFields');
-    const adminFields   = document.getElementById('adminFields');
-
-    function toggleFields() {
-        const role = roleSelect.value;
-        studentFields.classList.toggle('hidden', role !== 'student');
-        facultyFields.classList.toggle('hidden', role !== 'faculty');
-        adminFields.classList.toggle('hidden',   role !== 'admin');
-    }
-    roleSelect.addEventListener('change', toggleFields);
-    toggleFields();
-
     // Tab switching
     function switchTab(tab) {
         const tabs = ['single', 'bulk'];
         tabs.forEach(t => {
-            document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
+            const panel = document.getElementById(`panel-${t}`);
+            if (panel) panel.classList.toggle('hidden', t !== tab);
             const btn = document.getElementById(`tab-${t}`);
-            btn.classList.toggle('active', t === tab);
+            if (btn) btn.classList.toggle('active', t === tab);
         });
     }
 
-    // Check if we should open bulk tab (e.g. redirected from old bulk-import route)
-    const urlParams = new URLSearchParams(window.location.search);
+    // Check if we should open bulk tab
     @if(session('tab') === 'bulk')
     switchTab('bulk');
     @endif

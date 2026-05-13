@@ -127,14 +127,26 @@
                         </div>
                         
                         <!-- Student-specific fields -->
-                        <div id="studentFields" class="{{ $user->role == 'student' ? '' : 'hidden' }}">
+                        <div id="studentFields" class="{{ old('role', $user->role) == 'student' ? '' : 'hidden' }}">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
                                     <input type="text" name="student_id" value="{{ old('student_id', $user->student_id) }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">For students only</p>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Program</label>
+                                    <select name="program_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+                                        <option value="">Select Program</option>
+                                        @foreach($programs as $program)
+                                            <option value="{{ $program->id }}" {{ old('program_id', $user->program_id) == $program->id ? 'selected' : '' }}>
+                                                {{ $program->code }} - {{ $program->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Year Level</label>
                                     <select name="year_level" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
@@ -143,36 +155,45 @@
                                         <option value="2" {{ old('year_level', $user->year_level) == 2 ? 'selected' : '' }}>2nd Year</option>
                                         <option value="3" {{ old('year_level', $user->year_level) == 3 ? 'selected' : '' }}>3rd Year</option>
                                         <option value="4" {{ old('year_level', $user->year_level) == 4 ? 'selected' : '' }}>4th Year</option>
-                                        <option value="5" {{ old('year_level', $user->year_level) == 5 ? 'selected' : '' }}>5th Year</option>
-                                        <option value="6" {{ old('year_level', $user->year_level) == 6 ? 'selected' : '' }}>6th Year</option>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                                    <input type="text" name="section" value="{{ old('section', $user->section) }}"
+                                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Faculty-specific fields -->
-                        <div id="facultyFields" class="{{ $user->role == 'faculty' ? '' : 'hidden' }}">
+                        <div id="facultyFields" class="{{ old('role', $user->role) == 'faculty' ? '' : 'hidden' }}">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                                    <input type="text" name="department" value="{{ old('department', $user->department) }}"
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Faculty ID</label>
+                                    <input type="text" name="faculty_id" value="{{ old('faculty_id', $user->faculty_id) }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">e.g., Computer Science, Engineering, Business</p>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                                    <select name="department_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+                                        <option value="">Select Department</option>
+                                        @foreach($departments as $dept)
+                                            <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id) == $dept->id ? 'selected' : '' }}>
+                                                {{ $dept->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
                                     <input type="text" name="specialization" value="{{ old('specialization', $user->specialization) }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">e.g., Web Development, Data Science, AI</p>
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Qualification</label>
-                                <textarea name="qualification" rows="2" 
-                                          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
-                                          placeholder="e.g., PhD in Computer Science, Master's in Education">{{ old('qualification', $user->qualification) }}</textarea>
-                            </div>
                         </div>
+
                         
                         
         

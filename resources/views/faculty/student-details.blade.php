@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>My Courses - NU Clicks LMS</title>
-    
+    <title>Student Details - {{ $student->name }} | NU Clicks LMS</title>
     <!-- Google Fonts + Remix Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script>
         tailwind.config = {
             corePlugins: { preflight: false },
         }
     </script>
-
     <style>
         * {
             margin: 0;
@@ -156,7 +152,6 @@
             align-items: center;
             justify-content: center;
             color: var(--gold);
-            font-size: 1.1rem;
         }
         .profile-details p {
             color: white;
@@ -190,7 +185,7 @@
             box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
         }
 
-        /* Main Content */
+        /* Main content area */
         .main-content {
             margin-left: 280px;
             transition: margin-left 0.3s ease;
@@ -220,7 +215,6 @@
             font-weight: 700;
             color: var(--blue-deep);
         }
-
         @media (max-width: 1024px) {
             .menu-toggle {
                 display: block;
@@ -236,14 +230,6 @@
             box-shadow: var(--card-shadow);
             border: 1px solid rgba(0,0,0,0.03);
             overflow: hidden;
-        }
-
-        .course-card {
-            transition: var(--transition);
-        }
-        .course-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
         }
 
         /* Logout Confirmation Modal */
@@ -295,9 +281,7 @@
             align-items: center;
             gap: 0.5rem;
         }
-        .modal-header h3 i {
-            color: var(--gold);
-        }
+        .modal-header h3 i { color: var(--gold); }
         .modal-close {
             background: none;
             border: none;
@@ -305,9 +289,7 @@
             font-size: 1.6rem;
             cursor: pointer;
         }
-        .modal-close:hover {
-            color: var(--gold);
-        }
+        .modal-close:hover { color: var(--gold); }
         .modal-body {
             padding: 1.8rem 1.5rem;
             text-align: center;
@@ -329,64 +311,63 @@
             transition: all 0.2s ease;
             border: none;
         }
-        .modal-btn-cancel {
-            background: #eef2ff;
-            color: #1e293b;
-        }
-        .modal-btn-cancel:hover {
-            background: #e2e8f0;
-        }
-        .modal-btn-confirm {
-            background: var(--danger-red);
-            color: white;
-        }
-        .modal-btn-confirm:hover {
-            background: var(--danger-dark);
-        }
+        .modal-btn-cancel { background: #eef2ff; color: #1e293b; }
+        .modal-btn-cancel:hover { background: #e2e8f0; }
+        .modal-btn-confirm { background: var(--danger-red); color: white; }
+        .modal-btn-confirm:hover { background: var(--danger-dark); }
     </style>
 </head>
 <body>
 
-<!-- ========== SIDEBAR ========== -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
         <div class="logo-text">
             <h1>NU <span>CLICKS</span> LMS</h1>
-            <p>Student Portal</p>
+            <p>Faculty Portal</p>
         </div>
     </div>
 
     <div style="flex:1; overflow-y: auto;">
         <div class="nav-section">
             <div class="nav-section-title">Main</div>
-            <a href="{{ route('student.dashboard') }}" class="nav-item">
+            <a href="{{ route('faculty.dashboard') }}" class="nav-item">
                 <i class="ri-dashboard-line"></i> Dashboard
             </a>
-            <a href="{{ route('student.courses') }}" class="nav-item active">
-                <i class="ri-book-line"></i> My Courses
+            <a href="{{ route('faculty.students') }}" class="nav-item active">
+                <i class="ri-user-line"></i> Students
             </a>
-            <a href="{{ route('student.progress') }}" class="nav-item">
-                <i class="ri-bar-chart-line"></i> Progress
+            <a href="{{ route('faculty.courses') }}" class="nav-item">
+                <i class="ri-book-line"></i> Courses
             </a>
-            <a href="{{ route('student.announcements') }}" class="nav-item">
-                <i class="ri-megaphone-line"></i> Announcements
-            </a>
-            <a href="{{ route('student.notifications') }}" class="nav-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
-                <i class="ri-notification-line"></i> Notifications
-                @if(isset($unreadNotifications) && $unreadNotifications > 0)
-                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $unreadNotifications }}</span>
-                @endif
-            </a>
-            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
-                <i class="ri-star-line"></i> Faculty Evaluation
+            <a href="{{ route('faculty.folder-files') }}" class="nav-item">
+                <i class="ri-folder-3-line"></i> Files & Folders
             </a>
         </div>
 
         <div class="nav-section">
-            <div class="nav-section-title">Account</div>
-            <a href="{{ route('student.profile') }}" class="nav-item">
-                <i class="ri-user-line"></i> Profile
+            <div class="nav-section-title">Quiz Management</div>
+            <a href="{{ route('faculty.quiz.create') }}" class="nav-item">
+                <i class="ri-add-circle-line"></i> Create Quiz
+            </a>
+            <a href="{{ route('faculty.quizzes.list') }}" class="nav-item">
+                <i class="ri-list-check"></i> All Quizzes
+            </a>
+            <a href="{{ route('faculty.question.bank') }}" class="nav-item">
+                <i class="ri-database-2-line"></i> Question Bank
+            </a>
+            <a href="{{ route('faculty.grading') }}" class="nav-item">
+                <i class="ri-graduation-cap-line"></i> Grading
+            </a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Analytics</div>
+            <a href="{{ route('faculty.results.index') }}" class="nav-item">
+                <i class="ri-bar-chart-line"></i> Results & Analytics
+            </a>
+            <a href="{{ route('faculty.my-evaluation') }}" class="nav-item">
+                <i class="ri-star-smile-line"></i> My Evaluation
             </a>
         </div>
     </div>
@@ -398,14 +379,15 @@
             </div>
             <div class="profile-details">
                 <p>{{ Auth::user()->name }}</p>
-                <span>Student</span>
+                <span>{{ Auth::user()->email }}</span>
             </div>
         </div>
-        
-        <!-- Logout with Confirmation -->
-        <button onclick="openLogoutModal()" class="logout-btn">
-            <i class="ri-logout-box-r-line"></i> Sign Out
-        </button>
+        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+            @csrf
+            <button type="button" onclick="openLogoutModal()" class="logout-btn">
+                <i class="ri-logout-box-r-line"></i> Sign Out
+            </button>
+        </form>
     </div>
 </aside>
 
@@ -415,131 +397,121 @@
         <button class="menu-toggle" id="menuToggle">
             <i class="ri-menu-line"></i>
         </button>
-        <h2 class="page-title text-lg md:text-xl">My Courses</h2>
+        <div>
+            <h2 class="page-title text-lg md:text-xl">Student Details</h2>
+            <p class="text-sm text-gray-500 hidden md:block">{{ $student->name }}</p>
+        </div>
+        <a href="{{ route('faculty.students') }}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm border border-gray-200 text-gray-700 hover:bg-gray-50">
+            <i class="ri-arrow-left-line text-base"></i> Back to Students
+        </a>
     </div>
 
     <div class="p-4 md:p-6">
-        <!-- Session Messages -->
-        @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-5 py-4 rounded-2xl mb-6 flex items-center gap-3">
-                <i class="ri-check-line text-xl"></i>
-                {{ session('success') }}
-            </div>
-        @endif
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-6 flex items-center gap-3">
-                <i class="ri-error-warning-line text-xl"></i>
-                {{ session('error') }}
-            </div>
-        @endif
-
-        @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-6">
-                @foreach($errors->all() as $error)
-                    <p class="flex items-center gap-2"><i class="ri-error-warning-line"></i> {{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-
-        <!-- Join New Course Section - Changed to Navy Blue -->
-        <div class="dashboard-card mb-8">
-            <div class="p-8 bg-[#0A1F44] text-white rounded-t-3xl">   <!-- Navy blue like sidebar -->
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h3 class="text-2xl font-bold flex items-center gap-3">
-                            <i class="ri-add-circle-line text-3xl"></i>
-                            Join a New Course
-                        </h3>
-                        <p class="text-blue-100 mt-2">Enter the join code provided by your instructor</p>
+            <!-- Student Info Card -->
+            <div class="lg:col-span-1">
+                <div class="dashboard-card p-6">
+                    <div class="text-center">
+                        <div class="h-20 w-20 mx-auto mb-4 rounded-full flex items-center justify-content-center items-center justify-center" style="background: rgba(10,31,68,0.08);">
+                            <i class="ri-user-line text-4xl" style="color: var(--blue-deep);"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">{{ $student->name }}</h3>
+                        <p class="text-gray-500 text-sm mt-1">{{ $student->email }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Student ID: {{ $student->student_id ?? 'N/A' }}</p>
+                        <div class="mt-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $student->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                {{ ucfirst($student->status) }}
+                            </span>
+                        </div>
                     </div>
-                    <form action="{{ route('student.course.join') }}" method="POST" class="flex w-full md:w-auto gap-3">
-                        @csrf
-                        <input type="text" 
-                               name="join_code" 
-                               placeholder="Enter join code (e.g., ABC123)" 
-                               class="flex-1 md:w-80 px-5 py-3 rounded-2xl border-0 focus:ring-4 focus:ring-white/30 text-gray-900"
-                               required>
-                        <button type="submit" 
-                                class="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-3 rounded-2xl font-semibold flex items-center gap-2 transition">
-                            <i class="ri-add-line"></i> Join Course
-                        </button>
-                    </form>
+
+                    <div class="border-t border-gray-100 mt-6 pt-6 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                                <i class="ri-building-2-line"></i> Department
+                            </span>
+                            <span class="text-sm font-medium text-gray-800">{{ $student->department_id ? ($student->departmentRel->name ?? '—') : ($student->department ?? 'N/A') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                                <i class="ri-calendar-line"></i> Year Level
+                            </span>
+                            <span class="text-sm font-medium text-gray-800">{{ $student->year_level ? $student->year_level . ' Year' : 'N/A' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 flex items-center gap-1.5">
+                                <i class="ri-bar-chart-line"></i> Avg. Score
+                            </span>
+                            <span class="text-sm font-semibold {{ ($averageScore ?? 0) >= 70 ? 'text-green-600' : 'text-red-600' }}">{{ $averageScore ?? 0 }}%</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- My Enrolled Courses -->
-        <div class="dashboard-card">
-            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="ri-book-line" style="color: var(--gold);"></i> 
-                    My Enrolled Courses
-                </h3>
-                <span class="text-sm text-gray-500">{{ $enrolledCourses->count() }} courses</span>
-            </div>
+            <!-- Enrolled Courses + Quiz Attempts -->
+            <div class="lg:col-span-2 space-y-6">
 
-            <div class="p-6">
-                @if($enrolledCourses->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($enrolledCourses as $course)
-                            <div class="course-card bg-white border border-gray-100 rounded-3xl overflow-hidden">
-                                <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-                                <div class="p-6">
-                                    <div class="flex justify-between items-start mb-4">
+                <!-- Enrolled Courses -->
+                <div class="dashboard-card">
+                    <div class="px-5 py-4 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i class="ri-book-open-line" style="color: var(--gold);"></i> Enrolled Courses
+                        </h3>
+                    </div>
+                    <div class="p-5">
+                        @if(($enrolledCourses ?? collect())->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($enrolledCourses as $enrollment)
+                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
                                         <div>
-                                            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-2xl">
-                                                {{ $course->code }}
-                                            </span>
+                                            <h4 class="font-semibold text-gray-800 text-sm">{{ $enrollment->course->code ?? 'N/A' }} - {{ $enrollment->course->name ?? 'Course' }}</h4>
+                                            <p class="text-xs text-gray-400 mt-0.5">Enrolled: {{ $enrollment->created_at->format('M d, Y') }}</p>
                                         </div>
-                                        <span class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-2xl">
-                                            {{ $course->credits ?? 'N/A' }} credits
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                                            {{ ucfirst($enrollment->status) }}
                                         </span>
                                     </div>
-
-                                    <h4 class="font-semibold text-lg text-gray-800 line-clamp-2">{{ $course->name }}</h4>
-                                    
-                                    <p class="text-gray-600 text-sm mt-3 line-clamp-3">
-                                        {{ Str::limit($course->description ?? 'No description available.', 110) }}
-                                    </p>
-
-                                    <div class="flex items-center justify-between mt-6 text-sm text-gray-500">
-                                        <div class="flex items-center gap-1">
-                                            <i class="ri-quiz-line"></i>
-                                            <span>{{ $course->quizzes->count() }} Quizzes</span>
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <i class="ri-file-text-line"></i>
-                                            <span>{{ $course->materials->count() ?? 0 }} Materials</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-6 flex gap-3">
-                                        <a href="{{ route('student.course.details', $course->id) }}" 
-                                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl text-sm font-medium transition">
-                                            View Course
-                                        </a>
-                                        <form action="{{ route('student.course.leave', $course->id) }}" method="POST" class="flex-1">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to leave this course?')"
-                                                    class="w-full text-center bg-red-500 hover:bg-red-600 text-white py-3 rounded-2xl text-sm font-medium transition">
-                                                Leave Course
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        @else
+                            <p class="text-gray-500 text-center py-6">No courses enrolled.</p>
+                        @endif
                     </div>
-                @else
-                    <div class="text-center py-20">
-                        <i class="ri-book-line text-7xl text-gray-300 mb-4 block"></i>
-                        <p class="text-gray-600 text-lg">You haven't enrolled in any courses yet.</p>
-                        <p class="text-gray-500 mt-2">Use the join code section above to get started.</p>
+                </div>
+
+                <!-- Quiz Attempts -->
+                <div class="dashboard-card">
+                    <div class="px-5 py-4 border-b border-gray-100">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i class="ri-list-check" style="color: var(--gold);"></i> Quiz Attempts
+                        </h3>
                     </div>
-                @endif
+                    <div class="p-5">
+                        @if(($quizAttempts ?? collect())->count() > 0)
+                            <div class="space-y-3">
+                                @foreach($quizAttempts as $attempt)
+                                    @php $pct = $attempt->quiz->total_points > 0 ? ($attempt->score / $attempt->quiz->total_points) : 0; @endphp
+                                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800 text-sm">{{ $attempt->quiz->title }}</h4>
+                                            <p class="text-xs text-gray-400 mt-0.5">{{ $attempt->quiz->course->name ?? 'Course' }}</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <p class="font-semibold text-sm {{ $pct >= 0.6 ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ $attempt->score }}/{{ $attempt->quiz->total_points }}
+                                            </p>
+                                            <p class="text-xs text-gray-400 mt-0.5">{{ $attempt->completed_at ? $attempt->completed_at->format('M d, Y') : 'N/A' }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <p class="text-gray-500 text-center py-6">No quiz attempts yet.</p>
+                        @endif
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -550,7 +522,7 @@
     <div class="confirmation-modal">
         <div class="modal-header">
             <h3>
-                <i class="ri-logout-box-r-line"></i> 
+                <i class="ri-logout-box-r-line"></i>
                 Confirm Sign Out
             </h3>
             <button class="modal-close" onclick="closeLogoutModal()">&times;</button>
@@ -570,45 +542,37 @@
 </div>
 
 <script>
-    // Mobile Sidebar Toggle
+    // Mobile sidebar toggle
     const menuToggle = document.getElementById('menuToggle');
     const sidebar = document.getElementById('sidebar');
-    
     if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', function() {
             sidebar.classList.toggle('mobile-open');
         });
     }
-
-    document.addEventListener('click', function(e) {
-        if (window.innerWidth <= 1024 && sidebar.classList.contains('mobile-open')) {
-            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+    document.addEventListener('click', function(event) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar.classList.contains('mobile-open')) {
+            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
                 sidebar.classList.remove('mobile-open');
             }
         }
     });
 
-    // Logout Modal Functions
+    // Logout Modal
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
-
     function closeLogoutModal() {
         document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
-
     document.getElementById('logoutModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeLogoutModal();
-        }
+        if (e.target === this) closeLogoutModal();
     });
-
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeLogoutModal();
-        }
+        if (e.key === 'Escape') closeLogoutModal();
     });
 </script>
 </body>

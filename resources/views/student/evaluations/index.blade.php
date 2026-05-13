@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>My Courses - NU Clicks LMS</title>
+    <title>Faculty Evaluation - NU Clicks LMS</title>
     
     <!-- Google Fonts + Remix Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -43,7 +43,7 @@
             --danger-dark: #b91c1c;
         }
 
-        /* Sidebar */
+        /* Sidebar - Same as before */
         .sidebar {
             background-color: var(--blue-deep);
             width: 280px;
@@ -168,7 +168,7 @@
             font-size: 0.7rem;
         }
 
-        /* Red Logout Button */
+        /* Red Logout Button (matching Faculty/Admin) */
         .logout-btn {
             width: 100%;
             background: rgba(220, 38, 38, 0.15);
@@ -238,15 +238,7 @@
             overflow: hidden;
         }
 
-        .course-card {
-            transition: var(--transition);
-        }
-        .course-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
-        }
-
-        /* Logout Confirmation Modal */
+        /* Logout Confirmation Modal - Same as Faculty */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0;
@@ -347,7 +339,7 @@
 </head>
 <body>
 
-<!-- ========== SIDEBAR ========== -->
+<!-- ========== SIDEBAR (STUDENT VERSION) ========== -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
         <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
@@ -360,16 +352,16 @@
     <div style="flex:1; overflow-y: auto;">
         <div class="nav-section">
             <div class="nav-section-title">Main</div>
-            <a href="{{ route('student.dashboard') }}" class="nav-item">
+            <a href="{{ route('student.dashboard') }}" class="nav-item {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                 <i class="ri-dashboard-line"></i> Dashboard
             </a>
-            <a href="{{ route('student.courses') }}" class="nav-item active">
+            <a href="{{ route('student.courses') }}" class="nav-item {{ request()->routeIs('student.courses*') ? 'active' : '' }}">
                 <i class="ri-book-line"></i> My Courses
             </a>
-            <a href="{{ route('student.progress') }}" class="nav-item">
+            <a href="{{ route('student.progress') }}" class="nav-item {{ request()->routeIs('student.progress*') ? 'active' : '' }}">
                 <i class="ri-bar-chart-line"></i> Progress
             </a>
-            <a href="{{ route('student.announcements') }}" class="nav-item">
+            <a href="{{ route('student.announcements') }}" class="nav-item {{ request()->routeIs('student.announcements*') ? 'active' : '' }}">
                 <i class="ri-megaphone-line"></i> Announcements
             </a>
             <a href="{{ route('student.notifications') }}" class="nav-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
@@ -402,7 +394,7 @@
             </div>
         </div>
         
-        <!-- Logout with Confirmation -->
+        <!-- Logout Button with Confirmation -->
         <button onclick="openLogoutModal()" class="logout-btn">
             <i class="ri-logout-box-r-line"></i> Sign Out
         </button>
@@ -415,11 +407,23 @@
         <button class="menu-toggle" id="menuToggle">
             <i class="ri-menu-line"></i>
         </button>
-        <h2 class="page-title text-lg md:text-xl">My Courses</h2>
+        <h2 class="page-title text-lg md:text-xl">Faculty Evaluation</h2>
     </div>
 
     <div class="p-4 md:p-6">
-        <!-- Session Messages -->
+        <!-- Page Header -->
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-800 rounded-2xl p-6 mb-8 text-white shadow-lg">
+            <div class="flex items-center space-x-4">
+                <div class="bg-white bg-opacity-20 p-3 rounded-full">
+                    <i class="ri-star-fill text-3xl text-yellow-400"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold">Faculty Evaluation</h3>
+                    <p class="text-indigo-100 mt-1">Rate your instructors and help improve the quality of education.</p>
+                </div>
+            </div>
+        </div>
+
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-5 py-4 rounded-2xl mb-6 flex items-center gap-3">
                 <i class="ri-check-line text-xl"></i>
@@ -427,121 +431,132 @@
             </div>
         @endif
 
-        @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-6 flex items-center gap-3">
-                <i class="ri-error-warning-line text-xl"></i>
-                {{ session('error') }}
+        @if(isset($isClosed) && $isClosed)
+            <div class="dashboard-card p-12 text-center">
+                <i class="ri-lock-fill text-7xl text-gray-300 mb-5 block"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Evaluation Period Closed</h3>
+                <p class="text-gray-500">The faculty evaluation period is currently closed or has ended.</p>
+                <a href="{{ route('student.dashboard') }}"
+                   class="inline-flex mt-6 bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition-colors font-medium">
+                    Back to Dashboard
+                </a>
             </div>
-        @endif
-
-        @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-5 py-4 rounded-2xl mb-6">
-                @foreach($errors->all() as $error)
-                    <p class="flex items-center gap-2"><i class="ri-error-warning-line"></i> {{ $error }}</p>
-                @endforeach
-            </div>
-        @endif
-
-        <!-- Join New Course Section - Changed to Navy Blue -->
-        <div class="dashboard-card mb-8">
-            <div class="p-8 bg-[#0A1F44] text-white rounded-t-3xl">   <!-- Navy blue like sidebar -->
-                <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <h3 class="text-2xl font-bold flex items-center gap-3">
-                            <i class="ri-add-circle-line text-3xl"></i>
-                            Join a New Course
-                        </h3>
-                        <p class="text-blue-100 mt-2">Enter the join code provided by your instructor</p>
-                    </div>
-                    <form action="{{ route('student.course.join') }}" method="POST" class="flex w-full md:w-auto gap-3">
-                        @csrf
-                        <input type="text" 
-                               name="join_code" 
-                               placeholder="Enter join code (e.g., ABC123)" 
-                               class="flex-1 md:w-80 px-5 py-3 rounded-2xl border-0 focus:ring-4 focus:ring-white/30 text-gray-900"
-                               required>
-                        <button type="submit" 
-                                class="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-3 rounded-2xl font-semibold flex items-center gap-2 transition">
-                            <i class="ri-add-line"></i> Join Course
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- My Enrolled Courses -->
-        <div class="dashboard-card">
-            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="ri-book-line" style="color: var(--gold);"></i> 
-                    My Enrolled Courses
-                </h3>
-                <span class="text-sm text-gray-500">{{ $enrolledCourses->count() }} courses</span>
-            </div>
-
-            <div class="p-6">
-                @if($enrolledCourses->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($enrolledCourses as $course)
-                            <div class="course-card bg-white border border-gray-100 rounded-3xl overflow-hidden">
-                                <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-                                <div class="p-6">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div>
-                                            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-2xl">
-                                                {{ $course->code }}
-                                            </span>
-                                        </div>
-                                        <span class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-2xl">
-                                            {{ $course->credits ?? 'N/A' }} credits
-                                        </span>
-                                    </div>
-
-                                    <h4 class="font-semibold text-lg text-gray-800 line-clamp-2">{{ $course->name }}</h4>
-                                    
-                                    <p class="text-gray-600 text-sm mt-3 line-clamp-3">
-                                        {{ Str::limit($course->description ?? 'No description available.', 110) }}
-                                    </p>
-
-                                    <div class="flex items-center justify-between mt-6 text-sm text-gray-500">
-                                        <div class="flex items-center gap-1">
-                                            <i class="ri-quiz-line"></i>
-                                            <span>{{ $course->quizzes->count() }} Quizzes</span>
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <i class="ri-file-text-line"></i>
-                                            <span>{{ $course->materials->count() ?? 0 }} Materials</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-6 flex gap-3">
-                                        <a href="{{ route('student.course.details', $course->id) }}" 
-                                           class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-2xl text-sm font-medium transition">
-                                            View Course
-                                        </a>
-                                        <form action="{{ route('student.course.leave', $course->id) }}" method="POST" class="flex-1">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    onclick="return confirm('Are you sure you want to leave this course?')"
-                                                    class="w-full text-center bg-red-500 hover:bg-red-600 text-white py-3 rounded-2xl text-sm font-medium transition">
-                                                Leave Course
-                                            </button>
-                                        </form>
-                                    </div>
+        @elseif($enrolledCourses->count() > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @foreach($enrolledCourses as $course)
+                    <div class="dashboard-card overflow-hidden transition hover:-translate-y-1 hover:shadow-xl">
+                        <!-- Card Header -->
+                        <div class="h-2" style="background: var(--gold);"></div>
+                        <div class="p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium">{{ $course->code }}</span>
+                                    <h4 class="font-bold text-lg text-gray-800 mt-3">{{ $course->name }}</h4>
+                                </div>
+                                <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                                    <i class="ri-user-star-line text-blue-800 text-xl"></i>
                                 </div>
                             </div>
-                        @endforeach
+
+                            <div class="flex items-center space-x-3 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    <i class="ri-user-line text-blue-800"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">Instructor</p>
+                                    <p class="font-bold text-gray-800">{{ $course->faculty->name ?? 'Not Assigned' }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Evaluation Form -->
+                            @if(in_array($course->id, $evaluatedCourseIds))
+                            <div class="bg-green-50 text-green-800 p-6 rounded-xl border border-green-200 text-center mt-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                    <i class="ri-checkbox-circle-fill text-3xl text-green-600"></i>
+                                </div>
+                                <h4 class="font-bold text-lg mb-1">Already Evaluated</h4>
+                                <p class="text-sm opacity-80">Thank you for submitting your feedback for this course.</p>
+                            </div>
+                            @elseif($course->faculty)
+                            <form class="evaluation-form space-y-5" data-course="{{ $course->id }}" data-faculty="{{ $course->faculty->id }}">
+                                @csrf
+                                <!-- Teaching Effectiveness -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Teaching Effectiveness</label>
+                                    <div class="star-rating flex space-x-2" data-field="teaching">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button type="button" data-value="{{ $i }}"
+                                                class="star-btn text-2xl text-gray-200 hover:text-yellow-400 transition-colors focus:outline-none transform hover:scale-110"
+                                                title="{{ $i }} star{{ $i > 1 ? 's' : '' }}">
+                                                <i class="ri-star-fill"></i>
+                                            </button>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <!-- Subject Knowledge -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Subject Knowledge</label>
+                                    <div class="star-rating flex space-x-2" data-field="knowledge">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button type="button" data-value="{{ $i }}"
+                                                class="star-btn text-2xl text-gray-200 hover:text-yellow-400 transition-colors focus:outline-none transform hover:scale-110"
+                                                title="{{ $i }} star{{ $i > 1 ? 's' : '' }}">
+                                                <i class="ri-star-fill"></i>
+                                            </button>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <!-- Communication Skills -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Communication Skills</label>
+                                    <div class="star-rating flex space-x-2" data-field="communication">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button type="button" data-value="{{ $i }}"
+                                                class="star-btn text-2xl text-gray-200 hover:text-yellow-400 transition-colors focus:outline-none transform hover:scale-110"
+                                                title="{{ $i }} star{{ $i > 1 ? 's' : '' }}">
+                                                <i class="ri-star-fill"></i>
+                                            </button>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                <!-- Comments -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Additional Comments <span class="text-gray-400 font-normal">(optional)</span></label>
+                                    <textarea rows="3"
+                                        class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 resize-none transition"
+                                        placeholder="Share your thoughts about this instructor..."></textarea>
+                                </div>
+
+                                <button type="submit"
+                                    class="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2">
+                                    <i class="ri-send-plane-line"></i>
+                                    <span>Submit Evaluation</span>
+                                </button>
+                            </form>
+                            @else
+                            <div class="bg-yellow-50 text-yellow-800 p-4 rounded-xl border border-yellow-200 text-sm flex items-center gap-2">
+                                <i class="ri-error-warning-line text-lg"></i>
+                                No faculty assigned to evaluate for this course.
+                            </div>
+                            @endif
+                        </div>
                     </div>
-                @else
-                    <div class="text-center py-20">
-                        <i class="ri-book-line text-7xl text-gray-300 mb-4 block"></i>
-                        <p class="text-gray-600 text-lg">You haven't enrolled in any courses yet.</p>
-                        <p class="text-gray-500 mt-2">Use the join code section above to get started.</p>
-                    </div>
-                @endif
+                @endforeach
             </div>
-        </div>
+        @else
+            <div class="dashboard-card p-12 text-center">
+                <i class="ri-star-line text-7xl text-gray-200 mb-5 block"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">No Courses to Evaluate</h3>
+                <p class="text-gray-500">You need to be enrolled in a course with an assigned instructor to submit an evaluation.</p>
+                <a href="{{ route('student.courses') }}"
+                   class="inline-flex mt-6 bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition-colors font-medium">
+                    Browse Courses
+                </a>
+            </div>
+        @endif
     </div>
 </div>
 
@@ -599,16 +614,120 @@
         document.body.style.overflow = '';
     }
 
+    // Close modal when clicking outside
     document.getElementById('logoutModal').addEventListener('click', function(e) {
         if (e.target === this) {
             closeLogoutModal();
         }
     });
 
+    // ESC key support
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeLogoutModal();
         }
+    });
+
+    // Star rating interaction
+    document.querySelectorAll('.star-rating').forEach(function(ratingGroup) {
+        const stars = ratingGroup.querySelectorAll('.star-btn');
+
+        stars.forEach(function(star, index) {
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                stars.forEach(function(s, i) {
+                    s.classList.toggle('text-yellow-400', i <= index);
+                    s.classList.toggle('text-gray-200', i > index);
+                });
+            });
+
+            // Reset on leave (unless selected)
+            star.addEventListener('mouseleave', function() {
+                const selected = ratingGroup.dataset.selected;
+                stars.forEach(function(s, i) {
+                    if (selected) {
+                        s.classList.toggle('text-yellow-400', i < parseInt(selected));
+                        s.classList.toggle('text-gray-200', i >= parseInt(selected));
+                    } else {
+                        s.classList.remove('text-yellow-400');
+                        s.classList.add('text-gray-200');
+                    }
+                });
+            });
+
+            // Click to select
+            star.addEventListener('click', function() {
+                const value = parseInt(this.dataset.value);
+                ratingGroup.dataset.selected = value;
+                stars.forEach(function(s, i) {
+                    s.classList.toggle('text-yellow-400', i < value);
+                    s.classList.toggle('text-gray-200', i >= value);
+                });
+            });
+        });
+    });
+
+    // Form submission
+    document.querySelectorAll('.evaluation-form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            const courseId = form.dataset.course;
+            const facultyId = form.dataset.faculty;
+            
+            // Get ratings
+            const teaching = form.querySelector('.star-rating[data-field="teaching"]').dataset.selected;
+            const knowledge = form.querySelector('.star-rating[data-field="knowledge"]').dataset.selected;
+            const communication = form.querySelector('.star-rating[data-field="communication"]').dataset.selected;
+            const comment = form.querySelector('textarea').value;
+            
+            if (!teaching || !knowledge || !communication) {
+                alert('Please provide a rating for all criteria.');
+                return;
+            }
+
+            const payload = {
+                _token: form.querySelector('input[name="_token"]').value,
+                course_id: courseId,
+                faculty_id: facultyId,
+                teaching: teaching,
+                knowledge: knowledge,
+                communication: communication,
+                comment: comment
+            };
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> <span>Submitting...</span>';
+
+            fetch("{{ route('student.faculty.evaluation.store') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json().then(data => ({status: res.status, body: data})))
+            .then(result => {
+                if(result.status === 200) {
+                    btn.innerHTML = '<i class="ri-checkbox-circle-line"></i> <span>Evaluation Submitted!</span>';
+                    btn.classList.replace('bg-blue-800', 'bg-green-600');
+                    btn.classList.replace('hover:bg-blue-900', 'hover:bg-green-700');
+                    
+                    form.querySelectorAll('button.star-btn').forEach(b => b.disabled = true);
+                    form.querySelectorAll('textarea').forEach(txt => txt.disabled = true);
+                } else {
+                    alert(result.body.message || 'Error submitting evaluation');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ri-send-plane-line"></i> <span>Submit Evaluation</span>';
+                }
+            })
+            .catch(err => {
+                alert('Something went wrong. Please try again.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ri-send-plane-line"></i> <span>Submit Evaluation</span>';
+            });
+        });
     });
 </script>
 </body>

@@ -56,6 +56,10 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::put('/profile',                              [StudentController::class, 'updateProfile'])->name('profile.update');
     Route::post('/profile/avatar',                      [StudentController::class, 'updateAvatar'])->name('avatar.update');
     Route::put('/profile/password',                     [StudentController::class, 'changePassword'])->name('password.change');
+
+    // Faculty Evaluation
+    Route::get('/faculty-evaluation',                   [StudentController::class, 'facultyEvaluation'])->name('faculty.evaluation');
+    Route::post('/faculty-evaluation',                  [StudentController::class, 'storeFacultyEvaluation'])->name('faculty.evaluation.store');
 });
 
 // ──────────────────────────────────────────────────────────────
@@ -243,6 +247,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Faculty evaluation
     Route::get('/faculty-evaluations', [AdminController::class, 'facultyEvaluations'])->name('faculty-evaluations');
+    Route::post('/faculty-evaluations/settings', [AdminController::class, 'saveEvaluationSettings'])->name('faculty-evaluations.settings');
 
     // Folder & files
     Route::get('/folder-files', [AdminController::class, 'folderFiles'])->name('folder-files');

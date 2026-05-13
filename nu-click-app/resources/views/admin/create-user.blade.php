@@ -66,8 +66,10 @@
             <div class="bg-white shadow-sm px-6 py-4">
                 <div class="flex justify-between items-center">
                     <div>
-                        <h2 class="text-xl font-semibold text-gray-800">Create New User</h2>
-                        <p class="text-sm text-gray-600">Add a new student, faculty, or admin user</p>
+                        <h2 class="text-xl font-semibold text-gray-800">
+                            Create New {{ request('role') == 'faculty' ? 'Faculty Member' : (request('role') == 'student' ? 'Student' : 'User') }}
+                        </h2>
+                        <p class="text-sm text-gray-600">Add a new user to the system</p>
                     </div>
                     <a href="{{ route('admin.users') }}" class="px-4 py-2 border rounded-lg hover:bg-gray-50">
                         Back to Users
@@ -76,6 +78,26 @@
             </div>
 
             <div class="p-6 max-w-3xl">
+                @if ($errors->any())
+                    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="ri-error-warning-fill text-red-500"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-red-700">
+                                    Please correct the following errors:
+                                </p>
+                                <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="bg-white rounded-lg shadow p-6">
                     <form action="{{ route('admin.users.store') }}" method="POST">
                         @csrf
@@ -110,11 +132,21 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Role *</label>
-                                <select name="role" id="role" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                                    <option value="faculty" {{ old('role') == 'faculty' ? 'selected' : '' }}>Faculty</option>
-                                    <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                                @php $reqRole = request('role'); @endphp
+                                <select name="role" id="role" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" {{ $reqRole ? 'readonly' : '' }}>
+                                    @if(!$reqRole || $reqRole == 'student')
+                                        <option value="student" {{ (old('role') == 'student' || $reqRole == 'student') ? 'selected' : '' }}>Student</option>
+                                    @endif
+                                    @if(!$reqRole || $reqRole == 'faculty')
+                                        <option value="faculty" {{ (old('role') == 'faculty' || $reqRole == 'faculty') ? 'selected' : '' }}>Faculty</option>
+                                    @endif
+                                    @if(!$reqRole || $reqRole == 'admin')
+                                        <option value="admin" {{ (old('role') == 'admin' || $reqRole == 'admin') ? 'selected' : '' }}>Admin</option>
+                                    @endif
                                 </select>
+                                @if($reqRole)
+                                    <input type="hidden" name="role" value="{{ $reqRole }}">
+                                @endif
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
@@ -126,14 +158,26 @@
                         </div>
                         
                         <!-- Student-specific fields -->
-                        <div id="studentFields" class="{{ old('role') == 'student' ? '' : 'hidden' }}">
+                        <div id="studentFields" class="{{ (old('role') == 'student' || request('role') == 'student') ? '' : 'hidden' }}">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Student ID</label>
                                     <input type="text" name="student_id" value="{{ old('student_id') }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">For students only</p>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Program *</label>
+                                    <select name="program_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+                                        <option value="">Select Program</option>
+                                        @foreach($programs as $program)
+                                            <option value="{{ $program->id }}" {{ old('program_id') == $program->id ? 'selected' : '' }}>
+                                                {{ $program->code }} - {{ $program->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Year Level</label>
                                     <select name="year_level" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
@@ -142,43 +186,43 @@
                                         <option value="2">2nd Year</option>
                                         <option value="3">3rd Year</option>
                                         <option value="4">4th Year</option>
-                                        <option value="5">5th Year</option>
-                                        <option value="6">6th Year</option>
                                     </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Section</label>
+                                    <input type="text" name="section" value="{{ old('section') }}"
+                                           class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500" placeholder="e.g. A, B, 101">
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Faculty-specific fields -->
-                        <div id="facultyFields" class="{{ old('role') == 'faculty' ? '' : 'hidden' }}">
+                        <div id="facultyFields" class="{{ (old('role') == 'faculty' || request('role') == 'faculty') ? '' : 'hidden' }}">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
-                                    <input type="text" name="department" value="{{ old('department') }}"
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Faculty ID</label>
+                                    <input type="text" name="faculty_id" value="{{ old('faculty_id') }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">e.g., Computer Science, Engineering, Business</p>
                                 </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+                                    <select name="department_id" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
+                                        <option value="">Select Department</option>
+                                        @foreach($departments as $dept)
+                                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                                {{ $dept->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Specialization</label>
                                     <input type="text" name="specialization" value="{{ old('specialization') }}"
                                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500">
-                                    <p class="text-xs text-gray-500 mt-1">e.g., Web Development, Data Science, AI</p>
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Qualification</label>
-                                <textarea name="qualification" rows="2" 
-                                          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
-                                          placeholder="e.g., PhD in Computer Science, Master's in Education">{{ old('qualification') }}</textarea>
-                            </div>
-                        </div>
-                        
-                        <!-- Common fields for all -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Bio (Optional)</label>
-                            <textarea name="bio" rows="3" 
-                                      class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-indigo-500"
-                                      placeholder="Tell us about this user...">{{ old('bio') }}</textarea>
                         </div>
                         
                         <div class="flex justify-end space-x-2 pt-4 border-t">
@@ -192,7 +236,6 @@
     </div>
 
     <script>
-        // Show/hide fields based on role selection
         const roleSelect = document.getElementById('role');
         const studentFields = document.getElementById('studentFields');
         const facultyFields = document.getElementById('facultyFields');
@@ -213,8 +256,6 @@
         }
         
         roleSelect.addEventListener('change', toggleFields);
-        
-        // Initial toggle based on default selected role
         toggleFields();
     </script>
 </body>

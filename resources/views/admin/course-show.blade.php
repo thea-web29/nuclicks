@@ -233,7 +233,7 @@
                                 <option value="">-- Select Faculty --</option>
                                 @foreach($faculties ?? [] as $faculty)
                                     <option value="{{ $faculty->id }}" {{ $course->faculty_id == $faculty->id ? 'selected' : '' }}>
-                                        {{ $faculty->name }} - {{ $faculty->department ?? 'No department' }}
+                                        {{ $faculty->name }} - {{ $faculty->department_id ? ($faculty->departmentRel->name ?? 'No department') : ($faculty->department ?? 'No department') }}
                                     </option>
                                 @endforeach
                             </select>

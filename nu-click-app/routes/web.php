@@ -40,6 +40,9 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::post('/notifications/{id}/read', [StudentController::class, 'markNotificationRead'])->name('notification.read');
     Route::post('/notifications/mark-all-read', [StudentController::class, 'markAllNotificationsRead'])->name('notifications.mark-all-read');
 
+    // Faculty Evaluation
+    Route::get('/faculty-evaluation', [StudentController::class, 'facultyEvaluation'])->name('faculty.evaluation');
+
     // Profile Routes
     Route::get('/profile', [StudentController::class, 'profile'])->name('profile');
     Route::put('/profile', [StudentController::class, 'updateProfile'])->name('profile.update');

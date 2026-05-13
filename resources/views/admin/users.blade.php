@@ -349,9 +349,11 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->department ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $student->department_id ? ($student->departmentRel->name ?? 'N/A') : ($student->department ?? 'N/A') }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->year_level ? $student->year_level . ' Year' : 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->enrollments_count ?? 0 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->student_courses_count ?? 0 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->quiz_attempts_count ?? 0 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="toggleStatus({{ $student->id }})" class="status-toggle-{{ $student->id }}">
@@ -424,8 +426,10 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->department ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->courses_count ?? 0 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $facultyMember->department_id ? ($facultyMember->departmentRel->name ?? 'N/A') : ($facultyMember->department ?? 'N/A') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->faculty_courses_count ?? 0 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="toggleStatus({{ $facultyMember->id }})" class="status-toggle-{{ $facultyMember->id }}">
                                             @if($facultyMember->status === 'active')

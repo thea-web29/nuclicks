@@ -29,9 +29,16 @@
     </aside>
 
     <main class="flex-1 ml-64">
-        <div class="bg-white shadow px-6 py-4">
-            <h2 class="text-xl font-bold text-gray-800">Faculty Evaluation</h2>
-            <p class="text-sm text-gray-500">Oversee faculty performance based on student feedback.</p>
+        <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800">Faculty Evaluation</h2>
+                <p class="text-sm text-gray-500">Oversee faculty performance based on student feedback.</p>
+            </div>
+            <div>
+                <button onclick="openSettingsModal()" class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center shadow transition-colors">
+                    <i class="ri-settings-3-line mr-2"></i> Evaluation Settings
+                </button>
+            </div>
         </div>
 
         <div class="p-6">
@@ -146,10 +153,65 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="p-4">{{ $evaluations->links() }}</div>
-            </div>
+            <div class="p-4">{{ $evaluations->links() }}</div>
         </div>
-    </main>
+    </div>
+</main>
+
+<!-- Evaluation Settings Modal -->
+<div id="settingsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-indigo-50">
+            <h3 class="text-lg font-bold text-indigo-900 flex items-center">
+                <i class="ri-calendar-check-line mr-2"></i> Evaluation Period
+            </h3>
+            <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+        </div>
+        <form action="{{ route('admin.faculty-evaluations.settings') }}" method="POST" class="p-6">
+            @csrf
+            <div class="mb-5">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                <div class="flex items-center space-x-6">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status" value="open" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus !== 'closed' ? 'checked' : '' }}>
+                        <span class="ml-2 text-gray-700">Open</span>
+                    </label>
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="radio" name="status" value="closed" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus === 'closed' ? 'checked' : '' }}>
+                        <span class="ml-2 text-gray-700">Closed</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+                <input type="datetime-local" name="start_date" value="{{ $evalStart }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
+                <input type="datetime-local" name="end_date" value="{{ $evalEnd }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg font-medium text-sm transition shadow">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openSettingsModal() {
+        document.getElementById('settingsModal').classList.remove('hidden');
+        document.getElementById('settingsModal').classList.add('flex');
+    }
+    
+    function closeSettingsModal() {
+        document.getElementById('settingsModal').classList.add('hidden');
+        document.getElementById('settingsModal').classList.remove('flex');
+    }
+</script>
+
 </div>
 </body>
 </html>
