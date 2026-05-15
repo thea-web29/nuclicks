@@ -2,818 +2,901 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Question Bank - NU Clicks LMS</title>
-    <!-- Google Fonts + Remix Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank – NU Horizon LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            corePlugins: { preflight: false },
-        }
-    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ══ DESIGN TOKENS ══ */
+        :root {
+            --navy:      #0A1F44;
+            --navy-mid:  #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
+            --gold:      #FFD70F;
+            --gold-d:    #C49A00;
+            --gold-mid:  #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg:        #F8F6F1;
+            --white:     #FFFFFF;
+            --txt-1:     #0A1F44;
+            --txt-2:     #2C3E5C;
+            --txt-3:     #637089;
+            --bdr:       rgba(10,31,68,0.10);
+            --ease:      cubic-bezier(0.22,1,0.36,1);
+            --spring:    cubic-bezier(0.34,1.56,0.64,1);
+            --t:         0.26s var(--ease);
+            --sidebar-w: 272px;
+            --danger:    #dc2626;
+            --danger-d:  #b91c1c;
+            --green:     #16a34a;
+            --purple:    #7c3aed;
+            --blue:      #3b82f6;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #F5F7FB;
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--txt-1);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --blue-deep: #0A1F44;
-            --gold: #FFD70F;
-            --gold-dark: #e5c20c;
-            --gray-light: #F8FAFF;
-            --gray-border: #E9EDF2;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            --transition: all 0.25s ease;
-            --danger-red: #dc2626;
-            --danger-dark: #b91c1c;
-        }
+        *:focus { outline: none !important; }
 
-        /* Sidebar (identical to all previous pages) */
+        /* ══ SCROLLBAR ══ */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
+
+        /* ══ SIDEBAR ══ */
         .sidebar {
-            background-color: var(--blue-deep);
-            width: 280px;
             position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            z-index: 40;
-            transition: transform 0.3s ease;
-            transform: translateX(0);
+            top: 0; left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--navy);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transition: transform .3s var(--ease);
+            box-shadow: 4px 0 32px rgba(0,0,0,0.18);
+        }
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+        .sidebar-arc {
+            position: absolute;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,215,15,0.06);
+            bottom: -60px; left: -100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .sidebar-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
-        }
-
+        /* Logo */
         .sidebar-logo {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 215, 15, 0.2);
+            padding: 1.5rem 1.4rem 1.3rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: .85rem;
+            border-bottom: 1px solid rgba(255,215,15,0.14);
         }
-        .sidebar-logo-img {
-            height: 45px;
-            width: auto;
+        .logo-seal-wrap { position: relative; flex-shrink: 0; }
+        .logo-seal {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: block;
+        }
+        .logo-seal-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,215,15,0.28);
+            animation: rotateSlow 14s linear infinite;
+        }
+        @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        .logo-seal-ring::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 5px var(--gold);
         }
         .logo-text h1 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: -0.3px;
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -.02em;
+            line-height: 1.1;
         }
-        .logo-text span {
-            color: var(--gold);
-        }
+        .logo-text h1 em { color: var(--gold); font-style: normal; }
         .logo-text p {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
+            font-size: .65rem;
+            font-weight: 600;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.40);
+            margin-top: .15rem;
         }
 
-        .nav-section {
-            padding: 0 1rem;
-            margin-top: 1.5rem;
+        /* Nav */
+        .nav-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.2rem .85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
         }
-        .nav-section-title {
-            font-size: 0.7rem;
+        .nav-section-label {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .14em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255,215,15,0.6);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+            color: rgba(255,215,15,0.50);
+            margin-bottom: .4rem;
+            padding-left: .4rem;
         }
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.85);
-            transition: var(--transition);
-            margin-bottom: 0.25rem;
+            gap: .7rem;
+            padding: .62rem .85rem;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.70);
+            text-decoration: none;
+            font-size: .82rem;
             font-weight: 500;
+            transition: all var(--t);
+            margin-bottom: .15rem;
         }
-        .nav-item i {
-            font-size: 1.2rem;
-            width: 1.5rem;
-        }
+        .nav-item i { font-size: 1.05rem; width: 1.25rem; flex-shrink: 0; }
         .nav-item:hover {
-            background: rgba(255,215,15,0.15);
-            color: white;
+            background: rgba(255,215,15,0.10);
+            color: rgba(255,255,255,0.92);
         }
         .nav-item.active {
             background: var(--gold);
-            color: var(--blue-deep);
+            color: var(--navy);
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255,215,15,0.30);
         }
-        .nav-item.active i {
-            color: var(--blue-deep);
-        }
+        .nav-item.active i { color: var(--navy); }
 
+        /* Sidebar footer */
         .sidebar-footer {
-            margin-top: auto;
-            padding: 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.2);
+            padding: 1rem 1.2rem;
+            border-top: 1px solid rgba(255,215,15,0.14);
         }
-        .profile-info {
+        .profile-row {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+            gap: .75rem;
+            margin-bottom: .85rem;
         }
         .avatar {
-            width: 42px;
-            height: 42px;
-            background: rgba(255,215,15,0.2);
+            width: 38px; height: 38px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,215,15,0.15);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: flex; align-items: center; justify-content: center;
             color: var(--gold);
+            font-size: 1rem;
+            flex-shrink: 0;
         }
-        .profile-details p {
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .profile-details span {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.7rem;
-        }
-        
-        /* ===== RED LOGOUT BUTTON (SIDEBAR) ===== */
+        .profile-name { font-size: .82rem; font-weight: 700; color: #fff; }
+        .profile-email { font-size: .68rem; color: rgba(255,255,255,0.42); margin-top: .1rem; }
         .logout-btn {
             width: 100%;
-            background: rgba(220, 38, 38, 0.15);
-            border: none;
-            padding: 0.6rem;
-            border-radius: 40px;
+            padding: .58rem .9rem;
+            border-radius: 8px;
+            background: rgba(220,38,38,0.12);
+            border: 1px solid rgba(220,38,38,0.22);
             color: #fca5a5;
+            font-size: .78rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            gap: .5rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all var(--t);
         }
         .logout-btn:hover {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-        }
-        .logout-btn i {
-            font-size: 1.1rem;
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(220,38,38,0.35);
         }
 
-        /* Main content area */
+        /* ══ MAIN ══ */
         .main-content {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
+            margin-left: var(--sidebar-w);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .top-bar {
-            background: white;
-            padding: 1rem 2rem;
+
+        /* Topbar */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(248,246,241,0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--bdr);
+            padding: .9rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border-bottom: 1px solid var(--gray-border);
-            position: sticky;
-            top: 0;
-            z-index: 20;
+            gap: 1rem;
         }
+        .topbar-left { display: flex; align-items: center; gap: 1rem; }
         .menu-toggle {
             display: none;
             background: none;
-            border: none;
-            font-size: 1.5rem;
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .55rem;
+            color: var(--txt-2);
+            font-size: 1.1rem;
             cursor: pointer;
-            color: var(--blue-deep);
+            transition: all var(--t);
         }
-        .page-title {
+        .menu-toggle:hover { border-color: var(--gold-d); color: var(--navy); }
+        .topbar-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--blue-deep);
+            color: var(--navy);
+            letter-spacing: -.02em;
         }
-        @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .topbar-title em { color: var(--gold-d); font-style: normal; }
+        .topbar-breadcrumb { font-size: .72rem; color: var(--txt-3); font-weight: 500; }
+        .topbar-right { display: flex; align-items: center; gap: .75rem; }
+        .topbar-badge {
+            display: flex; align-items: center; gap: .4rem;
+            font-size: .72rem; font-weight: 600;
+            color: var(--txt-3);
+            background: var(--white);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .75rem;
+            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
+        }
+        .topbar-badge i { font-size: .85rem; color: var(--gold-d); }
+        .topbar-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
 
-        /* Stats cards styling */
-        .stat-card {
-            background: white;
-            border-radius: 1.2rem;
-            padding: 1.2rem;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-        .question-item {
-            transition: var(--transition);
-        }
-        .question-item:hover {
-            background: #F8FAFF;
-        }
-        .btn-gold {
-            background-color: var(--gold);
-            color: var(--blue-deep);
-        }
-        .btn-gold:hover {
-            background-color: var(--gold-dark);
-        }
-        .badge-mcq {
-            background: #dcfce7;
-            color: #166534;
-        }
-        .badge-tf {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .badge-essay {
-            background: #f3e8ff;
-            color: #6b21a5;
-        }
-        
-        /* ========== ENHANCED PROFESSIONAL MODAL STYLES (matches course modal) ========== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(10, 31, 68, 0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1), visibility 0.3s;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        .modal-container {
-            background: white;
-            max-width: 640px;
-            width: 92%;
-            border-radius: 1.75rem;
-            box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 215, 15, 0.1);
-            transform: scale(0.96) translateY(12px);
-            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
-            overflow: hidden;
-        }
-        .modal-overlay.active .modal-container {
-            transform: scale(1) translateY(0);
-        }
-        .modal-header {
-            background: linear-gradient(135deg, #0A1F44 0%, #132e5e 100%);
-            padding: 1.25rem 1.75rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--gold);
-        }
-        .modal-header h3 {
+        /* ══ PAGE BODY ══ */
+        .page-body { padding: 1.8rem 2rem; flex: 1; }
+
+        /* Section header */
+        .section-header { margin-bottom: 1.4rem; }
+        .section-header h2 {
+            font-size: .65rem;
             font-weight: 700;
-            font-size: 1.35rem;
-            letter-spacing: -0.2px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--txt-3);
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            color: white;
+            gap: .5rem;
         }
-        .modal-header h3 i {
-            color: var(--gold);
-            font-size: 1.6rem;
+        .section-header h2::after {
+            content: ""; flex: 1; height: 1px;
+            background: var(--bdr);
         }
+
+        /* ══ STAT CARDS ══ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+        }
+        .stat-card {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 1.2rem 1.1rem;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
+            transition: all var(--t);
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp .5s var(--ease) both;
+        }
+        .stat-card:nth-child(1) { animation-delay: .06s; }
+        .stat-card:nth-child(2) { animation-delay: .12s; }
+        .stat-card:nth-child(3) { animation-delay: .18s; }
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 14px 14px 0 0;
+        }
+        .stat-card.navy::before   { background: linear-gradient(90deg, var(--navy-lite), var(--navy)); }
+        .stat-card.green::before  { background: linear-gradient(90deg, #4ade80, #16a34a); }
+        .stat-card.blue::before   { background: linear-gradient(90deg, #93c5fd, #3b82f6); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(10,31,68,0.10); }
+        .stat-label { font-size: .7rem; font-weight: 600; color: var(--txt-3); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .4rem; }
+        .stat-value {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem; font-weight: 700;
+            line-height: 1; letter-spacing: -.04em;
+        }
+        .stat-card.navy  .stat-value { color: var(--navy); }
+        .stat-card.green .stat-value { color: var(--green); }
+        .stat-card.blue  .stat-value { color: var(--blue); }
+        .stat-icon {
+            position: absolute;
+            right: .85rem; top: .85rem;
+            font-size: 1.55rem; opacity: .10;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ══ DASH CARD ══ */
+        .dash-card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
+            overflow: hidden;
+            animation: fadeUp .5s var(--ease) .2s both;
+        }
+        .dash-card-head {
+            padding: 1rem 1.3rem .9rem;
+            border-bottom: 1px solid var(--bdr);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .dash-card-title {
+            font-size: .82rem; font-weight: 700;
+            color: var(--txt-1);
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .dash-card-title i { color: var(--gold-d); font-size: .9rem; }
+        .btn-add {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .48rem 1rem;
+            border-radius: 8px; border: none;
+            background: var(--navy); color: #fff;
+            font-size: .78rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
+            box-shadow: 0 2px 8px rgba(10,31,68,0.18);
+        }
+        .btn-add:hover { background: var(--navy-mid); transform: translateY(-1px); }
+
+        /* ══ QUESTION ITEMS ══ */
+        .question-item {
+            padding: 1rem 1.3rem;
+            border-bottom: 1px solid var(--bdr);
+            transition: background var(--t);
+        }
+        .question-item:last-child { border-bottom: none; }
+        .question-item:hover { background: var(--gold-pale); }
+        .question-item-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .question-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .45rem;
+            margin-bottom: .45rem;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: .25rem;
+            padding: .18rem .6rem;
+            border-radius: 99px;
+            font-size: .65rem; font-weight: 700;
+        }
+        .badge-mcq    { background: rgba(22,163,74,0.12); color: var(--green); }
+        .badge-tf     { background: rgba(59,130,246,0.12); color: var(--blue); }
+        .badge-essay  { background: rgba(124,58,237,0.12); color: var(--purple); }
+        .quiz-link {
+            font-size: .72rem; font-weight: 600;
+            color: var(--navy-lite); text-decoration: none;
+        }
+        .quiz-link:hover { color: var(--navy); text-decoration: underline; }
+        .points-label {
+            font-size: .68rem; color: var(--txt-3); font-weight: 500;
+        }
+        .question-text {
+            font-size: .82rem; font-weight: 600;
+            color: var(--txt-1); line-height: 1.45;
+        }
+        .question-options { margin-top: .55rem; display: flex; flex-direction: column; gap: .22rem; }
+        .option-line {
+            font-size: .75rem; color: var(--txt-2);
+            display: flex; align-items: center; gap: .35rem;
+        }
+        .option-line.correct { color: var(--green); font-weight: 700; }
+        .option-line i { font-size: .7rem; }
+        .correct-answer-label {
+            font-size: .75rem; color: var(--green); font-weight: 700;
+            margin-top: .4rem;
+        }
+        .question-actions { display: flex; gap: .35rem; flex-shrink: 0; }
+        .q-btn {
+            width: 30px; height: 30px;
+            border-radius: 7px; border: none;
+            background: transparent;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all var(--t);
+            font-size: .95rem;
+        }
+        .q-btn.edit   { background: rgba(59,130,246,0.10); color: var(--blue); }
+        .q-btn.edit:hover { background: var(--blue); color: #fff; }
+        .q-btn.delete { background: rgba(220,38,38,0.10); color: var(--danger); }
+        .q-btn.delete:hover { background: var(--danger); color: #fff; }
+
+        /* ══ EMPTY STATE ══ */
+        .empty-state {
+            text-align: center; padding: 3.5rem 1rem;
+            color: var(--txt-3); font-size: .82rem;
+        }
+        .empty-state i { font-size: 2.8rem; display: block; margin-bottom: .65rem; opacity: .3; }
+
+        /* ══ MODAL ══ */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(10,31,68,0.72);
+            backdrop-filter: blur(6px);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            visibility: hidden; opacity: 0;
+            transition: all .22s var(--ease);
+        }
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal {
+            background: var(--white);
+            border-radius: 18px;
+            width: min(640px, 94vw);
+            overflow: hidden;
+            transform: scale(0.94) translateY(12px);
+            transition: transform .28s var(--spring);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,215,15,0.10);
+        }
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-sm { width: min(440px, 94vw); }
+        .modal-head {
+            background: var(--navy);
+            padding: 1.2rem 1.4rem;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+            position: relative;
+        }
+        .modal-head::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .modal-head h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem; font-weight: 700; color: #fff;
+            display: flex; align-items: center; gap: .5rem;
+        }
+        .modal-head h3 i { color: var(--gold); }
         .modal-close {
-            background: rgba(255,255,255,0.15);
-            width: 32px;
-            height: 32px;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: white;
-            transition: all 0.2s;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.70); font-size: 1.1rem;
+            cursor: pointer; transition: all var(--t);
         }
-        .modal-close:hover {
-            background: var(--gold);
-            color: var(--blue-deep);
-            transform: rotate(90deg);
-        }
-        .modal-body {
-            padding: 1.75rem 2rem 1.5rem;
-            background: #FFFFFF;
+        .modal-close:hover { background: var(--gold); color: var(--navy); transform: rotate(90deg); }
+        .modal-body-scroll {
+            padding: 1.5rem 1.6rem 1.2rem;
             max-height: 65vh;
             overflow-y: auto;
         }
-        .form-group {
-            margin-bottom: 1.35rem;
-        }
-        .form-label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #1E293B;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.2px;
-        }
-        .form-label span {
-            color: #ef4444;
-        }
-        .form-control, select.form-control, textarea.form-control {
-            width: 100%;
-            border: 1.5px solid #E2E8F0;
-            border-radius: 0.9rem;
-            padding: 0.7rem 1rem;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            background: #FCFDFF;
-        }
-        .form-control:focus, select.form-control:focus, textarea.form-control:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(255, 215, 15, 0.25);
-            background: white;
-        }
-        .option-row {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-        }
-        .option-row input[type="text"] {
-            flex: 1;
-        }
-        .correct-radio {
-            width: 1.1rem;
-            height: 1.1rem;
-            accent-color: var(--gold);
-            cursor: pointer;
-        }
-        .remove-option {
-            color: #94A3B8;
-            transition: color 0.2s;
-            cursor: pointer;
-            font-size: 1.1rem;
-        }
-        .remove-option:hover {
-            color: #ef4444;
-        }
-        .add-option-btn {
-            color: var(--blue-deep);
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .add-option-btn:hover {
-            opacity: 0.8;
-        }
-        .radio-group {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            margin-top: 0.3rem;
-        }
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
-        .modal-footer {
-            background: #F8FAFE;
-            padding: 1rem 2rem 1.5rem;
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            border-top: 1px solid #EDF2F7;
-        }
-        .btn-cancel {
-            background: transparent;
-            border: 1.5px solid #CBD5E1;
-            padding: 0.6rem 1.4rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: #475569;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .btn-cancel:hover {
-            background: #F1F5F9;
-            border-color: #94A3B8;
-        }
-        .btn-submit {
-            background: var(--blue-deep);
-            border: none;
-            padding: 0.6rem 1.8rem;
-            border-radius: 2rem;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(10,31,68,0.2);
-        }
-        .btn-submit:hover {
-            background: #0F2A5C;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(10,31,68,0.15);
-        }
-        .error-feedback {
-            font-size: 0.7rem;
-            color: #E53E3E;
-            margin-top: 0.3rem;
-        }
-        /* Custom scroll inside modal */
-        .modal-body::-webkit-scrollbar {
-            width: 5px;
-        }
-        .modal-body::-webkit-scrollbar-track {
-            background: #E2E8F0;
-            border-radius: 10px;
-        }
-        .modal-body::-webkit-scrollbar-thumb {
-            background: var(--gold);
-            border-radius: 10px;
+        .modal-body-scroll::-webkit-scrollbar { width: 4px; }
+        .modal-body-scroll::-webkit-scrollbar-thumb { background: var(--gold-mid); border-radius: 99px; }
+        .modal-body { padding: 1.8rem 1.5rem; text-align: center; }
+        .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.55; }
+        .modal-warn { font-size: .72rem; color: var(--txt-3); margin-top: .5rem; }
+        .modal-foot {
+            padding: .9rem 1.4rem 1.3rem;
+            display: flex; gap: .6rem; justify-content: flex-end;
+            background: var(--bg); border-top: 1px solid var(--bdr);
         }
 
-        /* ===== LOGOUT CONFIRMATION MODAL STYLES (THEMED: gold/blue, red confirm) ===== */
-        .logout-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Form inside modal */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label {
+            display: block;
+            font-size: .75rem; font-weight: 700;
+            color: var(--txt-2); margin-bottom: .35rem;
+        }
+        .form-label span { color: var(--danger); }
+        .form-hint { font-size: .65rem; color: var(--txt-3); margin-top: .25rem; }
+        .form-control {
             width: 100%;
-            height: 100%;
-            background-color: rgba(10, 31, 68, 0.75);
-            backdrop-filter: blur(4px);
-            z-index: 1100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0.2s, opacity 0.2s ease;
+            padding: .58rem .9rem;
+            border: 1px solid var(--bdr);
+            border-radius: 9px;
+            font-size: .82rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--txt-1);
+            background: var(--bg);
+            transition: border-color var(--t), background var(--t), box-shadow var(--t);
         }
-        .logout-modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
+        .form-control:focus {
+            border-color: var(--gold-d);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(196,154,0,0.12);
         }
-        .logout-confirmation-modal {
-            background: white;
-            max-width: 450px;
-            width: 90%;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            transform: scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        textarea.form-control { resize: vertical; min-height: 75px; }
+
+        /* Option rows */
+        .option-row {
+            display: flex; align-items: center; gap: .6rem;
+            margin-bottom: .55rem;
         }
-        .logout-modal-overlay.active .logout-confirmation-modal {
-            transform: scale(1);
+        .option-row input[type="text"] { flex: 1; }
+        .correct-radio {
+            width: 15px; height: 15px;
+            accent-color: var(--gold-d);
+            cursor: pointer; flex-shrink: 0;
         }
-        .logout-modal-header {
-            background: var(--blue-deep);
-            padding: 1.25rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--gold);
+        .remove-option-btn {
+            color: var(--txt-3); font-size: 1rem;
+            cursor: pointer; transition: color var(--t);
+            flex-shrink: 0;
         }
-        .logout-modal-header h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .remove-option-btn:hover { color: var(--danger); }
+        .add-option-btn {
+            display: inline-flex; align-items: center; gap: .3rem;
+            font-size: .75rem; font-weight: 600;
+            color: var(--navy-lite);
+            cursor: pointer; transition: color var(--t);
+            margin-top: .3rem;
         }
-        .logout-modal-header h3 i {
-            color: var(--gold);
-            font-size: 1.4rem;
+        .add-option-btn:hover { color: var(--navy); }
+
+        /* Radio group */
+        .radio-group { display: flex; gap: 1.2rem; margin-top: .35rem; }
+        .radio-group label {
+            display: flex; align-items: center; gap: .4rem;
+            font-size: .82rem; color: var(--txt-2); cursor: pointer;
         }
-        .logout-modal-close {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            font-size: 1.6rem;
-            cursor: pointer;
-            transition: color 0.2s;
-            line-height: 1;
-            padding: 0;
+        .radio-group input[type="radio"] { accent-color: var(--gold-d); }
+
+        /* Buttons */
+        .btn-cancel {
+            padding: .58rem 1.1rem; border-radius: 8px;
+            border: 1px solid var(--bdr); background: var(--white);
+            font-size: .8rem; font-weight: 600; color: var(--txt-2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
         }
-        .logout-modal-close:hover {
-            color: var(--gold);
+        .btn-cancel:hover { background: var(--bg); }
+        .btn-submit {
+            padding: .58rem 1.3rem; border-radius: 8px; border: none;
+            background: var(--navy); font-size: .8rem; font-weight: 700; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
+            display: flex; align-items: center; gap: .4rem;
+            box-shadow: 0 3px 10px rgba(10,31,68,0.20);
         }
-        .logout-modal-body {
-            padding: 1.8rem 1.5rem;
-            background: white;
-            text-align: center;
+        .btn-submit:hover { background: var(--navy-mid); transform: translateY(-1px); }
+        .btn-confirm {
+            padding: .58rem 1.2rem; border-radius: 8px; border: none;
+            background: var(--danger); font-size: .8rem; font-weight: 700; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
+            box-shadow: 0 3px 10px rgba(220,38,38,0.30);
         }
-        .logout-modal-body p {
-            font-size: 1rem;
-            color: #1f2937;
-            font-weight: 500;
-            margin-bottom: 0;
+        .btn-confirm:hover { background: var(--danger-d); transform: translateY(-1px); }
+
+        /* ══ MOBILE OVERLAY ══ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(10,31,68,0.65); z-index: 90;
         }
-        .logout-modal-footer {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
-            display: flex;
-            gap: 0.75rem;
-            justify-content: flex-end;
-            background: #f9fafb;
-            border-top: 1px solid var(--gray-border);
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: flex; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
         }
-        .logout-modal-btn {
-            padding: 0.6rem 1.25rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            font-family: 'Inter', sans-serif;
-        }
-        .logout-modal-btn-cancel {
-            background: #eef2ff;
-            color: #1e293b;
-        }
-        .logout-modal-btn-cancel:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px);
-        }
-        .logout-modal-btn-confirm {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .logout-modal-btn-confirm:hover {
-            background: var(--danger-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.2);
-        }
-        @media (max-width: 500px) {
-            .logout-modal-footer {
-                flex-direction: column-reverse;
-            }
-            .logout-modal-btn {
-                width: 100%;
-                text-align: center;
-            }
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .page-body { padding: 1.2rem 1rem; }
+            .topbar { padding: .8rem 1rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== SIDEBAR (UPDATED: RED LOGOUT BUTTON) ========== -->
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
-        <div class="logo-text">
-            <h1>NU <span>CLICKS</span> LMS</h1>
-            <p>Faculty Portal</p>
-        </div>
-    </div>
+    <div class="sidebar-arc"></div>
+    <div class="sidebar-inner">
 
-    <div style="flex:1; overflow-y: auto;">
-        <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
-                <i class="ri-dashboard-line"></i> Dashboard
-            </a>
-            <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
-                <i class="ri-user-line"></i> Students
-            </a>
-            <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
-                <i class="ri-book-line"></i> Courses
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Quiz Management</div>
-            <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
-                <i class="ri-add-circle-line"></i> Create Quiz
-            </a>
-            <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
-                <i class="ri-list-check"></i> All Quizzes
-            </a>
-            <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
-                <i class="ri-database-2-line"></i> Question Bank
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Analytics</div>
-            <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
-                <i class="ri-bar-chart-line"></i> Results & Analytics
-            </a>
-            <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
-                <i class="ri-graduation-cap-line"></i> Grading
-            </a>
-        </div>
-    </div>
-
-    <div class="sidebar-footer">
-        <div class="profile-info">
-            <div class="avatar">
-                <i class="ri-user-line"></i>
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-seal-wrap">
+                <div class="logo-seal-ring"></div>
+                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal"
+                     onerror="this.style.display='none'">
             </div>
-            <div class="profile-details">
-                <p>{{ Auth::user()->name }}</p>
-                <span>{{ Auth::user()->email }}</span>
+            <div class="logo-text">
+                <h1>NU Horizon <em>LMS</em></h1>
+                <p>Faculty Portal · National University</p>
             </div>
         </div>
-        <!-- Logout form with full account logout + modal trigger -->
-        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-            @csrf
-            <button type="button" id="logoutButton" class="logout-btn">
-                <i class="ri-logout-box-r-line"></i> Sign Out of Account
-            </button>
-        </form>
+
+        <!-- Nav -->
+        <div class="nav-body">
+            <div>
+                <div class="nav-section-label">Main</div>
+                <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
+                    <i class="ri-dashboard-line"></i> Dashboard
+                </a>
+                <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
+                    <i class="ri-user-line"></i> Students
+                </a>
+                <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
+                    <i class="ri-book-line"></i> Courses
+                </a>
+                <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                    <i class="ri-folder-3-line"></i> Files & Folders
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Quiz Management</div>
+                <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
+                    <i class="ri-add-circle-line"></i> Create Quiz
+                </a>
+                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
+                    <i class="ri-list-check"></i> All Quizzes
+                </a>
+                <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
+                    <i class="ri-database-2-line"></i> Question Bank
+                </a>
+                <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
+                    <i class="ri-graduation-cap-line"></i> Grading
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Analytics</div>
+                <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
+                    <i class="ri-bar-chart-line"></i> Results & Analytics
+                </a>
+                <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
+                    <i class="ri-star-smile-line"></i> My Evaluation
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div class="profile-row">
+                <div class="avatar"><i class="ri-user-line"></i></div>
+                <div>
+                    <div class="profile-name">{{ Auth::user()->name }}</div>
+                    <div class="profile-email">{{ Auth::user()->email }}</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+                @csrf
+                <button type="button" id="logoutButton" class="logout-btn">
+                    <i class="ri-logout-box-line"></i> Sign Out
+                </button>
+            </form>
+        </div>
+
     </div>
 </aside>
 
-<!-- ========== MAIN CONTENT ========== -->
+<!-- ══ MAIN ══ -->
 <div class="main-content" id="mainContent">
-    <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="ri-menu-line"></i>
-        </button>
-        <h2 class="page-title text-lg md:text-xl">Question Bank</h2>
-        <div class="w-8"></div>
-    </div>
 
-    <div class="p-4 md:p-6">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Questions</p>
-                        <p class="text-3xl font-bold" style="color: var(--blue-deep);">{{ $questions->count() }}</p>
-                    </div>
-                    <i class="ri-questionnaire-line text-4xl text-indigo-300"></i>
-                </div>
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="ri-menu-2-line"></i>
+            </button>
+            <div>
+                <div class="topbar-title">NU Horizon <em>LMS</em></div>
+                <div class="topbar-breadcrumb">Faculty → Quiz Management → Question Bank</div>
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">MCQ Questions</p>
-                        <p class="text-3xl font-bold text-green-600">{{ $questions->where('question_type', 'mcq')->count() }}</p>
-                    </div>
-                    <i class="ri-list-check-2 text-4xl text-green-300"></i>
-                </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-badge">
+                <span class="topbar-dot"></span>
+                System Online
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">True/False Questions</p>
-                        <p class="text-3xl font-bold text-blue-600">{{ $questions->where('question_type', 'true_false')->count() }}</p>
-                    </div>
-                    <i class="ri-checkbox-circle-line text-4xl text-blue-300"></i>
-                </div>
+            <div class="topbar-badge">
+                <i class="ri-calendar-line"></i>
+                <span id="topbar-date"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page body -->
+    <div class="page-body">
+
+        <!-- Section header -->
+        <div class="section-header">
+            <h2><i class="ri-database-2-line" style="color:var(--gold-d);font-size:.85rem;"></i> Question Bank</h2>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stats-grid">
+            <div class="stat-card navy">
+                <i class="ri-questionnaire-line stat-icon"></i>
+                <div class="stat-label">Total Questions</div>
+                <div class="stat-value">{{ $questions->count() }}</div>
+            </div>
+            <div class="stat-card green">
+                <i class="ri-list-check-2 stat-icon"></i>
+                <div class="stat-label">MCQ Questions</div>
+                <div class="stat-value">{{ $questions->where('question_type', 'mcq')->count() }}</div>
+            </div>
+            <div class="stat-card blue">
+                <i class="ri-checkbox-circle-line stat-icon"></i>
+                <div class="stat-label">True / False</div>
+                <div class="stat-value">{{ $questions->where('question_type', 'true_false')->count() }}</div>
             </div>
         </div>
 
-        <!-- Questions List Card -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center flex-wrap gap-3">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i class="ri-database-2-line" style="color: var(--gold);"></i> All Questions
-                </h3>
-                <button onclick="openCreateModal()" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm" style="background: var(--blue-deep); color: white;">
+        <!-- Questions list -->
+        <div class="dash-card">
+            <div class="dash-card-head">
+                <div class="dash-card-title">
+                    <i class="ri-database-2-line"></i> All Questions
+                </div>
+                <button class="btn-add" onclick="openCreateModal()">
                     <i class="ri-add-line"></i> Add Question
                 </button>
             </div>
-            
+
             @if($questions->count() > 0)
-                <div class="divide-y divide-gray-100">
-                    @foreach($questions as $question)
-                    <div class="p-5 question-item transition" id="question-{{ $question->id }}">
-                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
-                            <div class="flex-1">
-                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                @foreach($questions as $question)
+                    <div class="question-item" id="question-{{ $question->id }}">
+                        <div class="question-item-top">
+                            <div style="flex:1;min-width:0;">
+                                <div class="question-meta">
                                     @if($question->question_type == 'mcq')
-                                        <span class="badge-mcq text-xs px-2.5 py-0.5 rounded-full font-medium">Multiple Choice</span>
+                                        <span class="badge badge-mcq"><i class="ri-list-check-2"></i> Multiple Choice</span>
                                     @elseif($question->question_type == 'true_false')
-                                        <span class="badge-tf text-xs px-2.5 py-0.5 rounded-full font-medium">True/False</span>
+                                        <span class="badge badge-tf"><i class="ri-checkbox-circle-line"></i> True / False</span>
                                     @else
-                                        <span class="badge-essay text-xs px-2.5 py-0.5 rounded-full font-medium">Essay</span>
+                                        <span class="badge badge-essay"><i class="ri-file-text-line"></i> Essay</span>
                                     @endif
-                                    <a href="{{ route('faculty.edit.quiz', $question->quiz_id) }}" class="text-xs text-indigo-600 hover:underline">
-                                        {{ $question->quiz->course->code ?? 'N/A' }} - {{ $question->quiz->title ?? 'N/A' }}
+                                    <a href="{{ route('faculty.edit.quiz', $question->quiz_id) }}" class="quiz-link">
+                                        {{ $question->quiz->course->code ?? 'N/A' }} — {{ $question->quiz->title ?? 'N/A' }}
                                     </a>
-                                    <span class="text-xs text-gray-500">{{ $question->points }} points</span>
+                                    <span class="points-label">{{ $question->points }} pt{{ $question->points != 1 ? 's' : '' }}</span>
                                 </div>
-                                <p class="text-gray-800 font-medium">{{ $question->question_text }}</p>
-                                
+                                <div class="question-text">{{ $question->question_text }}</div>
+
                                 @if($question->question_type == 'mcq')
-                                    <div class="mt-3 space-y-1">
-                                        @php
-                                            $options = $question->options;
-                                            if (is_string($options)) $options = json_decode($options, true);
-                                            if (!is_array($options)) $options = [];
-                                        @endphp
+                                    @php
+                                        $options = $question->options;
+                                        if (is_string($options)) $options = json_decode($options, true);
+                                        if (!is_array($options)) $options = [];
+                                    @endphp
+                                    <div class="question-options">
                                         @forelse($options as $option)
-                                            <div class="text-sm {{ $option == $question->correct_answer ? 'text-green-700 font-semibold' : 'text-gray-600' }}">
-                                                • {{ $option }}
+                                            <div class="option-line {{ $option == $question->correct_answer ? 'correct' : '' }}">
                                                 @if($option == $question->correct_answer)
-                                                    <span class="text-green-600 ml-2">(Correct)</span>
+                                                    <i class="ri-checkbox-circle-fill"></i>
+                                                @else
+                                                    <i class="ri-circle-line"></i>
+                                                @endif
+                                                {{ $option }}
+                                                @if($option == $question->correct_answer)
+                                                    <span style="font-size:.65rem;margin-left:.25rem;">(Correct)</span>
                                                 @endif
                                             </div>
                                         @empty
-                                            <div class="text-sm text-gray-500">No options available</div>
+                                            <div style="font-size:.72rem;color:var(--txt-3);">No options available.</div>
                                         @endforelse
                                     </div>
                                 @elseif($question->question_type == 'true_false')
-                                    <div class="mt-2">
-                                        <span class="text-sm text-green-700 font-semibold">✓ Correct Answer: {{ $question->correct_answer }}</span>
+                                    <div class="correct-answer-label">
+                                        <i class="ri-checkbox-circle-fill"></i> Correct Answer: {{ $question->correct_answer }}
                                     </div>
                                 @endif
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <button onclick="editQuestion({{ $question->id }})" class="p-2 rounded-lg hover:bg-gray-100 transition text-blue-600">
-                                    <i class="ri-edit-line text-lg"></i>
+                            <div class="question-actions">
+                                <button class="q-btn edit" onclick="editQuestion({{ $question->id }})" title="Edit question">
+                                    <i class="ri-edit-line"></i>
                                 </button>
-                                <button onclick="deleteQuestion({{ $question->id }})" class="p-2 rounded-lg hover:bg-gray-100 transition text-red-600">
-                                    <i class="ri-delete-bin-line text-lg"></i>
+                                <button class="q-btn delete" onclick="confirmDeleteQuestion({{ $question->id }})" title="Delete question">
+                                    <i class="ri-delete-bin-line"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
-                    @endforeach
-                </div>
+                @endforeach
             @else
-                <div class="text-center py-16">
-                    <i class="ri-question-line text-6xl text-gray-300 mb-4 block"></i>
-                    <p class="text-gray-500 mb-4">No questions in the question bank yet.</p>
+                <div class="empty-state">
+                    <i class="ri-question-line"></i>
+                    No questions in the question bank yet.
                 </div>
             @endif
         </div>
-    </div>
-</div>
 
-<!-- ========== ENHANCED PROFESSIONAL MODAL: Create/Edit Question ========== -->
+    </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+<!-- ══ CREATE / EDIT QUESTION MODAL ══ -->
 <div id="questionModal" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3 id="modalTitle">
-                <i class="ri-add-circle-line"></i> Create New Question
-            </h3>
-            <div class="modal-close" onclick="closeModal()">
-                <i class="ri-close-line"></i>
-            </div>
+    <div class="modal">
+        <div class="modal-head">
+            <h3 id="modalTitle"><i class="ri-add-circle-line"></i> Create New Question</h3>
+            <button class="modal-close" onclick="closeModal()"><i class="ri-close-line"></i></button>
         </div>
-        
-        <div class="modal-body">
+        <div class="modal-body-scroll">
             <form id="questionForm">
                 @csrf
                 <input type="hidden" id="editQuestionId" name="question_id" value="">
-                
+
                 <div class="form-group">
                     <label class="form-label">Question Type</label>
                     <select id="questionType" name="question_type" class="form-control">
@@ -822,56 +905,58 @@
                         <option value="essay">Essay</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Question Text <span>*</span></label>
-                    <textarea id="questionText" name="question_text" rows="3" required class="form-control" placeholder="e.g., What is the capital of France?"></textarea>
+                    <textarea id="questionText" name="question_text" rows="3" required
+                              class="form-control"
+                              placeholder="e.g., What is the capital of France?"></textarea>
                 </div>
-                
+
                 <!-- MCQ Options -->
                 <div id="mcqDiv" class="form-group">
                     <label class="form-label">Answer Options</label>
-                    <div id="optionsList" class="space-y-2">
+                    <div id="optionsList">
                         <div class="option-row">
                             <input type="text" name="options[]" class="form-control" placeholder="Option 1">
                             <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
-                            <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
+                            <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
                         </div>
                         <div class="option-row">
                             <input type="text" name="options[]" class="form-control" placeholder="Option 2">
                             <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
-                            <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
+                            <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
                         </div>
                     </div>
                     <div class="add-option-btn" onclick="addOption()">
                         <i class="ri-add-line"></i> Add another option
                     </div>
                 </div>
-                
+
                 <!-- True/False -->
-                <div id="tfDiv" class="form-group" style="display: none;">
+                <div id="tfDiv" class="form-group" style="display:none;">
                     <label class="form-label">Correct Answer</label>
                     <div class="radio-group">
                         <label><input type="radio" name="correct_answer" value="True"> True</label>
                         <label><input type="radio" name="correct_answer" value="False"> False</label>
                     </div>
                 </div>
-                
+
                 <!-- Essay -->
-                <div id="essayDiv" class="form-group" style="display: none;">
-                    <label class="form-label">Sample Answer / Rubric (Optional)</label>
-                    <textarea id="essayAnswer" name="correct_answer" rows="3" class="form-control" placeholder="Provide a sample answer or grading guidelines..."></textarea>
-                    <p class="text-xs text-gray-500 mt-1">Essay questions will be manually graded.</p>
+                <div id="essayDiv" class="form-group" style="display:none;">
+                    <label class="form-label">Sample Answer / Rubric <span style="color:var(--txt-3);font-weight:400;">(optional)</span></label>
+                    <textarea id="essayAnswer" name="correct_answer" rows="3" class="form-control"
+                              placeholder="Provide a sample answer or grading guidelines…"></textarea>
+                    <div class="form-hint">Essay questions will be manually graded.</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label">Points <span>*</span></label>
                     <input type="number" id="points" name="points" required min="1" value="1" class="form-control">
                 </div>
             </form>
         </div>
-        
-        <div class="modal-footer">
+        <div class="modal-foot">
             <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
             <button type="submit" form="questionForm" class="btn-submit">
                 <i class="ri-save-line"></i> Save Question
@@ -880,83 +965,137 @@
     </div>
 </div>
 
-<!-- ======================= LOGOUT CONFIRMATION MODAL (THEMED: red confirm button) ======================= -->
-<div id="logoutModal" class="logout-modal-overlay">
-    <div class="logout-confirmation-modal">
-        <div class="logout-modal-header">
-            <h3>
-                <i class="ri-logout-box-r-line"></i> 
-                Confirm Sign Out
-            </h3>
-            <button class="logout-modal-close" id="closeLogoutModalBtn">&times;</button>
+<!-- ══ DELETE CONFIRM MODAL ══ -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="ri-delete-bin-line"></i> Delete Question</h3>
+            <button class="modal-close" onclick="closeDeleteModal()"><i class="ri-close-line"></i></button>
         </div>
-        <div class="logout-modal-body">
-            <p>Are you sure you want to sign out of your faculty account?</p>
-            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page and will need to sign in again.</p>
+        <div class="modal-body">
+            <p>Are you sure you want to delete this question?</p>
+            <p class="modal-warn">This action cannot be undone.</p>
         </div>
-        <div class="logout-modal-footer">
-            <button class="logout-modal-btn logout-modal-btn-cancel" id="cancelLogoutBtn">Cancel</button>
-            <button class="logout-modal-btn logout-modal-btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
+        <div class="modal-foot">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-confirm" id="confirmDeleteBtn">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══ LOGOUT MODAL ══ -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal modal-sm">
+        <div class="modal-head">
+            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
+            <button class="modal-close" onclick="closeLogoutModal()"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to sign out of your account?</p>
+            <p class="modal-warn">You will be redirected to the login page.</p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <button class="btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== Mobile sidebar toggle ==========
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
+    /* ── Topbar date ── */
+    document.getElementById('topbar-date').textContent =
+        new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    /* ── Sidebar toggle ── */
+    function toggleSidebar() {
+        const s = document.getElementById('sidebar');
+        const o = document.getElementById('sidebarOverlay');
+        const open = s.classList.toggle('open');
+        o.style.display = open ? 'block' : 'none';
     }
-    document.addEventListener('click', function(event) {
-        const isMobile = window.innerWidth <= 1024;
-        if (isMobile && sidebar.classList.contains('mobile-open')) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('mobile-open');
-            }
-        }
-    });
-    
-    // ========== Active nav highlight ==========
-    const currentUrl = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(item => {
-        const href = item.getAttribute('href');
-        if (href && currentUrl.includes(href) && href !== '/faculty/dashboard') {
-            item.classList.add('active');
-        } else if (currentUrl === '/faculty/dashboard' && href === '/faculty/dashboard') {
-            item.classList.add('active');
-        }
-    });
-    if (currentUrl.includes('/faculty/question-bank')) {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            if (item.getAttribute('href') === '{{ route("faculty.question.bank") }}') {
-                item.classList.add('active');
-            }
-        });
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').style.display = 'none';
     }
-    
-    // ========== Modal logic with enhanced theme ==========
+
+    /* ── Modal helpers ── */
     let optionCounter = 2;
-    const modal = document.getElementById('questionModal');
-    
+    const questionModal = document.getElementById('questionModal');
+
     function openModal() {
-        modal.classList.add('active');
+        questionModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
-    
     function closeModal() {
-        modal.classList.remove('active');
+        questionModal.classList.remove('active');
         document.body.style.overflow = '';
         resetForm();
     }
-    
     function openCreateModal() {
         document.getElementById('modalTitle').innerHTML = '<i class="ri-add-circle-line"></i> Create New Question';
         document.getElementById('editQuestionId').value = '';
         resetForm();
         openModal();
     }
-    
+    questionModal.addEventListener('click', e => { if (e.target === questionModal) closeModal(); });
+
+    /* ── Toggle question type sections ── */
+    function toggleSections() {
+        const type = document.getElementById('questionType').value;
+        document.getElementById('mcqDiv').style.display   = type === 'mcq' ? 'block' : 'none';
+        document.getElementById('tfDiv').style.display    = type === 'true_false' ? 'block' : 'none';
+        document.getElementById('essayDiv').style.display = type === 'essay' ? 'block' : 'none';
+    }
+    document.getElementById('questionType').addEventListener('change', toggleSections);
+
+    /* ── MCQ options ── */
+    function addOption() {
+        optionCounter++;
+        const container = document.getElementById('optionsList');
+        const div = document.createElement('div');
+        div.className = 'option-row';
+        div.innerHTML = `
+            <input type="text" name="options[]" class="form-control" placeholder="Option ${optionCounter}">
+            <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
+            <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
+        `;
+        container.appendChild(div);
+        updateRadioValues();
+    }
+    function setCorrectAnswerValue(radio) {
+        const optInput = radio.parentElement.querySelector('input[type="text"]');
+        if (optInput && optInput.value) radio.value = optInput.value;
+    }
+    function updateRadioValues() {
+        const options = document.querySelectorAll('[name="options[]"]');
+        const radios  = document.querySelectorAll('.correct-radio');
+        radios.forEach((radio, idx) => { if (options[idx] && options[idx].value) radio.value = options[idx].value; });
+    }
+    document.addEventListener('input', e => { if (e.target.name === 'options[]') updateRadioValues(); });
+
+    /* ── Reset form ── */
+    function resetForm() {
+        document.getElementById('questionForm').reset();
+        document.getElementById('editQuestionId').value = '';
+        document.getElementById('optionsList').innerHTML = `
+            <div class="option-row">
+                <input type="text" name="options[]" class="form-control" placeholder="Option 1">
+                <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
+                <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
+            </div>
+            <div class="option-row">
+                <input type="text" name="options[]" class="form-control" placeholder="Option 2">
+                <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
+                <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
+            </div>
+        `;
+        optionCounter = 2;
+        document.getElementById('questionType').value = 'mcq';
+        document.getElementById('essayAnswer').value = '';
+        toggleSections();
+    }
+
+    /* ── Edit question ── */
     function editQuestion(questionId) {
         fetch(`/faculty/questions/${questionId}/edit-data`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
@@ -967,148 +1106,97 @@
                 const q = data.question;
                 document.getElementById('modalTitle').innerHTML = '<i class="ri-edit-line"></i> Edit Question';
                 document.getElementById('editQuestionId').value = q.id;
-                document.getElementById('questionType').value = q.question_type;
-                document.getElementById('questionText').value = q.question_text;
-                document.getElementById('points').value = q.points;
+                document.getElementById('questionType').value   = q.question_type;
+                document.getElementById('questionText').value   = q.question_text;
+                document.getElementById('points').value         = q.points;
                 toggleSections();
-                
                 if (q.question_type === 'mcq') {
-                    let options = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
+                    let opts = typeof q.options === 'string' ? JSON.parse(q.options) : q.options;
                     const container = document.getElementById('optionsList');
                     container.innerHTML = '';
-                    if (options && Array.isArray(options)) {
-                        options.forEach((opt, idx) => {
+                    if (opts && Array.isArray(opts)) {
+                        opts.forEach(opt => {
                             const div = document.createElement('div');
                             div.className = 'option-row';
                             div.innerHTML = `
                                 <input type="text" name="options[]" class="form-control" value="${escapeHtml(opt)}">
                                 <input type="radio" name="correct_answer" value="${escapeHtml(opt)}" class="correct-radio" onchange="setCorrectAnswerValue(this)" ${opt === q.correct_answer ? 'checked' : ''}>
-                                <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
+                                <i class="ri-delete-bin-line remove-option-btn" onclick="this.parentElement.remove()"></i>
                             `;
                             container.appendChild(div);
                         });
-                        optionCounter = options.length;
+                        optionCounter = opts.length;
                     }
                 } else if (q.question_type === 'true_false') {
-                    const radios = document.querySelectorAll('#tfDiv input[name="correct_answer"]');
-                    radios.forEach(radio => { if (radio.value === q.correct_answer) radio.checked = true; });
-                } else if (q.question_type === 'essay') {
+                    document.querySelectorAll('#tfDiv input[name="correct_answer"]').forEach(r => {
+                        if (r.value === q.correct_answer) r.checked = true;
+                    });
+                } else {
                     document.getElementById('essayAnswer').value = q.correct_answer || '';
                 }
                 openModal();
-            } else alert('Could not load question');
+            } else alert('Could not load question.');
         })
         .catch(err => alert('Error: ' + err.message));
     }
-    
-    function deleteQuestion(questionId) {
-        if (confirm('Delete this question? This action cannot be undone.')) {
-            fetch(`/faculty/questions/${questionId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) { alert('Question deleted'); location.reload(); }
-                else alert(data.message || 'Error');
-            })
-            .catch(err => alert('Error: ' + err.message));
-        }
+
+    /* ── Delete question ── */
+    let pendingDeleteId = null;
+
+    function confirmDeleteQuestion(id) {
+        pendingDeleteId = id;
+        document.getElementById('deleteModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
-    
-    function resetForm() {
-        document.getElementById('questionForm').reset();
-        document.getElementById('editQuestionId').value = '';
-        document.getElementById('optionsList').innerHTML = `
-            <div class="option-row">
-                <input type="text" name="options[]" class="form-control" placeholder="Option 1">
-                <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
-                <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
-            </div>
-            <div class="option-row">
-                <input type="text" name="options[]" class="form-control" placeholder="Option 2">
-                <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
-                <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
-            </div>
-        `;
-        optionCounter = 2;
-        document.getElementById('questionType').value = 'mcq';
-        document.getElementById('essayAnswer').value = '';
-        toggleSections();
-        updateRadioValues();
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+        document.body.style.overflow = '';
+        pendingDeleteId = null;
     }
-    
-    function addOption() {
-        optionCounter++;
-        const container = document.getElementById('optionsList');
-        const div = document.createElement('div');
-        div.className = 'option-row';
-        div.innerHTML = `
-            <input type="text" name="options[]" class="form-control" placeholder="Option ${optionCounter}">
-            <input type="radio" name="correct_answer" value="" class="correct-radio" onchange="setCorrectAnswerValue(this)">
-            <i class="ri-delete-bin-line remove-option" onclick="this.parentElement.remove()"></i>
-        `;
-        container.appendChild(div);
-        updateRadioValues();
-    }
-    
-    function setCorrectAnswerValue(radio) {
-        const optInput = radio.parentElement.querySelector('input[type="text"]');
-        if (optInput && optInput.value) radio.value = optInput.value;
-    }
-    
-    function toggleSections() {
-        const type = document.getElementById('questionType').value;
-        document.getElementById('mcqDiv').style.display = type === 'mcq' ? 'block' : 'none';
-        document.getElementById('tfDiv').style.display = type === 'true_false' ? 'block' : 'none';
-        document.getElementById('essayDiv').style.display = type === 'essay' ? 'block' : 'none';
-    }
-    
-    function updateRadioValues() {
-        const options = document.querySelectorAll('[name="options[]"]');
-        const radios = document.querySelectorAll('.correct-radio');
-        radios.forEach((radio, idx) => { if (options[idx] && options[idx].value) radio.value = options[idx].value; });
-    }
-    
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-    
-    document.getElementById('questionType').addEventListener('change', toggleSections);
-    document.addEventListener('input', e => { if (e.target.name === 'options[]') updateRadioValues(); });
-    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('active')) closeModal(); });
-    
-    // Form submission
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+        if (!pendingDeleteId) return;
+        fetch(`/faculty/questions/${pendingDeleteId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) { closeDeleteModal(); location.reload(); }
+            else alert(data.message || 'Error deleting question.');
+        })
+        .catch(err => alert('Error: ' + err.message));
+    });
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    /* ── Form submission ── */
     document.getElementById('questionForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        const type = document.getElementById('questionType').value;
+        const type         = document.getElementById('questionType').value;
         const questionText = document.getElementById('questionText').value.trim();
-        const points = document.getElementById('points').value;
-        let correctAnswer = '';
-        
-        if (!questionText) { alert('Please enter question text'); return; }
-        
+        const points       = document.getElementById('points').value;
+        let correctAnswer  = '';
+
+        if (!questionText) { alert('Please enter question text.'); return; }
+
         if (type === 'mcq') {
             let selected = null;
             document.querySelectorAll('#mcqDiv .correct-radio').forEach(r => { if (r.checked && r.value) selected = r.value; });
-            if (!selected) { alert('Please select the correct answer'); return; }
+            if (!selected) { alert('Please select the correct answer.'); return; }
             correctAnswer = selected;
         } else if (type === 'true_false') {
-            const selected = document.querySelector('#tfDiv input[name="correct_answer"]:checked');
-            if (!selected) { alert('Please select True or False'); return; }
-            correctAnswer = selected.value;
+            const sel = document.querySelector('#tfDiv input[name="correct_answer"]:checked');
+            if (!sel) { alert('Please select True or False.'); return; }
+            correctAnswer = sel.value;
         } else {
             correctAnswer = document.getElementById('essayAnswer').value || 'To be graded manually';
         }
-        
+
         updateRadioValues();
         const formData = new FormData();
         formData.append('_token', document.querySelector('input[name="_token"]').value);
@@ -1116,66 +1204,56 @@
         formData.append('question_text', questionText);
         formData.append('correct_answer', correctAnswer);
         formData.append('points', points);
-        
         if (type === 'mcq') {
-            document.querySelectorAll('[name="options[]"]').forEach(opt => { if (opt.value.trim()) formData.append('options[]', opt.value.trim()); });
+            document.querySelectorAll('[name="options[]"]').forEach(opt => {
+                if (opt.value.trim()) formData.append('options[]', opt.value.trim());
+            });
         }
-        
+
         const questionId = document.getElementById('editQuestionId').value;
         let url = '/faculty/questions';
         if (questionId) { url = `/faculty/questions/${questionId}`; formData.append('_method', 'PUT'); }
-        
+
         fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             .then(res => res.json())
             .then(data => {
-                if (data.success) { alert(questionId ? 'Question updated!' : 'Question added!'); location.reload(); }
-                else alert(data.message || 'Validation failed');
+                if (data.success) { closeModal(); location.reload(); }
+                else alert(data.message || 'Validation failed.');
             })
             .catch(err => alert('Error: ' + err.message));
     });
-    
-    toggleSections();
 
-    // ======================= LOGOUT CONFIRMATION MODAL LOGIC (FULL ACCOUNT LOGOUT) =======================
-    const logoutButton = document.getElementById('logoutButton');
-    const logoutModal = document.getElementById('logoutModal');
-    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
-    const closeLogoutModalBtn = document.getElementById('closeLogoutModalBtn');
-    const logoutForm = document.getElementById('logoutForm');
+    /* ── Util ── */
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
 
+    /* ── Logout modal ── */
     function openLogoutModal() {
-        logoutModal.classList.add('active');
+        document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     function closeLogoutModal() {
-        logoutModal.classList.remove('active');
+        document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+        e.preventDefault(); openLogoutModal();
+    });
+    document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+        document.getElementById('logoutForm').submit();
+    });
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) closeLogoutModal();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeModal(); closeDeleteModal(); closeLogoutModal(); }
+    });
 
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            openLogoutModal();
-        });
-    }
-    if (confirmLogoutBtn) {
-        confirmLogoutBtn.addEventListener('click', () => {
-            if (logoutForm) {
-                logoutForm.submit();
-            } else {
-                window.location.href = "{{ route('logout') }}";
-            }
-        });
-    }
-    if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutModal);
-    if (closeLogoutModalBtn) closeLogoutModalBtn.addEventListener('click', closeLogoutModal);
-    logoutModal.addEventListener('click', (e) => {
-        if (e.target === logoutModal) closeLogoutModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && logoutModal.classList.contains('active')) closeLogoutModal();
-    });
+    toggleSections();
 </script>
 </body>
 </html>

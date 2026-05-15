@@ -2,765 +2,1146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Admin Dashboard - NU Horizon</title>
-    <!-- Google Fonts + Remix Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard – NU Horizon LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            corePlugins: { preflight: false },
-        }
-    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ══ DESIGN TOKENS (mirrored from login page) ══ */
+        :root {
+            --navy:      #0A1F44;
+            --navy-mid:  #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
+            --gold:      #FFD70F;
+            --gold-d:    #C49A00;
+            --gold-mid:  #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg:        #F8F6F1;
+            --white:     #FFFFFF;
+            --txt-1:     #0A1F44;
+            --txt-2:     #2C3E5C;
+            --txt-3:     #637089;
+            --bdr:       rgba(10,31,68,0.10);
+            --ease:      cubic-bezier(0.22,1,0.36,1);
+            --spring:    cubic-bezier(0.34,1.56,0.64,1);
+            --t:         0.26s var(--ease);
+            --sidebar-w: 272px;
+            --danger:    #dc2626;
+            --danger-d:  #b91c1c;
+            --green:     #16a34a;
+            --purple:    #7c3aed;
+            --orange:    #ea580c;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #F5F7FB;
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--txt-1);
         }
 
-        :root {
-            --blue-deep: #0A1F44;
-            --gold: #FFD70F;
-            --gold-dark: #e5c20c;
-            --gray-light: #F8FAFF;
-            --gray-border: #E9EDF2;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            --transition: all 0.25s ease;
-            --danger-red: #dc2626;
-            --danger-dark: #b91c1c;
-        }
+        /* ══ SCROLLBAR ══ */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
 
-        /* Sidebar */
+        /* ══ SIDEBAR ══ */
         .sidebar {
-            background-color: var(--blue-deep);
-            width: 280px;
             position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            z-index: 40;
-            transition: transform 0.3s ease;
-            transform: translateX(0);
+            top: 0; left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--navy);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transition: transform .3s var(--ease);
+            box-shadow: 4px 0 32px rgba(0,0,0,0.18);
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
+        /* Gold shimmer top bar */
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
         }
 
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+
+        /* Subtle grid texture on sidebar */
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        /* Decorative arc */
+        .sidebar-arc {
+            position: absolute;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,215,15,0.06);
+            bottom: -60px; left: -100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .sidebar-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Logo */
         .sidebar-logo {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 215, 15, 0.2);
+            padding: 1.5rem 1.4rem 1.3rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: .85rem;
+            border-bottom: 1px solid rgba(255,215,15,0.14);
         }
-        .sidebar-logo-img {
-            height: 45px;
-            width: auto;
+        .logo-seal-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .logo-seal {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: block;
+        }
+        .logo-seal-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,215,15,0.28);
+            animation: rotateSlow 14s linear infinite;
+        }
+        @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        .logo-seal-ring::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 5px var(--gold);
         }
         .logo-text h1 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: -0.3px;
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -.02em;
+            line-height: 1.1;
         }
-        .logo-text span {
-            color: var(--gold);
-        }
+        .logo-text h1 em { color: var(--gold); font-style: normal; }
         .logo-text p {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
+            font-size: .65rem;
+            font-weight: 600;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.40);
+            margin-top: .15rem;
         }
 
-        .nav-section {
-            padding: 0 1rem;
-            margin-top: 1.5rem;
+        /* Nav */
+        .nav-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.2rem .85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
         }
-        .nav-section-title {
-            font-size: 0.7rem;
+        .nav-section-label {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .14em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255,215,15,0.6);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+            color: rgba(255,215,15,0.50);
+            margin-bottom: .4rem;
+            padding-left: .4rem;
         }
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.85);
-            transition: var(--transition);
-            margin-bottom: 0.25rem;
-            font-weight: 500;
+            gap: .7rem;
+            padding: .62rem .85rem;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.70);
             text-decoration: none;
+            font-size: .82rem;
+            font-weight: 500;
+            transition: all var(--t);
+            margin-bottom: .15rem;
         }
-        .nav-item i {
-            font-size: 1.2rem;
-            width: 1.5rem;
-        }
+        .nav-item i { font-size: 1.05rem; width: 1.25rem; flex-shrink: 0; }
         .nav-item:hover {
-            background: rgba(255,215,15,0.15);
-            color: white;
+            background: rgba(255,215,15,0.10);
+            color: rgba(255,255,255,0.92);
         }
         .nav-item.active {
             background: var(--gold);
-            color: var(--blue-deep);
+            color: var(--navy);
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255,215,15,0.30);
         }
-        .nav-item.active i {
-            color: var(--blue-deep);
-        }
+        .nav-item.active i { color: var(--navy); }
 
+        /* Sidebar footer */
         .sidebar-footer {
-            margin-top: auto;
-            padding: 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.2);
+            padding: 1rem 1.2rem;
+            border-top: 1px solid rgba(255,215,15,0.14);
         }
-        .profile-info {
+        .profile-row {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+            gap: .75rem;
+            margin-bottom: .85rem;
         }
         .avatar {
-            width: 42px;
-            height: 42px;
-            background: rgba(255,215,15,0.2);
+            width: 38px; height: 38px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,215,15,0.15);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: flex; align-items: center; justify-content: center;
             color: var(--gold);
+            font-size: 1rem;
+            flex-shrink: 0;
         }
-        .profile-details p {
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .profile-details span {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.7rem;
-        }
-
-        /* Red Logout Button */
+        .profile-name { font-size: .82rem; font-weight: 700; color: #fff; }
+        .profile-email { font-size: .68rem; color: rgba(255,255,255,0.42); margin-top: .1rem; }
         .logout-btn {
             width: 100%;
-            background: rgba(220, 38, 38, 0.15);
-            border: none;
-            padding: 0.6rem;
-            border-radius: 40px;
+            padding: .58rem .9rem;
+            border-radius: 8px;
+            background: rgba(220,38,38,0.12);
+            border: 1px solid rgba(220,38,38,0.22);
             color: #fca5a5;
+            font-size: .78rem;
             font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            gap: .5rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all var(--t);
         }
         .logout-btn:hover {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(220,38,38,0.35);
         }
 
-        /* Main content area */
+        /* ══ MAIN ══ */
         .main-content {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
+            margin-left: var(--sidebar-w);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .top-bar {
-            background: white;
-            padding: 1rem 2rem;
+
+        /* Top bar */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(248,246,241,0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--bdr);
+            padding: .9rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border-bottom: 1px solid var(--gray-border);
-            position: sticky;
-            top: 0;
-            z-index: 20;
+            gap: 1rem;
         }
+        .topbar-left { display: flex; align-items: center; gap: 1rem; }
         .menu-toggle {
             display: none;
             background: none;
-            border: none;
-            font-size: 1.5rem;
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .55rem;
+            color: var(--txt-2);
+            font-size: 1.1rem;
             cursor: pointer;
-            color: var(--blue-deep);
+            transition: all var(--t);
         }
-        .page-title {
+        .menu-toggle:hover { border-color: var(--gold-d); color: var(--navy); }
+        .topbar-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--blue-deep);
+            color: var(--navy);
+            letter-spacing: -.02em;
         }
-        @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .topbar-title em { color: var(--gold-d); font-style: normal; }
+        .topbar-breadcrumb {
+            font-size: .72rem;
+            color: var(--txt-3);
+            font-weight: 500;
+        }
+        .topbar-right { display: flex; align-items: center; gap: .75rem; }
+        .topbar-badge {
+            display: flex; align-items: center; gap: .4rem;
+            font-size: .72rem;
+            font-weight: 600;
+            color: var(--txt-3);
+            background: var(--white);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .75rem;
+            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
+        }
+        .topbar-badge i { font-size: .85rem; color: var(--gold-d); }
+        .topbar-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
 
-        /* Stats cards and dashboard components */
+        /* ══ PAGE BODY ══ */
+        .page-body { padding: 1.8rem 2rem; flex: 1; }
+
+        /* Section header */
+        .section-header {
+            margin-bottom: 1.4rem;
+        }
+        .section-header h2 {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--txt-3);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .section-header h2::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--bdr);
+        }
+
+        /* ══ STAT CARDS ══ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+        }
         .stat-card {
-            background: white;
-            border-radius: 1.2rem;
-            padding: 1.2rem;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-        .dashboard-card {
-            background: white;
-            border-radius: 1.2rem;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(0,0,0,0.03);
+            background: var(--white);
+            border-radius: 14px;
+            padding: 1.2rem 1.1rem;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
+            transition: all var(--t);
+            position: relative;
             overflow: hidden;
+            animation: fadeUp .5s var(--ease) both;
         }
-        .activity-item {
-            transition: var(--transition);
-        }
-        .activity-item:hover {
-            background: #F8FAFF;
+        .stat-card:nth-child(1) { animation-delay: .06s; }
+        .stat-card:nth-child(2) { animation-delay: .12s; }
+        .stat-card:nth-child(3) { animation-delay: .18s; }
+        .stat-card:nth-child(4) { animation-delay: .24s; }
+        .stat-card:nth-child(5) { animation-delay: .30s; }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
         }
 
-        /* Logout Confirmation Modal */
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 14px 14px 0 0;
+        }
+        .stat-card.navy::before  { background: linear-gradient(90deg, var(--navy-lite), var(--navy)); }
+        .stat-card.green::before { background: linear-gradient(90deg, #4ade80, #16a34a); }
+        .stat-card.purple::before{ background: linear-gradient(90deg, #a78bfa, #7c3aed); }
+        .stat-card.gold::before  { background: linear-gradient(90deg, var(--gold-mid), var(--gold-d)); }
+        .stat-card.orange::before{ background: linear-gradient(90deg, #fb923c, #ea580c); }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(10,31,68,0.10);
+            border-color: rgba(10,31,68,0.15);
+        }
+        .stat-label {
+            font-size: .7rem;
+            font-weight: 600;
+            color: var(--txt-3);
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-bottom: .5rem;
+        }
+        .stat-value {
+            font-family: 'Fraunces', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -.04em;
+            margin-bottom: .35rem;
+        }
+        .stat-card.navy  .stat-value { color: var(--navy); }
+        .stat-card.green .stat-value { color: var(--green); }
+        .stat-card.purple .stat-value { color: var(--purple); }
+        .stat-card.gold  .stat-value { color: var(--gold-d); }
+        .stat-card.orange .stat-value { color: var(--orange); }
+        .stat-icon {
+            position: absolute;
+            right: .85rem; top: .85rem;
+            font-size: 1.55rem;
+            opacity: .12;
+        }
+        .stat-change {
+            font-size: .68rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: .2rem;
+            color: var(--txt-3);
+        }
+        .stat-change.up { color: var(--green); }
+        .stat-change.neutral { color: var(--txt-3); }
+
+        /* ══ TWO-COLUMN ══ */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+        .three-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+
+        /* ══ DASHBOARD CARD ══ */
+        .dash-card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
+            overflow: hidden;
+            animation: fadeUp .55s var(--ease) .18s both;
+        }
+        .dash-card-head {
+            padding: 1.1rem 1.3rem .9rem;
+            border-bottom: 1px solid var(--bdr);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dash-card-title {
+            font-size: .82rem;
+            font-weight: 700;
+            color: var(--txt-1);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .dash-card-title i { color: var(--gold-d); font-size: .9rem; }
+        .dash-card-badge {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: var(--txt-3);
+            background: var(--bg);
+            border: 1px solid var(--bdr);
+            border-radius: 6px;
+            padding: .2rem .55rem;
+        }
+        .dash-card-body { padding: 1.2rem 1.3rem; }
+
+        /* Chart areas */
+        .chart-wrap { position: relative; }
+
+        /* ══ PERFORMANCE NUMS ══ */
+        .perf-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .8rem;
+            margin-bottom: 1.2rem;
+        }
+        .perf-box {
+            background: var(--bg);
+            border: 1px solid var(--bdr);
+            border-radius: 10px;
+            padding: .85rem;
+            text-align: center;
+        }
+        .perf-box-label { font-size: .68rem; font-weight: 600; color: var(--txt-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .35rem; }
+        .perf-box-val {
+            font-family: 'Fraunces', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -.04em;
+            line-height: 1;
+        }
+        .perf-box-val.blue { color: var(--navy-lite); }
+        .perf-box-val.green { color: var(--green); }
+
+        /* Faculty bar */
+        .faculty-bar-row { margin-bottom: .7rem; }
+        .faculty-bar-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: .72rem;
+            color: var(--txt-2);
+            font-weight: 500;
+            margin-bottom: .3rem;
+        }
+        .faculty-bar-meta span:last-child { color: var(--txt-3); font-weight: 400; }
+        .bar-track {
+            height: 5px;
+            background: var(--bg);
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid var(--bdr);
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--gold-mid), var(--gold-d));
+        }
+
+        /* ══ ENROLLMENT / QUIZ LIST ══ */
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .7rem 0;
+            border-bottom: 1px solid var(--bdr);
+            transition: background var(--t);
+        }
+        .list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .list-item:first-child { padding-top: 0; }
+        .list-avatar {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: var(--navy-pale);
+            display: flex; align-items: center; justify-content: center;
+            font-size: .7rem;
+            font-weight: 700;
+            color: var(--navy-mid);
+            flex-shrink: 0;
+        }
+        .list-info { flex: 1; padding: 0 .65rem; min-width: 0; }
+        .list-name { font-size: .8rem; font-weight: 600; color: var(--txt-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-sub { font-size: .68rem; color: var(--txt-3); margin-top: .08rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .list-time { font-size: .65rem; color: var(--txt-3); white-space: nowrap; flex-shrink: 0; }
+        .score-pill {
+            font-size: .72rem;
+            font-weight: 700;
+            padding: .2rem .55rem;
+            border-radius: 6px;
+        }
+        .score-pill.pass { background: rgba(22,163,74,0.10); color: var(--green); }
+        .score-pill.fail { background: rgba(220,38,38,0.10); color: var(--danger); }
+
+        /* ══ ACTIVITY LOG ══ */
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            padding: .7rem .9rem;
+            border-radius: 9px;
+            transition: background var(--t);
+            margin-bottom: .2rem;
+        }
+        .activity-item:hover { background: var(--bg); }
+        .activity-icon {
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem;
+            flex-shrink: 0;
+        }
+        .activity-icon.create { background: rgba(22,163,74,0.12); color: var(--green); }
+        .activity-icon.update { background: rgba(234,179,8,0.12); color: #ca8a04; }
+        .activity-icon.delete { background: rgba(220,38,38,0.10); color: var(--danger); }
+        .activity-icon.info   { background: var(--navy-pale); color: var(--navy-lite); }
+        .activity-text { font-size: .78rem; color: var(--txt-2); line-height: 1.45; }
+        .activity-meta { font-size: .65rem; color: var(--txt-3); margin-top: .18rem; }
+
+        /* ══ MODAL ══ */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(10, 31, 68, 0.75);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
+            inset: 0;
+            background: rgba(10,31,68,0.72);
+            backdrop-filter: blur(6px);
+            z-index: 500;
             display: flex;
             align-items: center;
             justify-content: center;
             visibility: hidden;
             opacity: 0;
-            transition: all 0.2s ease;
+            transition: all .22s var(--ease);
         }
-        .modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .confirmation-modal {
-            background: white;
-            max-width: 450px;
-            width: 90%;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal {
+            background: var(--white);
+            border-radius: 18px;
+            width: min(440px, 94vw);
             overflow: hidden;
-            transform: scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform: scale(0.94) translateY(12px);
+            transition: transform .28s var(--spring);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,215,15,0.10);
         }
-        .modal-overlay.active .confirmation-modal {
-            transform: scale(1);
-        }
-        .modal-header {
-            background: var(--blue-deep);
-            padding: 1.25rem 1.5rem;
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-head {
+            background: var(--navy);
+            padding: 1.2rem 1.4rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid var(--gold);
+            position: relative;
         }
-        .modal-header h3 {
-            font-size: 1.25rem;
+        .modal-head::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+        .modal-head h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: white;
-            margin: 0;
+            color: #fff;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: .5rem;
         }
-        .modal-header h3 i {
-            color: var(--gold);
-        }
+        .modal-head h3 i { color: var(--gold); }
         .modal-close {
             background: none;
             border: none;
-            color: rgba(255,255,255,0.7);
-            font-size: 1.6rem;
+            color: rgba(255,255,255,0.55);
+            font-size: 1.3rem;
             cursor: pointer;
+            transition: color var(--t);
+            line-height: 1;
         }
-        .modal-close:hover {
-            color: var(--gold);
-        }
+        .modal-close:hover { color: var(--gold); }
         .modal-body {
             padding: 1.8rem 1.5rem;
             text-align: center;
         }
-        .modal-footer {
-            padding: 1rem 1.5rem 1.5rem;
+        .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.55; }
+        .modal-body .modal-warn {
+            font-size: .72rem;
+            color: var(--txt-3);
+            margin-top: .55rem;
+        }
+        .modal-foot {
+            padding: .9rem 1.4rem 1.3rem;
             display: flex;
-            gap: 0.75rem;
+            gap: .6rem;
             justify-content: flex-end;
-            background: #f9fafb;
-            border-top: 1px solid var(--gray-border);
+            background: var(--bg);
+            border-top: 1px solid var(--bdr);
         }
-        .modal-btn {
-            padding: 0.6rem 1.25rem;
-            border-radius: 40px;
+        .btn-cancel {
+            padding: .58rem 1.1rem;
+            border-radius: 8px;
+            border: 1px solid var(--bdr);
+            background: var(--white);
+            font-size: .8rem;
             font-weight: 600;
-            font-size: 0.85rem;
+            color: var(--txt-2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all var(--t);
+        }
+        .btn-cancel:hover { background: var(--bg); border-color: rgba(10,31,68,0.18); }
+        .btn-confirm {
+            padding: .58rem 1.2rem;
+            border-radius: 8px;
             border: none;
+            background: var(--danger);
+            font-size: .8rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            transition: all var(--t);
+            box-shadow: 0 3px 10px rgba(220,38,38,0.30);
         }
-        .modal-btn-cancel {
-            background: #eef2ff;
-            color: #1e293b;
+        .btn-confirm:hover { background: var(--danger-d); transform: translateY(-1px); }
+
+        /* ══ MOBILE OVERLAY ══ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10,31,68,0.65);
+            z-index: 90;
         }
-        .modal-btn-cancel:hover {
-            background: #e2e8f0;
+
+        /* ══ EMPTY STATE ══ */
+        .empty-state {
+            text-align: center;
+            padding: 1.8rem 1rem;
+            color: var(--txt-3);
+            font-size: .8rem;
         }
-        .modal-btn-confirm {
-            background: var(--danger-red);
-            color: white;
+        .empty-state i { font-size: 1.8rem; display: block; margin-bottom: .5rem; opacity: .4; }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        .modal-btn-confirm:hover {
-            background: var(--danger-dark);
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: flex; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-body { padding: 1.2rem 1rem; }
+            .topbar { padding: .8rem 1rem; }
+        }
+        @media (max-width: 420px) {
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== SIDEBAR (UNIFIED - matches users.php) ========== -->
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
-        <div class="logo-text">
-            <h1>NU <span>Horizon</span></h1>
-            <p>Admin Portal</p>
-        </div>
-    </div>
+    <div class="sidebar-arc"></div>
+    <div class="sidebar-inner">
 
-    <div style="flex:1; overflow-y: auto;">
-        <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <i class="ri-dashboard-line"></i> Dashboard
-            </a>
-            <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                <i class="ri-user-add-line"></i> Account Creation
-            </a>
-            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                <i class="ri-team-line"></i> Users
-            </a>
-            <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                <i class="ri-user-star-line"></i> Faculty
-            </a>
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">Academic</div>
-            <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
-                <i class="ri-graduation-cap-line"></i> Programs
-            </a>
-            <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                <i class="ri-building-2-line"></i> Departments
-            </a>
-            <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
-                <i class="ri-book-open-line"></i> Subjects
-            </a>
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">Assessment</div>
-            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
-                <i class="ri-star-smile-line"></i> Faculty Evaluation
-            </a>
-            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
-                <i class="ri-folder-3-line"></i> Folder & Files
-            </a>
-            <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                <i class="ri-bar-chart-line"></i> Analytics
-            </a>
-            <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                <i class="ri-history-line"></i> Activity Logs
-            </a>
-            <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                <i class="ri-settings-line"></i> Settings
-            </a>
-        </div>
-    </div>
-
-    <div class="sidebar-footer">
-        <div class="profile-info" onclick="window.location='{{ route('admin.profile') }}'" style="cursor:pointer;">
-            <div class="avatar">
-                <i class="ri-user-line"></i>
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-seal-wrap">
+                <div class="logo-seal-ring"></div>
+                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal"
+                     onerror="this.style.display='none'">
             </div>
-            <div class="profile-details">
-                <p>{{ Auth::user()->name }}</p>
-                <span>{{ Auth::user()->email }}</span>
+            <div class="logo-text">
+                <h1>NU Horizon <em>LMS</em></h1>
+                <p>Admin Portal · National University</p>
             </div>
         </div>
-        <button onclick="openLogoutModal()" class="logout-btn">
-            <i class="ri-logout-box-line"></i> Logout
-        </button>
+
+        <!-- Nav -->
+        <div class="nav-body">
+            <div>
+                <div class="nav-section-label">Main</div>
+                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="ri-dashboard-line"></i> Dashboard
+                </a>
+                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                    <i class="ri-team-line"></i> Users
+                </a>
+                <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
+                    <i class="ri-user-add-line"></i> Account Creation
+                </a>
+                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
+                    <i class="ri-user-star-line"></i> Faculty
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Academic</div>
+                <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
+                    <i class="ri-graduation-cap-line"></i> Programs
+                </a>
+                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
+                    <i class="ri-building-2-line"></i> Departments
+                </a>
+                <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
+                    <i class="ri-book-open-line"></i> Subjects
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Assessment</div>
+                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
+                    <i class="ri-bar-chart-line"></i> Analytics
+                </a>
+                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
+                    <i class="ri-history-line"></i> Activity Logs
+                </a>
+                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                    <i class="ri-settings-line"></i> Settings
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div class="profile-row">
+                <div class="avatar"><i class="ri-user-line"></i></div>
+                <div>
+                    <div class="profile-name">{{ Auth::user()->name }}</div>
+                    <div class="profile-email">{{ Auth::user()->email }}</div>
+                </div>
+            </div>
+            <button onclick="openLogoutModal()" class="logout-btn">
+                <i class="ri-logout-box-line"></i> Sign Out
+            </button>
+        </div>
+
     </div>
 </aside>
 
-<!-- ========== MAIN CONTENT ========== -->
+<!-- ══ MAIN ══ -->
 <div class="main-content" id="mainContent">
-    <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="ri-menu-line"></i>
-        </button>
-        <h2 class="page-title text-lg md:text-xl">Dashboard</h2>
-        <div class="flex items-center gap-3">
-        @include('admin.partials.notification-bell')
-    </div>
-    </div>
 
-    <div class="p-4 md:p-6">
-        <!-- Stats Cards Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 mb-8">
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Students</p>
-                        <p class="text-3xl font-bold" style="color: var(--blue-deep);">{{ number_format($totalStudents) }}</p>
-                    </div>
-                    <div class="bg-blue-100 p-3 rounded-full">
-                        <i class="ri-user-line text-blue-600 text-xl"></i>
-                    </div>
-                </div>
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="ri-menu-2-line"></i>
+            </button>
+            <div>
+                <div class="topbar-title">NU Horizon <em>LMS</em></div>
+                <div class="topbar-breadcrumb">Admin → Dashboard</div>
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Faculty</p>
-                        <p class="text-3xl font-bold text-green-600">{{ number_format($totalFaculty) }}</p>
-                    </div>
-                    <div class="bg-green-100 p-3 rounded-full">
-                        <i class="ri-user-star-line text-green-600 text-xl"></i>
-                    </div>
-                </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-badge">
+                <span class="topbar-dot"></span>
+                System Online
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Total Courses</p>
-                        <p class="text-3xl font-bold text-purple-600">{{ number_format($totalCourses) }}</p>
-                    </div>
-                    <div class="bg-purple-100 p-3 rounded-full">
-                        <i class="ri-book-line text-purple-600 text-xl"></i>
-                    </div>
-                </div>
+            <div class="topbar-badge">
+                <i class="ri-calendar-line"></i>
+                <span id="topbar-date"></span>
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Faculty Evaluations</p>
-                        <p class="text-3xl font-bold text-yellow-600">{{ number_format($totalEvaluations) }}</p>
-                    </div>
-                    <div class="bg-yellow-100 p-3 rounded-full">
-                        <i class="ri-star-smile-line text-yellow-600 text-xl"></i>
-                    </div>
-                </div>
+        </div>
+    </header>
+
+    <!-- Page body -->
+    <div class="page-body">
+
+        <!-- Section: Overview -->
+        <div class="section-header">
+            <h2><i class="ri-pulse-line" style="color:var(--gold-d);font-size:.85rem;"></i> Overview</h2>
+        </div>
+
+        <!-- Stat cards -->
+        <div class="stats-grid">
+            <div class="stat-card navy">
+                <i class="ri-user-line stat-icon"></i>
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value">{{ number_format($totalStudents) }}</div>
+                <div class="stat-change up"><i class="ri-arrow-up-s-line"></i> Active learners</div>
             </div>
-            <div class="stat-card">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">Admin Files</p>
-                        <p class="text-3xl font-bold text-orange-600">{{ number_format($totalFiles) }}</p>
-                    </div>
-                    <div class="bg-orange-100 p-3 rounded-full">
-                        <i class="ri-folder-3-line text-orange-600 text-xl"></i>
-                    </div>
-                </div>
+            <div class="stat-card green">
+                <i class="ri-user-star-line stat-icon"></i>
+                <div class="stat-label">Total Faculty</div>
+                <div class="stat-value">{{ number_format($totalFaculty) }}</div>
+                <div class="stat-change up"><i class="ri-arrow-up-s-line"></i> Instructors</div>
+            </div>
+            <div class="stat-card purple">
+                <i class="ri-book-line stat-icon"></i>
+                <div class="stat-label">Total Courses</div>
+                <div class="stat-value">{{ number_format($totalCourses) }}</div>
+                <div class="stat-change neutral"><i class="ri-subtract-line"></i> All subjects</div>
+            </div>
+            <div class="stat-card gold">
+                <i class="ri-quiz-line stat-icon"></i>
+                <div class="stat-label">Total Quizzes</div>
+                <div class="stat-value">{{ number_format($totalQuizzes) }}</div>
+                <div class="stat-change neutral"><i class="ri-subtract-line"></i> All assessments</div>
+            </div>
+            <div class="stat-card orange">
+                <i class="ri-play-circle-line stat-icon"></i>
+                <div class="stat-label">Active Quizzes</div>
+                <div class="stat-value">{{ number_format($activeQuizzes) }}</div>
+                <div class="stat-change up"><i class="ri-arrow-up-s-line"></i> Live now</div>
             </div>
         </div>
 
-        <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Monthly Statistics Chart -->
-            <div class="dashboard-card p-5">
-                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="ri-bar-chart-grouped-line" style="color: var(--gold);"></i> Monthly Statistics
-                </h3>
-                <canvas id="monthlyChart" height="250"></canvas>
-            </div>
-            
-            <!-- Quiz Performance + Courses per Faculty -->
-            <div class="dashboard-card p-5">
-                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i class="ri-questionnaire-line" style="color: var(--gold);"></i> Quiz Performance
-                </h3>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="text-center bg-gray-50 rounded-xl p-3">
-                        <p class="text-gray-500 text-sm">Total Attempts</p>
-                        <p class="text-3xl font-bold text-blue-600">{{ number_format($totalAttempts) }}</p>
+        <!-- Section: Analytics -->
+        <div class="section-header">
+            <h2><i class="ri-bar-chart-2-line" style="color:var(--gold-d);font-size:.85rem;"></i> Analytics</h2>
+        </div>
+
+        <!-- Charts row -->
+        <div class="three-col">
+            <!-- Monthly chart -->
+            <div class="dash-card">
+                <div class="dash-card-head">
+                    <div class="dash-card-title">
+                        <i class="ri-bar-chart-grouped-line"></i> Monthly Statistics
                     </div>
-                    <div class="text-center bg-gray-50 rounded-xl p-3">
-                        <p class="text-gray-500 text-sm">Average Score</p>
-                        <p class="text-3xl font-bold text-green-600">{{ number_format($averageScore, 1) }}%</p>
+                    <span class="dash-card-badge">Last 6 months</span>
+                </div>
+                <div class="dash-card-body">
+                    <div class="chart-wrap">
+                        <canvas id="monthlyChart" height="220"></canvas>
                     </div>
                 </div>
-                <div class="mt-2">
-                    <h4 class="font-semibold text-gray-700 mb-3">Courses per Faculty (Top 5)</h4>
-                    <div class="space-y-3">
-                        @foreach($coursesPerFaculty as $faculty)
-                            @php
-                                $maxCourses = $coursesPerFaculty->first()->courses_count ?? 1;
-                                $percentage = $maxCourses > 0 ? ($faculty->courses_count / $maxCourses) * 100 : 0;
-                            @endphp
-                            <div>
-                                <div class="flex justify-between text-sm mb-1">
-                                    <span class="text-gray-700">{{ $faculty->name }}</span>
-                                    <span class="text-gray-500">{{ $faculty->courses_count }} courses</span>
-                                </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div class="rounded-full h-2" style="width: {{ $percentage }}%; background-color: var(--gold);"></div>
-                                </div>
+            </div>
+
+            <!-- Performance + Faculty bars -->
+            <div class="dash-card">
+                <div class="dash-card-head">
+                    <div class="dash-card-title">
+                        <i class="ri-questionnaire-line"></i> Quiz Performance
+                    </div>
+                </div>
+                <div class="dash-card-body">
+                    <div class="perf-row">
+                        <div class="perf-box">
+                            <div class="perf-box-label">Total Attempts</div>
+                            <div class="perf-box-val blue">{{ number_format($totalAttempts) }}</div>
+                        </div>
+                        <div class="perf-box">
+                            <div class="perf-box-label">Average Score</div>
+                            <div class="perf-box-val green">{{ number_format($averageScore, 1) }}%</div>
+                        </div>
+                    </div>
+                    <div style="font-size:.72rem;font-weight:700;color:var(--txt-2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem;">
+                        Courses per Faculty — Top 5
+                    </div>
+                    @foreach($coursesPerFaculty as $faculty)
+                        @php
+                            $maxCourses = $coursesPerFaculty->first()->courses_count ?? 1;
+                            $pct = $maxCourses > 0 ? ($faculty->courses_count / $maxCourses) * 100 : 0;
+                        @endphp
+                        <div class="faculty-bar-row">
+                            <div class="faculty-bar-meta">
+                                <span>{{ $faculty->name }}</span>
+                                <span>{{ $faculty->courses_count }} courses</span>
                             </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- Top Performing Faculty -->
-        <div class="dashboard-card mb-8">
-            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                    <i class="ri-trophy-line" style="color: var(--gold);"></i> Top 5 Performing Faculty
-                </h3>
-                <a href="{{ route('admin.faculty-evaluations') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-800">View evaluations</a>
-            </div>
-            <div class="p-5">
-                @if(isset($topFaculty) && $topFaculty->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        @foreach($topFaculty as $index => $faculty)
-                            <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="w-8 h-8 rounded-full bg-[#0A1F44] text-white flex items-center justify-center font-bold">{{ $index + 1 }}</span>
-                                    <span class="text-yellow-600 font-bold">{{ number_format($faculty->faculty_evaluations_received_avg_rating ?? 0, 2) }}/5</span>
-                                </div>
-                                <p class="font-bold text-gray-800 truncate">{{ $faculty->name }}</p>
-                                <p class="text-xs text-gray-500">{{ $faculty->faculty_evaluations_received_count }} evaluation(s)</p>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width:{{ $pct }}%"></div>
                             </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="text-gray-500 text-center py-4">No faculty evaluations yet. Once students submit feedback, top performers will appear here.</p>
-                @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 
-        <!-- Recent Activity Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Recent Enrollments -->
-            <div class="dashboard-card">
-                <div class="px-5 py-4 border-b border-gray-100">
-                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="ri-user-add-line" style="color: var(--gold);"></i> Recent Enrollments
-                    </h3>
+        <!-- Section: Activity -->
+        <div class="section-header">
+            <h2><i class="ri-time-line" style="color:var(--gold-d);font-size:.85rem;"></i> Recent Activity</h2>
+        </div>
+
+        <!-- Enrollments + Quiz attempts -->
+        <div class="two-col">
+            <!-- Recent enrollments -->
+            <div class="dash-card">
+                <div class="dash-card-head">
+                    <div class="dash-card-title">
+                        <i class="ri-user-add-line"></i> Recent Enrollments
+                    </div>
+                    <span class="dash-card-badge">Latest</span>
                 </div>
-                <div class="p-5">
+                <div class="dash-card-body">
                     @if($recentEnrollments->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($recentEnrollments as $enrollment)
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="font-medium text-gray-800">{{ $enrollment->student->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $enrollment->course->name }}</p>
-                                    </div>
-                                    <span class="text-xs text-gray-400">{{ $enrollment->created_at->diffForHumans() }}</span>
+                        @foreach($recentEnrollments as $enrollment)
+                            <div class="list-item">
+                                <div class="list-avatar">{{ strtoupper(substr($enrollment->student->name, 0, 2)) }}</div>
+                                <div class="list-info">
+                                    <div class="list-name">{{ $enrollment->student->name }}</div>
+                                    <div class="list-sub">{{ $enrollment->course->name }}</div>
                                 </div>
-                            @endforeach
-                        </div>
+                                <div class="list-time">{{ $enrollment->created_at->diffForHumans() }}</div>
+                            </div>
+                        @endforeach
                     @else
-                        <p class="text-gray-500 text-center py-4">No recent enrollments.</p>
+                        <div class="empty-state"><i class="ri-user-line"></i> No recent enrollments.</div>
                     @endif
                 </div>
             </div>
-            
-            <!-- Recent Quiz Attempts -->
-            <div class="dashboard-card">
-                <div class="px-5 py-4 border-b border-gray-100">
-                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                        <i class="ri-quiz-line" style="color: var(--gold);"></i> Recent Quiz Attempts
-                    </h3>
-                </div>
-                <div class="p-5">
-                    @if($recentAttempts->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($recentAttempts as $attempt)
-                                @php
-                                    $percentage = $attempt->quiz->total_points > 0 
-                                        ? ($attempt->score / $attempt->quiz->total_points) * 100 
-                                        : 0;
-                                @endphp
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <p class="font-medium text-gray-800">{{ $attempt->student->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $attempt->quiz->title }} - {{ $attempt->quiz->course->name }}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="font-semibold {{ $percentage >= 60 ? 'text-green-600' : 'text-red-600' }}">
-                                            {{ $attempt->score }}/{{ $attempt->quiz->total_points }}
-                                        </p>
-                                        <span class="text-xs text-gray-400">{{ $attempt->completed_at->diffForHumans() }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-gray-500 text-center py-4">No quiz attempts yet.</p>
-                    @endif
-                </div>
-            </div>
-        </div>
 
-        <!-- Activity Logs -->
-        <div class="dashboard-card">
-            <div class="px-5 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                    <i class="ri-history-line" style="color: var(--gold);"></i> Recent Activity Logs
-                </h3>
-            </div>
-            <div class="p-5">
-                @if($recentActivities->count() > 0)
-                    <div class="space-y-3">
-                        @foreach($recentActivities as $activity)
-                            <div class="flex items-start gap-3 p-3 bg-gray-50 rounded-xl activity-item">
-                                <div class="flex-shrink-0 mt-0.5">
-                                    @switch($activity->action)
-                                        @case('create')
-                                            <i class="ri-add-line text-green-600 text-lg"></i>
-                                            @break
-                                        @case('update')
-                                            <i class="ri-edit-line text-yellow-600 text-lg"></i>
-                                            @break
-                                        @case('delete')
-                                            <i class="ri-delete-bin-line text-red-600 text-lg"></i>
-                                            @break
-                                        @default
-                                            <i class="ri-information-line text-blue-600 text-lg"></i>
-                                    @endswitch
+            <!-- Recent quiz attempts -->
+            <div class="dash-card">
+                <div class="dash-card-head">
+                    <div class="dash-card-title">
+                        <i class="ri-quiz-line"></i> Recent Quiz Attempts
+                    </div>
+                    <span class="dash-card-badge">Latest</span>
+                </div>
+                <div class="dash-card-body">
+                    @if($recentAttempts->count() > 0)
+                        @foreach($recentAttempts as $attempt)
+                            @php
+                                $pct = $attempt->quiz->total_points > 0
+                                    ? ($attempt->score / $attempt->quiz->total_points) * 100 : 0;
+                                $pass = $pct >= 60;
+                            @endphp
+                            <div class="list-item">
+                                <div class="list-avatar">{{ strtoupper(substr($attempt->student->name, 0, 2)) }}</div>
+                                <div class="list-info">
+                                    <div class="list-name">{{ $attempt->student->name }}</div>
+                                    <div class="list-sub">{{ $attempt->quiz->title }} · {{ $attempt->quiz->course->name }}</div>
                                 </div>
-                                <div class="flex-1">
-                                    <p class="text-sm text-gray-700">{{ $activity->description }}</p>
-                                    <p class="text-xs text-gray-400 mt-1">
-                                        {{ $activity->user ? $activity->user->name : 'System' }} • {{ $activity->created_at->diffForHumans() }}
-                                    </p>
+                                <div style="text-align:right;flex-shrink:0;">
+                                    <div class="score-pill {{ $pass ? 'pass' : 'fail' }}">
+                                        {{ $attempt->score }}/{{ $attempt->quiz->total_points }}
+                                    </div>
+                                    <div class="list-time" style="margin-top:.25rem;">{{ $attempt->completed_at->diffForHumans() }}</div>
                                 </div>
                             </div>
                         @endforeach
-                    </div>
+                    @else
+                        <div class="empty-state"><i class="ri-quiz-line"></i> No quiz attempts yet.</div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity logs -->
+        <div class="section-header">
+            <h2><i class="ri-history-line" style="color:var(--gold-d);font-size:.85rem;"></i> Activity Logs</h2>
+        </div>
+
+        <div class="dash-card" style="margin-bottom:1.8rem;">
+            <div class="dash-card-head">
+                <div class="dash-card-title">
+                    <i class="ri-history-line"></i> Recent System Logs
+                </div>
+                <a href="{{ route('admin.logs') }}" style="font-size:.72rem;font-weight:600;color:var(--navy-lite);text-decoration:none;display:flex;align-items:center;gap:.25rem;">
+                    View all <i class="ri-arrow-right-s-line"></i>
+                </a>
+            </div>
+            <div style="padding:.4rem .45rem;">
+                @if($recentActivities->count() > 0)
+                    @foreach($recentActivities as $activity)
+                        <div class="activity-item">
+                            <div class="activity-icon
+                                @switch($activity->action)
+                                    @case('create') create @break
+                                    @case('update') update @break
+                                    @case('delete') delete @break
+                                    @default info
+                                @endswitch
+                            ">
+                                @switch($activity->action)
+                                    @case('create') <i class="ri-add-line"></i> @break
+                                    @case('update') <i class="ri-edit-line"></i> @break
+                                    @case('delete') <i class="ri-delete-bin-line"></i> @break
+                                    @default <i class="ri-information-line"></i>
+                                @endswitch
+                            </div>
+                            <div>
+                                <div class="activity-text">{{ $activity->description }}</div>
+                                <div class="activity-meta">
+                                    {{ $activity->user ? $activity->user->name : 'System' }}
+                                    &nbsp;·&nbsp;
+                                    {{ $activity->created_at->diffForHumans() }}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 @else
-                    <p class="text-gray-500 text-center py-4">No activity logs available.</p>
+                    <div class="empty-state"><i class="ri-history-line"></i> No activity logs available.</div>
                 @endif
             </div>
         </div>
-    </div>
-</div>
 
-<!-- ======================= LOGOUT CONFIRMATION MODAL ======================= -->
-<div id="logoutModal" class="modal-overlay">
-    <div class="confirmation-modal">
-        <div class="modal-header">
-            <h3>
-                <i class="ri-logout-box-r-line"></i> 
-                Confirm Sign Out
-            </h3>
-            <button class="modal-close" onclick="closeLogoutModal()">&times;</button>
+    </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+<!-- ══ LOGOUT MODAL ══ -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
+            <button class="modal-close" onclick="closeLogoutModal()">×</button>
         </div>
         <div class="modal-body">
             <p>Are you sure you want to sign out of your account?</p>
-            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p>
+            <p class="modal-warn">You will be redirected to the login page.</p>
         </div>
-        <div class="modal-footer">
-            <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+        <div class="modal-foot">
+            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                 @csrf
-                <button type="submit" class="modal-btn modal-btn-confirm">Yes, Sign Out</button>
+                <button type="submit" class="btn-confirm">Yes, Sign Out</button>
             </form>
         </div>
     </div>
 </div>
 
 <script>
-    // Mobile sidebar toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('mobile-open');
-        });
-    }
-    document.addEventListener('click', function(event) {
-        const isMobile = window.innerWidth <= 1024;
-        if (isMobile && sidebar.classList.contains('mobile-open')) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('mobile-open');
-            }
-        }
-    });
+    /* ── Topbar date ── */
+    const d = new Date();
+    document.getElementById('topbar-date').textContent =
+        d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    // Monthly Statistics Chart
+    /* ── Sidebar toggle ── */
+    function toggleSidebar() {
+        const s = document.getElementById('sidebar');
+        const o = document.getElementById('sidebarOverlay');
+        const open = s.classList.toggle('open');
+        o.style.display = open ? 'block' : 'none';
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').style.display = 'none';
+    }
+
+    /* ── Monthly chart ── */
     const ctx = document.getElementById('monthlyChart').getContext('2d');
     const monthlyData = @json($monthlyStats);
-    
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: monthlyData.map(item => item.month),
+            labels: monthlyData.map(i => i.month),
             datasets: [
                 {
                     label: 'Students',
-                    data: monthlyData.map(item => item.students),
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgb(59, 130, 246)'
+                    data: monthlyData.map(i => i.students),
+                    borderColor: '#3D5FA0',
+                    backgroundColor: 'rgba(61,95,160,0.08)',
+                    tension: 0.42, fill: true, pointRadius: 4,
+                    pointBackgroundColor: '#3D5FA0',
+                    borderWidth: 2.5
                 },
                 {
                     label: 'Courses',
-                    data: monthlyData.map(item => item.courses),
-                    borderColor: 'rgb(139, 92, 246)',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgb(139, 92, 246)'
+                    data: monthlyData.map(i => i.courses),
+                    borderColor: '#7c3aed',
+                    backgroundColor: 'rgba(124,58,237,0.07)',
+                    tension: 0.42, fill: true, pointRadius: 4,
+                    pointBackgroundColor: '#7c3aed',
+                    borderWidth: 2.5
                 },
                 {
                     label: 'Quizzes',
-                    data: monthlyData.map(item => item.quizzes),
-                    borderColor: 'rgb(234, 179, 8)',
-                    backgroundColor: 'rgba(234, 179, 8, 0.1)',
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: 'rgb(234, 179, 8)'
+                    data: monthlyData.map(i => i.quizzes),
+                    borderColor: '#C49A00',
+                    backgroundColor: 'rgba(196,154,0,0.07)',
+                    tension: 0.42, fill: true, pointRadius: 4,
+                    pointBackgroundColor: '#C49A00',
+                    borderWidth: 2.5
                 }
             ]
         },
@@ -768,17 +1149,38 @@
             responsive: true,
             maintainAspectRatio: true,
             plugins: {
-                legend: { position: 'top' },
-                tooltip: { mode: 'index', intersect: false }
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' },
+                        usePointStyle: true, pointStyleWidth: 8, boxHeight: 6
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#0A1F44',
+                    titleFont: { family: 'Plus Jakarta Sans', size: 11, weight: '700' },
+                    bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                    padding: 10,
+                    cornerRadius: 8
+                }
             },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#E9EDF2' } },
-                x: { grid: { display: false } }
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(10,31,68,0.05)' },
+                    ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#637089' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#637089' }
+                }
             }
         }
     });
 
-    // Logout Modal
+    /* ── Logout modal ── */
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -790,9 +1192,7 @@
     document.getElementById('logoutModal').addEventListener('click', function(e) {
         if (e.target === this) closeLogoutModal();
     });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeLogoutModal();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogoutModal(); });
 </script>
 </body>
 </html>

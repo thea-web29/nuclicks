@@ -2,651 +2,885 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>All Quizzes - NU Clicks LMS</title>
-    <!-- Google Fonts + Remix Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Quizzes – NU Horizon LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            corePlugins: { preflight: false },
-        }
-    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ══ DESIGN TOKENS ══ */
+        :root {
+            --navy:      #0A1F44;
+            --navy-mid:  #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
+            --gold:      #FFD70F;
+            --gold-d:    #C49A00;
+            --gold-mid:  #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg:        #F8F6F1;
+            --white:     #FFFFFF;
+            --txt-1:     #0A1F44;
+            --txt-2:     #2C3E5C;
+            --txt-3:     #637089;
+            --bdr:       rgba(10,31,68,0.10);
+            --ease:      cubic-bezier(0.22,1,0.36,1);
+            --spring:    cubic-bezier(0.34,1.56,0.64,1);
+            --t:         0.26s var(--ease);
+            --sidebar-w: 272px;
+            --danger:    #dc2626;
+            --danger-d:  #b91c1c;
+            --green:     #16a34a;
+            --blue:      #3b82f6;
+            --orange:    #ea580c;
         }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: #F5F7FB;
-            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--txt-1);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --blue-deep: #0A1F44;
-            --gold: #FFD70F;
-            --gold-dark: #e5c20c;
-            --gray-light: #F8FAFF;
-            --gray-border: #E9EDF2;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
-            --transition: all 0.25s ease;
-            --danger-red: #dc2626;
-            --danger-dark: #b91c1c;
-        }
+        *:focus { outline: none !important; }
 
-        /* Sidebar styles */
+        /* ══ SCROLLBAR ══ */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
+
+        /* ══ SIDEBAR ══ */
         .sidebar {
-            background-color: var(--blue-deep);
-            width: 280px;
             position: fixed;
-            top: 0;
-            left: 0;
-            height: 100%;
-            z-index: 40;
-            transition: transform 0.3s ease;
-            transform: translateX(0);
+            top: 0; left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--navy);
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            transition: transform .3s var(--ease);
+            box-shadow: 4px 0 32px rgba(0,0,0,0.18);
+        }
+        .sidebar::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 4s linear infinite;
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+        .sidebar-arc {
+            position: absolute;
+            width: 340px; height: 340px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,215,15,0.06);
+            bottom: -60px; left: -100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .sidebar-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            .sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
-        }
-
+        /* Logo */
         .sidebar-logo {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 215, 15, 0.2);
+            padding: 1.5rem 1.4rem 1.3rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: .85rem;
+            border-bottom: 1px solid rgba(255,215,15,0.14);
         }
-        .sidebar-logo-img {
-            height: 45px;
-            width: auto;
+        .logo-seal-wrap { position: relative; flex-shrink: 0; }
+        .logo-seal {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: rgba(255,255,255,0.07);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: block;
+        }
+        .logo-seal-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,215,15,0.28);
+            animation: rotateSlow 14s linear infinite;
+        }
+        @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+        .logo-seal-ring::before {
+            content: "";
+            position: absolute;
+            top: -2px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: var(--gold);
+            box-shadow: 0 0 5px var(--gold);
         }
         .logo-text h1 {
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: white;
-            letter-spacing: -0.3px;
+            font-family: 'Fraunces', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -.02em;
+            line-height: 1.1;
         }
-        .logo-text span {
-            color: var(--gold);
-        }
+        .logo-text h1 em { color: var(--gold); font-style: normal; }
         .logo-text p {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
+            font-size: .65rem;
+            font-weight: 600;
+            letter-spacing: .10em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.40);
+            margin-top: .15rem;
         }
 
-        .nav-section {
-            padding: 0 1rem;
-            margin-top: 1.5rem;
+        /* Nav */
+        .nav-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.2rem .85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6rem;
         }
-        .nav-section-title {
-            font-size: 0.7rem;
+        .nav-section-label {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: .14em;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: rgba(255,215,15,0.6);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
+            color: rgba(255,215,15,0.50);
+            margin-bottom: .4rem;
+            padding-left: .4rem;
         }
         .nav-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 1rem;
-            border-radius: 12px;
-            color: rgba(255,255,255,0.85);
-            transition: var(--transition);
-            margin-bottom: 0.25rem;
+            gap: .7rem;
+            padding: .62rem .85rem;
+            border-radius: 10px;
+            color: rgba(255,255,255,0.70);
+            text-decoration: none;
+            font-size: .82rem;
             font-weight: 500;
-            text-decoration: none;   /* REMOVE UNDERLINE */
+            transition: all var(--t);
+            margin-bottom: .15rem;
         }
-        .nav-item i {
-            font-size: 1.2rem;
-            width: 1.5rem;
-        }
+        .nav-item i { font-size: 1.05rem; width: 1.25rem; flex-shrink: 0; }
         .nav-item:hover {
-            background: rgba(255,215,15,0.15);
-            color: white;
+            background: rgba(255,215,15,0.10);
+            color: rgba(255,255,255,0.92);
         }
         .nav-item.active {
             background: var(--gold);
-            color: var(--blue-deep);
+            color: var(--navy);
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(255,215,15,0.30);
         }
-        .nav-item.active i {
-            color: var(--blue-deep);
-        }
+        .nav-item.active i { color: var(--navy); }
 
+        /* Sidebar footer */
         .sidebar-footer {
-            margin-top: auto;
-            padding: 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.2);
+            padding: 1rem 1.2rem;
+            border-top: 1px solid rgba(255,215,15,0.14);
         }
-        .profile-info {
+        .profile-row {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
+            gap: .75rem;
+            margin-bottom: .85rem;
         }
         .avatar {
-            width: 42px;
-            height: 42px;
-            background: rgba(255,215,15,0.2);
+            width: 38px; height: 38px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255,215,15,0.15);
+            border: 1.5px solid rgba(255,215,15,0.30);
+            display: flex; align-items: center; justify-content: center;
             color: var(--gold);
+            font-size: 1rem;
+            flex-shrink: 0;
         }
-        .profile-details p {
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-        .profile-details span {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.7rem;
-        }
-        
-        /* ===== RED LOGOUT BUTTON (SIDEBAR) ===== */
+        .profile-name { font-size: .82rem; font-weight: 700; color: #fff; }
+        .profile-email { font-size: .68rem; color: rgba(255,255,255,0.42); margin-top: .1rem; }
         .logout-btn {
             width: 100%;
-            background: rgba(220, 38, 38, 0.15);
-            border: none;
-            padding: 0.6rem;
-            border-radius: 40px;
+            padding: .58rem .9rem;
+            border-radius: 8px;
+            background: rgba(220,38,38,0.12);
+            border: 1px solid rgba(220,38,38,0.22);
             color: #fca5a5;
+            font-size: .78rem;
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            gap: .5rem;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all var(--t);
         }
         .logout-btn:hover {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
-        }
-        .logout-btn i {
-            font-size: 1.1rem;
+            background: var(--danger);
+            border-color: var(--danger);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(220,38,38,0.35);
         }
 
-        /* Main content area */
+        /* ══ MAIN ══ */
         .main-content {
-            margin-left: 280px;
-            transition: margin-left 0.3s ease;
+            margin-left: var(--sidebar-w);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .top-bar {
-            background: white;
-            padding: 1rem 2rem;
+
+        /* Topbar */
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(248,246,241,0.88);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--bdr);
+            padding: .9rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            border-bottom: 1px solid var(--gray-border);
-            position: sticky;
-            top: 0;
-            z-index: 20;
+            gap: 1rem;
         }
+        .topbar-left { display: flex; align-items: center; gap: 1rem; }
         .menu-toggle {
             display: none;
             background: none;
-            border: none;
-            font-size: 1.5rem;
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .55rem;
+            color: var(--txt-2);
+            font-size: 1.1rem;
             cursor: pointer;
-            color: var(--blue-deep);
+            transition: all var(--t);
         }
-        .page-title {
+        .menu-toggle:hover { border-color: var(--gold-d); color: var(--navy); }
+        .topbar-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: var(--blue-deep);
+            color: var(--navy);
+            letter-spacing: -.02em;
         }
-        @media (max-width: 1024px) {
-            .menu-toggle {
-                display: block;
-            }
-            .main-content {
-                margin-left: 0;
-            }
+        .topbar-title em { color: var(--gold-d); font-style: normal; }
+        .topbar-breadcrumb { font-size: .72rem; color: var(--txt-3); font-weight: 500; }
+        .topbar-right { display: flex; align-items: center; gap: .75rem; }
+        .topbar-badge {
+            display: flex; align-items: center; gap: .4rem;
+            font-size: .72rem; font-weight: 600;
+            color: var(--txt-3);
+            background: var(--white);
+            border: 1px solid var(--bdr);
+            border-radius: 8px;
+            padding: .4rem .75rem;
+            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
+        }
+        .topbar-badge i { font-size: .85rem; color: var(--gold-d); }
+        .topbar-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
 
-        /* Quiz card styles */
-        .quiz-card {
-            background: white;
-            border-radius: 1.2rem;
-            transition: var(--transition);
-            border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: var(--card-shadow);
+
+        /* ══ PAGE BODY ══ */
+        .page-body { padding: 1.8rem 2rem; flex: 1; }
+
+        /* Section header */
+        .section-header { margin-bottom: 1.4rem; }
+        .section-header h2 {
+            font-size: .65rem;
+            font-weight: 700;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            color: var(--txt-3);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
         }
+        .section-header h2::after {
+            content: ""; flex: 1; height: 1px;
+            background: var(--bdr);
+        }
+
+        /* ══ ALERT ══ */
+        .alert-success {
+            display: flex; align-items: center; gap: .6rem;
+            background: rgba(22,163,74,0.08);
+            border: 1px solid rgba(22,163,74,0.20);
+            border-left: 4px solid var(--green);
+            border-radius: 10px;
+            padding: .75rem 1rem;
+            font-size: .8rem; font-weight: 600;
+            color: var(--green);
+            margin-bottom: 1.4rem;
+            animation: fadeUp .4s var(--ease) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(14px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ══ QUIZ CARDS ══ */
+        .quiz-list { display: flex; flex-direction: column; gap: .9rem; }
+        .quiz-card {
+            background: var(--white);
+            border-radius: 14px;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
+            padding: 1.2rem 1.3rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.2rem;
+            transition: all var(--t);
+            animation: fadeUp .5s var(--ease) both;
+            position: relative;
+            overflow: hidden;
+        }
+        .quiz-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 4px; height: 100%;
+            border-radius: 4px 0 0 4px;
+        }
+        .quiz-card.active-quiz::before  { background: var(--green); }
+        .quiz-card.ended-quiz::before   { background: var(--danger); }
+        .quiz-card.upcoming-quiz::before { background: var(--orange); }
+
         .quiz-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 24px rgba(10,31,68,0.09);
+            border-color: rgba(10,31,68,0.15);
         }
-        .badge-active {
-            background: #dcfce7;
-            color: #166534;
+        .quiz-card-left { flex: 1; min-width: 0; }
+        .quiz-card-head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: .55rem;
+            margin-bottom: .45rem;
         }
-        .badge-ended {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .badge-upcoming {
-            background: #fef9c3;
-            color: #854d0e;
-        }
-        .btn-icon {
-            transition: var(--transition);
-        }
-        .btn-icon:hover {
-            transform: translateY(-1px);
+        .quiz-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.25;
         }
 
-        /* ===== LOGOUT CONFIRMATION MODAL STYLES (THEMED: gold/blue, red confirm) ===== */
-        .logout-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(10, 31, 68, 0.75);
-            backdrop-filter: blur(4px);
-            z-index: 1100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0.2s, opacity 0.2s ease;
+        /* Status badges */
+        .status-badge {
+            font-size: .65rem; font-weight: 700;
+            padding: .2rem .6rem;
+            border-radius: 99px;
+            display: inline-flex; align-items: center; gap: .25rem;
         }
-        .logout-modal-overlay.active {
-            visibility: visible;
-            opacity: 1;
-        }
-        .logout-confirmation-modal {
-            background: white;
-            max-width: 450px;
-            width: 90%;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        .status-active   { background: rgba(22,163,74,0.12); color: var(--green); }
+        .status-ended    { background: rgba(220,38,38,0.10); color: var(--danger); }
+        .status-upcoming { background: rgba(234,88,12,0.10); color: var(--orange); }
+
+        .quiz-desc {
+            font-size: .78rem; color: var(--txt-3);
+            margin-bottom: .65rem;
+            line-height: 1.45;
             overflow: hidden;
-            transform: scale(0.95);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
-        .logout-modal-overlay.active .logout-confirmation-modal {
-            transform: scale(1);
+        .quiz-meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .9rem;
         }
-        .logout-modal-header {
-            background: var(--blue-deep);
-            padding: 1.25rem 1.5rem;
+        .quiz-meta-item {
+            display: flex; align-items: center; gap: .3rem;
+            font-size: .72rem; color: var(--txt-3);
+        }
+        .quiz-meta-item i { font-size: .8rem; }
+        .quiz-meta-item.course { color: var(--navy-lite); font-weight: 600; }
+
+        /* Action buttons */
+        .quiz-actions {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--gold);
+            gap: .45rem;
+            flex-shrink: 0;
         }
-        .logout-modal-header h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: white;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .logout-modal-header h3 i {
-            color: var(--gold);
-            font-size: 1.4rem;
-        }
-        .logout-modal-close {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            font-size: 1.6rem;
+        .qa-btn {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .42rem .85rem;
+            border-radius: 8px;
+            font-size: .75rem; font-weight: 700;
+            text-decoration: none;
+            transition: all var(--t);
+            border: 1px solid var(--bdr);
+            background: var(--white);
+            color: var(--txt-2);
             cursor: pointer;
-            transition: color 0.2s;
-            line-height: 1;
-            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .logout-modal-close:hover {
-            color: var(--gold);
-        }
-        .logout-modal-body {
-            padding: 1.8rem 1.5rem;
-            background: white;
+        .qa-btn:hover { background: var(--bg); border-color: rgba(10,31,68,0.18); }
+        .qa-btn.edit i    { color: var(--gold-d); }
+        .qa-btn.results i { color: var(--blue); }
+        .qa-btn.delete    { color: var(--danger); border-color: rgba(220,38,38,0.15); }
+        .qa-btn.delete:hover { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.25); }
+
+        /* ══ EMPTY STATE ══ */
+        .empty-card {
+            background: var(--white);
+            border-radius: 16px;
+            border: 1px solid var(--bdr);
+            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
             text-align: center;
+            padding: 4rem 2rem;
+            animation: fadeUp .5s var(--ease) both;
         }
-        .logout-modal-body p {
-            font-size: 1rem;
-            color: #1f2937;
-            font-weight: 500;
-            margin-bottom: 0;
+        .empty-card i { font-size: 3rem; color: var(--txt-3); opacity: .3; display: block; margin-bottom: 1rem; }
+        .empty-card h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; }
+        .empty-card p { font-size: .82rem; color: var(--txt-3); max-width: 320px; margin: 0 auto 1.5rem; }
+        .btn-gold {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .42rem .95rem;
+            border-radius: 8px; border: none;
+            background: var(--gold); color: var(--navy);
+            font-size: .75rem; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            text-decoration: none; cursor: pointer;
+            transition: all var(--t);
+            box-shadow: 0 2px 8px rgba(255,215,15,0.28);
         }
-        .logout-modal-footer {
-            padding: 1rem 1.5rem 1.5rem 1.5rem;
-            display: flex;
-            gap: 0.75rem;
-            justify-content: flex-end;
-            background: #f9fafb;
-            border-top: 1px solid var(--gray-border);
+        .btn-gold:hover { background: var(--gold-mid); transform: translateY(-1px); }
+
+        /* ══ MODAL ══ */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(10,31,68,0.72);
+            backdrop-filter: blur(6px);
+            z-index: 500;
+            display: flex; align-items: center; justify-content: center;
+            visibility: hidden; opacity: 0;
+            transition: all .22s var(--ease);
         }
-        .logout-modal-btn {
-            padding: 0.6rem 1.25rem;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            font-family: 'Inter', sans-serif;
+        .modal-overlay.active { visibility: visible; opacity: 1; }
+        .modal {
+            background: var(--white);
+            border-radius: 18px; width: min(440px, 94vw);
+            overflow: hidden;
+            transform: scale(0.94) translateY(12px);
+            transition: transform .28s var(--spring);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,215,15,0.10);
         }
-        .logout-modal-btn-cancel {
-            background: #eef2ff;
-            color: #1e293b;
+        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-head {
+            background: var(--navy);
+            padding: 1.2rem 1.4rem;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+            position: relative;
         }
-        .logout-modal-btn-cancel:hover {
-            background: #e2e8f0;
-            transform: translateY(-1px);
+        .modal-head::before {
+            content: "";
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
-        .logout-modal-btn-confirm {
-            background: var(--danger-red);
-            color: white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        .modal-head h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.05rem; font-weight: 700; color: #fff;
+            display: flex; align-items: center; gap: .5rem;
         }
-        .logout-modal-btn-confirm:hover {
-            background: var(--danger-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.2);
+        .modal-head h3 i { color: var(--gold); }
+        .modal-close {
+            background: none; border: none;
+            color: rgba(255,255,255,0.55); font-size: 1.3rem;
+            cursor: pointer; transition: color var(--t); line-height: 1;
         }
-        @media (max-width: 500px) {
-            .logout-modal-footer {
-                flex-direction: column-reverse;
-            }
-            .logout-modal-btn {
-                width: 100%;
-                text-align: center;
-            }
+        .modal-close:hover { color: var(--gold); }
+        .modal-body { padding: 1.8rem 1.5rem; text-align: center; }
+        .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.55; }
+        .modal-warn { font-size: .72rem; color: var(--txt-3); margin-top: .5rem; }
+        .modal-foot {
+            padding: .9rem 1.4rem 1.3rem;
+            display: flex; gap: .6rem; justify-content: flex-end;
+            background: var(--bg); border-top: 1px solid var(--bdr);
+        }
+        .btn-cancel {
+            padding: .58rem 1.1rem; border-radius: 8px;
+            border: 1px solid var(--bdr); background: var(--white);
+            font-size: .8rem; font-weight: 600; color: var(--txt-2);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
+        }
+        .btn-cancel:hover { background: var(--bg); }
+        .btn-confirm {
+            padding: .58rem 1.2rem; border-radius: 8px; border: none;
+            background: var(--danger); font-size: .8rem; font-weight: 700; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer; transition: all var(--t);
+            box-shadow: 0 3px 10px rgba(220,38,38,0.30);
+        }
+        .btn-confirm:hover { background: var(--danger-d); transform: translateY(-1px); }
+
+        /* ══ MOBILE OVERLAY ══ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(10,31,68,0.65); z-index: 90;
+        }
+
+        /* ══ RESPONSIVE ══ */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay { display: block; }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: flex; }
+            .quiz-card { flex-direction: column; }
+            .quiz-actions { flex-wrap: wrap; }
+        }
+        @media (max-width: 640px) {
+            .page-body { padding: 1.2rem 1rem; }
+            .topbar { padding: .8rem 1rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- ========== SIDEBAR (UPDATED: RED LOGOUT BUTTON) ========== -->
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-logo">
-        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img">
-        <div class="logo-text">
-            <h1>NU <span>CLICKS</span> LMS</h1>
-            <p>Faculty Portal</p>
-        </div>
-    </div>
+    <div class="sidebar-arc"></div>
+    <div class="sidebar-inner">
 
-    <div style="flex:1; overflow-y: auto;">
-        <div class="nav-section">
-            <div class="nav-section-title">Main</div>
-            <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
-                <i class="ri-dashboard-line"></i> Dashboard
-            </a>
-            <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
-                <i class="ri-user-line"></i> Students
-            </a>
-            <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
-                <i class="ri-book-line"></i> Courses
-            </a>
-            <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
-                <i class="ri-folder-3-line"></i> Files & Folders
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Quiz Management</div>
-            <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
-                <i class="ri-add-circle-line"></i> Create Quiz
-            </a>
-            <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
-                <i class="ri-list-check"></i> All Quizzes
-            </a>
-            <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
-                <i class="ri-database-2-line"></i> Question Bank
-            </a>
-            <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
-                <i class="ri-graduation-cap-line"></i> Grading
-            </a>
-        </div>
-
-        <div class="nav-section">
-            <div class="nav-section-title">Analytics</div>
-            <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
-                <i class="ri-bar-chart-line"></i> Results & Analytics
-            </a>
-            <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
-                <i class="ri-star-smile-line"></i> My Evaluation
-            </a>
-        </div>
-    </div>
-
-    <div class="sidebar-footer">
-        <div class="profile-info">
-            <div class="avatar">
-                <i class="ri-user-line"></i>
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <div class="logo-seal-wrap">
+                <div class="logo-seal-ring"></div>
+                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal"
+                     onerror="this.style.display='none'">
             </div>
-            <div class="profile-details">
-                <p>{{ Auth::user()->name }}</p>
-                <span>{{ Auth::user()->email }}</span>
+            <div class="logo-text">
+                <h1>NU Horizon <em>LMS</em></h1>
+                <p>Faculty Portal · National University</p>
             </div>
         </div>
-        <!-- Logout form with full account logout + modal trigger -->
-        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-            @csrf
-            <button type="button" id="logoutButton" class="logout-btn">
-                <i class="ri-logout-box-r-line"></i> Sign Out
-            </button>
-        </form>
+
+        <!-- Nav -->
+        <div class="nav-body">
+            <div>
+                <div class="nav-section-label">Main</div>
+                <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
+                    <i class="ri-dashboard-line"></i> Dashboard
+                </a>
+                <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
+                    <i class="ri-user-line"></i> Students
+                </a>
+                <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
+                    <i class="ri-book-line"></i> Courses
+                </a>
+                <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                    <i class="ri-folder-3-line"></i> Files & Folders
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Quiz Management</div>
+                <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
+                    <i class="ri-add-circle-line"></i> Create Quiz
+                </a>
+                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
+                    <i class="ri-list-check"></i> All Quizzes
+                </a>
+                <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
+                    <i class="ri-database-2-line"></i> Question Bank
+                </a>
+                <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
+                    <i class="ri-graduation-cap-line"></i> Grading
+                </a>
+            </div>
+            <div>
+                <div class="nav-section-label">Analytics</div>
+                <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
+                    <i class="ri-bar-chart-line"></i> Results & Analytics
+                </a>
+                <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
+                    <i class="ri-star-smile-line"></i> My Evaluation
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+            <div class="profile-row">
+                <div class="avatar"><i class="ri-user-line"></i></div>
+                <div>
+                    <div class="profile-name">{{ Auth::user()->name }}</div>
+                    <div class="profile-email">{{ Auth::user()->email }}</div>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+                @csrf
+                <button type="button" id="logoutButton" class="logout-btn">
+                    <i class="ri-logout-box-line"></i> Sign Out
+                </button>
+            </form>
+        </div>
+
     </div>
 </aside>
 
-<!-- ========== MAIN CONTENT ========== -->
+<!-- ══ MAIN ══ -->
 <div class="main-content" id="mainContent">
-    <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle">
-            <i class="ri-menu-line"></i>
-        </button>
-        <h2 class="page-title text-lg md:text-xl">All Quizzes</h2>
-        <a href="{{ route('faculty.quiz.create') }}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background: var(--blue-deep); color: white;">
-            <i class="ri-add-line text-base"></i> Create New Quiz
-        </a>
-    </div>
 
-    <div class="p-4 md:p-6">
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="ri-menu-2-line"></i>
+            </button>
+            <div>
+                <div class="topbar-title">NU Horizon <em>LMS</em></div>
+                <div class="topbar-breadcrumb">Faculty → Quiz Management → All Quizzes</div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-badge">
+                <span class="topbar-dot"></span>
+                System Online
+            </div>
+            <div class="topbar-badge">
+                <i class="ri-calendar-line"></i>
+                <span id="topbar-date"></span>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Page body -->
+    <div class="page-body">
+
+        <!-- Section header -->
+        <div class="section-header">
+            <h2><i class="ri-list-check" style="color:var(--gold-d);font-size:.85rem;"></i> All Quizzes</h2>
+        </div>
+
+        <!-- Success alert -->
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-xl mb-6 shadow-sm flex items-center gap-2">
-                <i class="ri-checkbox-circle-line text-green-600"></i>
+            <div class="alert-success">
+                <i class="ri-checkbox-circle-line"></i>
                 <span>{{ session('success') }}</span>
             </div>
         @endif
 
         @if(isset($quizzes) && $quizzes->count() > 0)
-            <div class="space-y-5">
-                @foreach($quizzes as $quiz)
+            <div class="quiz-list">
+                @foreach($quizzes as $i => $quiz)
                     @php
-                        $statusClass = '';
-                        $statusText = '';
+                        $statusClass = 'upcoming-quiz';
+                        $statusBadge = 'status-upcoming';
+                        $statusText  = 'Upcoming';
+                        $statusIcon  = 'ri-time-line';
                         if($quiz->hasStarted() && !$quiz->hasEnded()) {
-                            $statusClass = 'badge-active';
-                            $statusText = 'Active';
+                            $statusClass = 'active-quiz';
+                            $statusBadge = 'status-active';
+                            $statusText  = 'Active';
+                            $statusIcon  = 'ri-checkbox-circle-line';
                         } elseif($quiz->hasEnded()) {
-                            $statusClass = 'badge-ended';
-                            $statusText = 'Ended';
-                        } else {
-                            $statusClass = 'badge-upcoming';
-                            $statusText = 'Upcoming';
+                            $statusClass = 'ended-quiz';
+                            $statusBadge = 'status-ended';
+                            $statusText  = 'Ended';
+                            $statusIcon  = 'ri-close-circle-line';
                         }
                     @endphp
-                    <div class="quiz-card p-5 transition-all duration-200">
-                        <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                            <div class="flex-1">
-                                <div class="flex flex-wrap items-center gap-3 mb-2">
-                                    <h3 class="text-lg font-bold text-gray-800">{{ $quiz->title }}</h3>
-                                    <span class="text-xs px-2.5 py-1 rounded-full font-medium {{ $statusClass }}">{{ $statusText }}</span>
-                                </div>
-                                <p class="text-gray-600 text-sm mb-3">{{ $quiz->description ?? 'No description provided.' }}</p>
-                                <div class="flex flex-wrap gap-4 text-sm text-gray-500">
-                                    <span class="flex items-center gap-1.5"><i class="ri-book-line text-indigo-500"></i> {{ $quiz->course->code ?? 'N/A' }}</span>
-                                    <span class="flex items-center gap-1.5"><i class="ri-question-line"></i> {{ $quiz->questions->count() }} Questions</span>
-                                    <span class="flex items-center gap-1.5"><i class="ri-star-line text-yellow-600"></i> {{ $quiz->total_points }} Points</span>
-                                    @if($quiz->duration_minutes)
-                                        <span class="flex items-center gap-1.5"><i class="ri-time-line"></i> {{ $quiz->duration_minutes }} min</span>
-                                    @endif
-                                    <span class="flex items-center gap-1.5"><i class="ri-user-line"></i> {{ $quiz->attempts->count() }} Attempts</span>
-                                </div>
+                    <div class="quiz-card {{ $statusClass }}" style="animation-delay:{{ $i * 0.05 }}s;">
+                        <div class="quiz-card-left">
+                            <div class="quiz-card-head">
+                                <div class="quiz-title">{{ $quiz->title }}</div>
+                                <span class="status-badge {{ $statusBadge }}">
+                                    <i class="{{ $statusIcon }}"></i> {{ $statusText }}
+                                </span>
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <a href="{{ route('faculty.edit.quiz', $quiz->id) }}" 
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 hover:border-gold transition-all hover:bg-gray-50">
-                                    <i class="ri-edit-line text-yellow-600"></i> Edit
-                                </a>
-                                <a href="{{ route('faculty.submissions', $quiz->id) }}" 
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 hover:border-gold transition-all hover:bg-gray-50">
-                                    <i class="ri-bar-chart-line text-blue-600"></i> Results
-                                </a>
-                                <form action="{{ route('faculty.delete.quiz', $quiz->id) }}" method="POST" class="inline" onsubmit="return confirm('⚠️ Delete this quiz? All questions, submissions, and results will be permanently lost. This action cannot be undone.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium border border-gray-200 hover:border-red-300 transition-all hover:bg-red-50">
-                                        <i class="ri-delete-bin-line text-red-600"></i> Delete
-                                    </button>
-                                </form>
+                            <div class="quiz-desc">{{ $quiz->description ?? 'No description provided.' }}</div>
+                            <div class="quiz-meta-row">
+                                <span class="quiz-meta-item course">
+                                    <i class="ri-book-line"></i> {{ $quiz->course->code ?? 'N/A' }}
+                                </span>
+                                <span class="quiz-meta-item">
+                                    <i class="ri-question-line"></i> {{ $quiz->questions->count() }} Questions
+                                </span>
+                                <span class="quiz-meta-item">
+                                    <i class="ri-star-line"></i> {{ $quiz->total_points }} Points
+                                </span>
+                                @if($quiz->duration_minutes)
+                                    <span class="quiz-meta-item">
+                                        <i class="ri-time-line"></i> {{ $quiz->duration_minutes }} min
+                                    </span>
+                                @endif
+                                <span class="quiz-meta-item">
+                                    <i class="ri-user-line"></i> {{ $quiz->attempts->count() }} Attempts
+                                </span>
                             </div>
+                        </div>
+                        <div class="quiz-actions">
+                            <a href="{{ route('faculty.edit.quiz', $quiz->id) }}" class="qa-btn edit">
+                                <i class="ri-edit-line"></i> Edit
+                            </a>
+                            <a href="{{ route('faculty.submissions', $quiz->id) }}" class="qa-btn results">
+                                <i class="ri-bar-chart-line"></i> Results
+                            </a>
+                            <form action="{{ route('faculty.delete.quiz', $quiz->id) }}" method="POST"
+                                  style="margin:0;" id="delete-form-{{ $quiz->id }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                        class="qa-btn delete"
+                                        onclick="confirmDeleteQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')">
+                                    <i class="ri-delete-bin-line"></i> Delete
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @endforeach
             </div>
         @else
-            <!-- Empty state with consistent styling -->
-            <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden text-center py-16 px-4 transition-all">
-                <i class="ri-quiz-line text-6xl text-gray-300 mb-5 block"></i>
-                <h3 class="text-2xl font-semibold text-gray-800 mb-2">No Quizzes Created Yet</h3>
-                <p class="text-gray-500 max-w-sm mx-auto mb-7">Ready to assess your students? Create your first quiz and start building engaging assessments.</p>
-                <a href="{{ route('faculty.quiz.create') }}"class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-md no-underline" style="background: var(--gold); color: var(--blue-deep);">
-                    <i class="ri-add-line text-lg"></i> Create Your First Quiz
+            <div class="empty-card">
+                <i class="ri-quiz-line"></i>
+                <h3>No Quizzes Created Yet</h3>
+                <p>Ready to assess your students? Create your first quiz and start building engaging assessments.</p>
+                <a href="{{ route('faculty.quiz.create') }}" class="btn-gold">
+                    <i class="ri-add-line"></i> Create Your First Quiz
                 </a>
             </div>
         @endif
+
+    </div><!-- /page-body -->
+</div><!-- /main-content -->
+
+<!-- ══ DELETE CONFIRM MODAL ══ -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-head">
+            <h3><i class="ri-delete-bin-line"></i> Delete Quiz</h3>
+            <button class="modal-close" onclick="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to delete <strong id="deleteQuizTitle"></strong>?</p>
+            <p class="modal-warn">All questions, submissions, and results will be permanently lost. This cannot be undone.</p>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-confirm" id="confirmDeleteBtn">Yes, Delete</button>
+        </div>
     </div>
 </div>
 
-<!-- ======================= LOGOUT CONFIRMATION MODAL (THEMED: red confirm button) ======================= -->
-<div id="logoutModal" class="logout-modal-overlay">
-    <div class="logout-confirmation-modal">
-        <div class="logout-modal-header">
-            <h3>
-                <i class="ri-logout-box-r-line"></i> 
-                Confirm Sign Out
-            </h3>
-            <button class="logout-modal-close" id="closeLogoutModalBtn">&times;</button>
+<!-- ══ LOGOUT MODAL ══ -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="modal">
+        <div class="modal-head">
+            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
+            <button class="modal-close" onclick="closeLogoutModal()">×</button>
         </div>
-        <div class="logout-modal-body">
-            <p>Are you sure you want to sign out of your faculty account?</p>
-            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page and will need to sign in again.</p>
+        <div class="modal-body">
+            <p>Are you sure you want to sign out of your account?</p>
+            <p class="modal-warn">You will be redirected to the login page.</p>
         </div>
-        <div class="logout-modal-footer">
-            <button class="logout-modal-btn logout-modal-btn-cancel" id="cancelLogoutBtn">Cancel</button>
-            <button class="logout-modal-btn logout-modal-btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
+        <div class="modal-foot">
+            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <button class="btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Mobile sidebar toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('mobile-open');
-        });
-    }
-    document.addEventListener('click', function(event) {
-        const isMobile = window.innerWidth <= 1024;
-        if (isMobile && sidebar.classList.contains('mobile-open')) {
-            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
-                sidebar.classList.remove('mobile-open');
-            }
-        }
-    });
+    /* ── Topbar date ── */
+    document.getElementById('topbar-date').textContent =
+        new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    // Active nav highlight based on current route
-    const currentUrl = window.location.pathname;
-    document.querySelectorAll('.nav-item').forEach(item => {
-        const href = item.getAttribute('href');
-        if (href && currentUrl.includes(href) && href !== '/faculty/dashboard') {
-            item.classList.add('active');
-        } else if (currentUrl === '/faculty/dashboard' && href === '/faculty/dashboard') {
-            item.classList.add('active');
-        }
-    });
-    // Force "All Quizzes" active highlight
-    if (currentUrl.includes('/faculty/quizzes') || currentUrl.includes('/faculty/quizzes/list')) {
-        document.querySelectorAll('.nav-item').forEach(item => {
-            if (item.getAttribute('href') === '{{ route("faculty.quizzes.list") }}') {
-                item.classList.add('active');
-            }
-        });
+    /* ── Sidebar toggle ── */
+    function toggleSidebar() {
+        const s = document.getElementById('sidebar');
+        const o = document.getElementById('sidebarOverlay');
+        const open = s.classList.toggle('open');
+        o.style.display = open ? 'block' : 'none';
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
-    // ======================= LOGOUT CONFIRMATION MODAL LOGIC (FULL ACCOUNT LOGOUT) =======================
-    const logoutButton = document.getElementById('logoutButton');
-    const logoutModal = document.getElementById('logoutModal');
-    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
-    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
-    const closeLogoutModalBtn = document.getElementById('closeLogoutModalBtn');
-    const logoutForm = document.getElementById('logoutForm');
+    /* ── Delete quiz modal ── */
+    let pendingDeleteForm = null;
 
+    function confirmDeleteQuiz(id, title) {
+        pendingDeleteForm = document.getElementById(`delete-form-${id}`);
+        document.getElementById('deleteQuizTitle').textContent = title;
+        document.getElementById('deleteModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.remove('active');
+        document.body.style.overflow = '';
+        pendingDeleteForm = null;
+    }
+    document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+        if (pendingDeleteForm) pendingDeleteForm.submit();
+    });
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    /* ── Logout modal ── */
     function openLogoutModal() {
-        logoutModal.classList.add('active');
+        document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     function closeLogoutModal() {
-        logoutModal.classList.remove('active');
+        document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
-
-    if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            openLogoutModal();
-        });
-    }
-    if (confirmLogoutBtn) {
-        confirmLogoutBtn.addEventListener('click', () => {
-            if (logoutForm) {
-                logoutForm.submit();
-            } else {
-                window.location.href = "{{ route('logout') }}";
-            }
-        });
-    }
-    if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutModal);
-    if (closeLogoutModalBtn) closeLogoutModalBtn.addEventListener('click', closeLogoutModal);
-    logoutModal.addEventListener('click', (e) => {
-        if (e.target === logoutModal) closeLogoutModal();
+    document.getElementById('logoutButton').addEventListener('click', function(e) {
+        e.preventDefault(); openLogoutModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && logoutModal.classList.contains('active')) closeLogoutModal();
+    document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+        document.getElementById('logoutForm').submit();
+    });
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) closeLogoutModal();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeDeleteModal(); closeLogoutModal(); }
     });
 </script>
 </body>
