@@ -719,14 +719,13 @@
     </div>
 </aside>
 
-<<<<<<< HEAD
 <!-- ══ MAIN CONTENT ══ -->
 <div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
             <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
                 <i class="ri-menu-2-line"></i>
-=======
+
 <!-- MAIN CONTENT -->
 <div class="main-content" id="mainContent">
     <div class="top-bar">
@@ -772,7 +771,7 @@
             </button>
             <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">
                 <i class="ri-upload-cloud-line mr-1.5"></i> Bulk Faculty Import
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+
             </button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
@@ -799,7 +798,7 @@
                     <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
                 </div>
             @endif
-<<<<<<< HEAD
+
             @if(session('error'))
                 <div class="alert alert-error">
                     <i class="ri-error-warning-line"></i> {{ session('error') }}
@@ -814,7 +813,6 @@
                             @foreach(session('import_errors') as $err)
                                 <li>{{ $err }}</li>
                             @endforeach
-=======
 
             <div class="bg-white rounded-2xl shadow p-6">
                 <form action="{{ route('admin.users.store') }}" method="POST">
@@ -957,7 +955,6 @@
                 </button>
             </div>
 
-<<<<<<< HEAD
             <!-- ========== TAB: SINGLE ACCOUNT ========== -->
             <div id="panel-single" class="tab-content">
                 @if($errors->any())

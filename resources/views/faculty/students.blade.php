@@ -814,7 +814,6 @@
 <!-- ══ MAIN ══ -->
 <div class="main-content" id="mainContent">
 
-<<<<<<< HEAD
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
@@ -824,7 +823,7 @@
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Faculty → Student Management</div>
-=======
+
     <div class="p-4 md:p-6">
         <!-- Search and Filters -->
         <div class="bg-white rounded-lg shadow-md p-4 mb-6 border-l-4" style="border-left-color: var(--gold);">
@@ -851,7 +850,7 @@
                         <i class="ri-filter-line"></i> Search
                     </button>
                 </div>
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+
             </div>
         </div>
         <div class="topbar-right">
@@ -907,7 +906,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-<<<<<<< HEAD
+
                     <tbody id="studentsTableBody">
                         <!-- Sample Student 1 -->
                         <tr class="student-row" data-student-id="1">
@@ -973,7 +972,7 @@
                                     <button onclick="editStudent(3)" class="action-btn btn-edit" title="Edit Student"><i class="ri-edit-line"></i></button>
                                     <button onclick="deleteStudent(3)" class="action-btn btn-delete" title="Delete Student"><i class="ri-delete-bin-line"></i></button>
                                 </div>
-=======
+
                     <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
                         @forelse($students as $student)
                         <tr class="student-row hover:bg-gray-50 transition" data-student-id="{{ $student->id }}">
@@ -1006,7 +1005,7 @@
                             <td colspan="5" class="px-6 py-8 text-center text-gray-500">
                                 <i class="ri-user-line text-4xl block mb-2 text-gray-300"></i>
                                 No students enrolled in your courses yet.
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+
                             </td>
                         </tr>
                         @endforelse

@@ -763,7 +763,7 @@
                         <thead>
                             <tr><th>ID</th><th>Student ID</th><th>Name</th><th>Email</th><th>Department</th><th>Year</th><th>Courses</th><th>Quizzes</th><th>Status</th><th>Actions</th></tr>
                         </thead>
-<<<<<<< HEAD
+
                         <tbody>
                             @forelse($students as $student)
                             <tr>
@@ -802,7 +802,7 @@
                             @empty
                             <tr><td colspan="10" style="text-align:center; padding:2rem;">No students found.</td></tr>
                             @endforelse
-=======
+
                         <tbody class="bg-white divide-y divide-gray-100">
                             @foreach($students as $student)
                                 <tr class="hover:bg-gray-50 transition">
@@ -856,7 +856,7 @@
                                     </td>
                                 </tr>
                             @endforeach
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+
                         </tbody>
                     </table>
                 </div>
@@ -908,11 +908,11 @@
                                     </div>
                                 </td>
                             </tr>
-<<<<<<< HEAD
+
                             @empty
                             <tr><td colspan="7" style="text-align:center; padding:2rem;">No faculty records.</td></tr>
                             @endforelse
-=======
+
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
                             @foreach($faculty as $facultyMember)
@@ -964,7 +964,7 @@
                                     </td>
                                 </tr>
                             @endforeach
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+
                         </tbody>
                     </table>
                 </div>
