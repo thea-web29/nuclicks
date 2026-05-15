@@ -81,6 +81,16 @@ class StudentController extends Controller
             $unreadNotifications = 0;
         }
         
+        // Get recent notifications
+        try {
+            $recentNotifications = Notification::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        } catch (\Exception $e) {
+            $recentNotifications = collect();
+        }
+
         // Get recent announcements
         try {
             $announcements = Announcement::whereHas('course.enrollments', function($q) use ($user) {
@@ -122,7 +132,7 @@ class StudentController extends Controller
         return view('student.dashboard', compact(
             'enrolledCourses', 'completedQuizzes', 'averageScore', 
             'upcomingQuizzes', 'pendingQuizzes', 'announcements',
-            'unreadNotifications'
+            'unreadNotifications', 'recentNotifications'
         ));
     }
     
@@ -311,7 +321,11 @@ public function profile()
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
-        return view('student.notifications', compact('notifications'));
+        $unreadNotifications = Notification::where('user_id', $user->id)
+            ->where('is_read', false)
+            ->count();
+        
+        return view('student.notifications', compact('notifications', 'unreadNotifications'));
     }
     
     public function markNotificationRead($id)
@@ -562,6 +576,85 @@ public function courseDetails($id)
         ));
     }
     
+    // ==================== FACULTY EVALUATION ====================
+
+    public function facultyEvaluation()
+    {
+        $user = Auth::user();
+
+        $evalStatus = \App\Models\SystemSetting::getValue('evaluation_status', 'open');
+        $evalStart = \App\Models\SystemSetting::getValue('evaluation_start_date');
+        $evalEnd = \App\Models\SystemSetting::getValue('evaluation_end_date');
+
+        $isClosed = ($evalStatus === 'closed');
+        
+        $now = now();
+        if (!$isClosed) {
+            if ($evalStart && $now->lt(\Carbon\Carbon::parse($evalStart))) {
+                $isClosed = true;
+            }
+            if ($evalEnd && $now->gt(\Carbon\Carbon::parse($evalEnd))) {
+                $isClosed = true;
+            }
+        }
+
+        // Get courses the student is enrolled in, with their faculty
+        $enrolledCourses = Enrollment::where('student_id', $user->id)
+            ->with(['course.faculty'])
+            ->get()
+            ->map(function ($enrollment) {
+                return $enrollment->course;
+            })
+            ->filter(fn($course) => $course && $course->faculty);
+
+        $evaluatedCourseIds = \App\Models\FacultyEvaluation::where('student_id', $user->id)
+            ->pluck('course_id')
+            ->toArray();
+
+        return view('student.evaluations.index', compact('enrolledCourses', 'isClosed', 'evaluatedCourseIds'));
+    }
+
+    public function storeFacultyEvaluation(\Illuminate\Http\Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'faculty_id' => 'required|exists:users,id',
+            'teaching' => 'required|integer|min:1|max:5',
+            'knowledge' => 'required|integer|min:1|max:5',
+            'communication' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string',
+        ]);
+
+        // Calculate average rating
+        $rating = ($validated['teaching'] + $validated['knowledge'] + $validated['communication']) / 3;
+
+        // Check if already evaluated
+        $existing = \App\Models\FacultyEvaluation::where('student_id', $user->id)
+            ->where('course_id', $validated['course_id'])
+            ->first();
+
+        if ($existing) {
+            return response()->json(['message' => 'You have already evaluated this course.'], 400);
+        }
+
+        \App\Models\FacultyEvaluation::create([
+            'student_id' => $user->id,
+            'faculty_id' => $validated['faculty_id'],
+            'course_id' => $validated['course_id'],
+            'teaching_quality' => $validated['teaching'],
+            'preparedness' => $validated['knowledge'],
+            'communication' => $validated['communication'],
+            'fairness' => $validated['teaching'], // Defaulting since we removed it from UI
+            'rating' => $rating,
+            'comment' => $validated['comment'],
+            'is_anonymous' => false
+        ]);
+
+        return response()->json(['message' => 'Evaluation submitted successfully!']);
+    }
+
     private function getLetterGrade($percentage)
     {
         if ($percentage >= 90) return 'A';

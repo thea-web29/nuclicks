@@ -615,7 +615,7 @@
                         <select id="faculty_id" name="faculty_id" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold transition bg-white">
                             <option value="">-- Select Faculty --</option>
                             @foreach($faculties ?? [] as $faculty)
-                                <option value="{{ $faculty->id }}">{{ $faculty->name }} – {{ $faculty->department ?? 'No department' }}</option>
+                                <option value="{{ $faculty->id }}">{{ $faculty->name }} – {{ $faculty->department_id ? ($faculty->departmentRel->name ?? 'No department') : ($faculty->department ?? 'No department') }}</option>
                             @endforeach
                         </select>
                     </div>

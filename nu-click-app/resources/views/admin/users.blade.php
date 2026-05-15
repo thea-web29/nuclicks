@@ -318,8 +318,11 @@
             <h2 class="page-title text-lg md:text-xl">User Management</h2>
             <p class="text-sm text-gray-500 hidden md:block">Manage students and faculty accounts</p>
         </div>
-        <a href="{{ route('admin.users.create') }}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background: var(--blue-deep); color: white;">
-            <i class="ri-add-line text-base"></i> Create New User
+        <a href="{{ route('admin.users.create') }}?role=student" id="createStudentBtn" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background: var(--blue-deep); color: white;">
+            <i class="ri-add-line text-base"></i> Create New Student
+        </a>
+        <a href="{{ route('admin.users.create') }}?role=faculty" id="createFacultyBtn" class="hidden items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background: var(--blue-deep); color: white;">
+            <i class="ri-add-line text-base"></i> Create New Faculty
         </a>
     </div>
 
@@ -383,7 +386,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->department ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->departmentRel->name ?? $student->department ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->year_level ? $student->year_level . ' Year' : 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->enrollments_count ?? 0 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->quiz_attempts_count ?? 0 }}</td>
@@ -453,7 +456,7 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->email }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->department ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->departmentRel->name ?? $facultyMember->department ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->courses_count ?? 0 }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <button onclick="toggleStatus({{ $facultyMember->id }})" class="status-toggle-{{ $facultyMember->id }}">
@@ -542,13 +545,22 @@
             studentsTab.classList.remove('border-transparent', 'text-gray-500');
             facultyTab.classList.remove('border-gold', 'text-blue-deep', 'font-semibold');
             facultyTab.classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('createStudentBtn').classList.remove('hidden');
+            document.getElementById('createStudentBtn').classList.add('flex');
+            document.getElementById('createFacultyBtn').classList.add('hidden');
+            document.getElementById('createFacultyBtn').classList.remove('flex');
         } else {
             facultyTab.classList.add('border-gold', 'text-blue-deep', 'font-semibold');
             facultyTab.classList.remove('border-transparent', 'text-gray-500');
             studentsTab.classList.remove('border-gold', 'text-blue-deep', 'font-semibold');
             studentsTab.classList.add('border-transparent', 'text-gray-500');
+            document.getElementById('createFacultyBtn').classList.remove('hidden');
+            document.getElementById('createFacultyBtn').classList.add('flex');
+            document.getElementById('createStudentBtn').classList.add('hidden');
+            document.getElementById('createStudentBtn').classList.remove('flex');
         }
     }
+
 
     // Toggle user status via AJAX (same as original)
     function toggleStatus(userId) {

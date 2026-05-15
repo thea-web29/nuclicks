@@ -47,10 +47,11 @@
             <div class="empty">You have no notifications.</div>
         @else
             @foreach($notifications as $notif)
-                <div class="notif-item {{ $notif->read_at ? 'read-item' : '' }}">
-                    <div class="notif-dot {{ $notif->read_at ? 'read' : '' }}"></div>
+                <div class="notif-item {{ $notif->is_read ? 'read-item' : '' }}">
+                    <div class="notif-dot {{ $notif->is_read ? 'read' : '' }}"></div>
                     <div class="notif-body">
-                        <div class="notif-message">{{ $notif->message ?? $notif->data ?? 'New notification' }}</div>
+                        <div class="notif-message" style="font-weight: 700;">{{ $notif->title }}</div>
+                        <div class="notif-message" style="margin-top: 4px;">{{ $notif->message }}</div>
                         <div class="notif-time">{{ $notif->created_at->diffForHumans() }}</div>
                     </div>
                 </div>

@@ -15,6 +15,11 @@ use Barryvdh\DomPDF\Facade\Pdf; // Uncomment if using PDF package
 use App\Models\SystemSetting;
 use App\Models\LoginHistory;
 use App\Models\AccessLog;
+use App\Models\Department;
+use App\Models\Program;
+use App\Models\Section;
+use App\Models\FacultySubjectAssignment;
+use Illuminate\Validation\Rule;
 
 
 class AdminController extends Controller
@@ -105,22 +110,219 @@ class AdminController extends Controller
     public function users()
     {
         $students = User::where('role', 'student')
+            ->with(['program', 'departmentRel'])
             ->withCount(['enrollments', 'quizAttempts'])
             ->orderBy('name')
             ->paginate(10);
             
         $faculty = User::where('role', 'faculty')
+            ->with(['departmentRel'])
             ->withCount('courses')
             ->orderBy('name')
             ->paginate(10);
             
         return view('admin.users', compact('students', 'faculty'));
     }
+
+    // ==================== PROGRAM / COURSE MANAGEMENT ====================
+
+    public function programs()
+    {
+        $programs = Program::with(['department'])
+            ->withCount(['subjects', 'students', 'sections'])
+            ->orderBy('name')
+            ->get();
+
+        $departments = Department::orderBy('name')->get();
+
+        return view('admin.programs', compact('programs', 'departments'));
+    }
+
+    public function storeProgram(Request $request)
+    {
+        $validated = $request->validate([
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:programs,code'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        $program = Program::create($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => "Created program/course: {$program->code} - {$program->name}",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'program' => $program,
+        ]);
+    }
+
+    public function updateProgram(Request $request, $id)
+    {
+        $program = Program::findOrFail($id);
+
+        $validated = $request->validate([
+            'department_id' => ['required', 'exists:departments,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('programs', 'code')->ignore($program->id)],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        Program::where('id', $program->id)->update($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => "Updated program/course: {$validated['code']} - {$validated['name']}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteProgram($id)
+    {
+        $program = Program::withCount(['subjects', 'students', 'sections'])->findOrFail($id);
+
+        if ($program->subjects_count > 0 || $program->students_count > 0 || $program->sections_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This program/course cannot be deleted because it still has subjects, students, or sections assigned to it.',
+            ], 422);
+        }
+
+        $name = $program->name;
+        Program::where('id', $program->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => "Deleted program/course: {$name}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getProgramData($id)
+    {
+        $program = Program::with(['department', 'sections' => function ($query) {
+            $query->where('is_active', true)->orderBy('name');
+        }])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'program' => $program,
+        ]);
+    }
+
+    // ==================== DEPARTMENT MANAGEMENT ====================
+
+    public function departments()
+    {
+        $departments = Department::withCount('programs')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.departments', compact('departments'));
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:departments,code'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        $department = Department::create($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => "Created department: {$department->code} - {$department->name}",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'department' => $department,
+        ]);
+    }
+
+    public function updateDepartment(Request $request, $id)
+    {
+        $department = Department::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('departments', 'code')->ignore($department->id)],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        Department::where('id', $department->id)->update($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => "Updated department: {$validated['code']} - {$validated['name']}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteDepartment($id)
+    {
+        $department = Department::withCount('programs')->findOrFail($id);
+
+        if ($department->programs_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This department cannot be deleted because it still has programs/courses under it.',
+            ], 422);
+        }
+
+        $name = $department->name;
+        Department::where('id', $department->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => "Deleted department: {$name}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getDepartmentData($id)
+    {
+        $department = Department::with(['programs' => function ($query) {
+            $query->orderBy('name');
+        }])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'department' => $department,
+        ]);
+    }
+
     
     public function createUser()
     {
-        return view('admin.create-user');
+        $departments = Department::orderBy('name')->get();
+        $programs = Program::orderBy('name')->get();
+        return view('admin.create-user', compact('departments', 'programs'));
     }
+
     
     public function storeUser(Request $request)
     {
@@ -131,45 +333,73 @@ class AdminController extends Controller
             'role' => 'required|in:student,faculty,admin',
             'status' => 'in:active,inactive',
             'student_id' => 'nullable|string|unique:users',
-            'year_level' => 'nullable|integer|min:1|max:6',
-            'department' => 'nullable|string|max:255',
+            'faculty_id' => 'nullable|string|unique:users',
+            'year_level' => 'nullable|integer|min:1|max:4',
+            'section' => 'nullable|string|max:10',
+            'department_id' => 'nullable|exists:departments,id',
+            'program_id' => 'nullable|exists:programs,id',
             'specialization' => 'nullable|string|max:255',
-            'qualification' => 'nullable|string',
             'bio' => 'nullable|string',
         ]);
         
-        $user = User::create([
+        $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
             'role' => $validated['role'],
             'status' => $validated['status'] ?? 'active',
             'student_id' => $validated['student_id'] ?? null,
+            'faculty_id' => $validated['faculty_id'] ?? null,
             'year_level' => $validated['year_level'] ?? null,
-            'department' => $validated['department'] ?? null,
+            'section' => $validated['section'] ?? null,
+            'department_id' => $validated['department_id'] ?? null,
+            'program_id' => $validated['program_id'] ?? null,
             'specialization' => $validated['specialization'] ?? null,
-            'qualification' => $validated['qualification'] ?? null,
             'bio' => $validated['bio'] ?? null,
-        ]);
+        ];
+
+        // Sync legacy department string and handle student department mapping
+        if (!empty($userData['department_id'])) {
+            $dept = Department::find($userData['department_id']);
+            if ($dept) $userData['department'] = $dept->name;
+        } elseif (!empty($userData['program_id'])) {
+            $program = Program::with('department')->find($userData['program_id']);
+            if ($program && $program->department) {
+                $userData['department_id'] = $program->department_id;
+                $userData['department'] = $program->department->name;
+            }
+        }
+
+        $user = User::create($userData);
         
-        // Log activity
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'create',
             'description' => "Created user: {$user->name} ({$user->role})",
         ]);
         
-        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+        $redirectRoute = route('admin.users');
+        if ($user->role === 'faculty') {
+            $redirectRoute .= '#faculty';
+        }
+        
+        return redirect($redirectRoute)->with('success', 'User created successfully.');
+
     }
+
+
     
     public function editUser($id)
     {
         $user = User::findOrFail($id);
         $courses = Course::all();
         $assignedCourses = $user->courses()->pluck('courses.id')->toArray();
+        $departments = Department::orderBy('name')->get();
+        $programs = Program::orderBy('name')->get();
         
-        return view('admin.edit-user', compact('user', 'courses', 'assignedCourses'));
+        return view('admin.edit-user', compact('user', 'courses', 'assignedCourses', 'departments', 'programs'));
     }
+
     
     public function updateUser(Request $request, $id)
     {
@@ -182,47 +412,75 @@ class AdminController extends Controller
             'role' => 'required|in:student,faculty,admin',
             'status' => 'in:active,inactive',
             'student_id' => 'nullable|string|unique:users,student_id,' . $id,
-            'year_level' => 'nullable|integer|min:1|max:6',
-            'department' => 'nullable|string|max:255',
+            'faculty_id' => 'nullable|string|unique:users,faculty_id,' . $id,
+            'year_level' => 'nullable|integer|min:1|max:4',
+            'section' => 'nullable|string|max:10',
+            'department_id' => 'nullable|exists:departments,id',
+            'program_id' => 'nullable|exists:programs,id',
             'specialization' => 'nullable|string|max:255',
-            'qualification' => 'nullable|string',
             'bio' => 'nullable|string',
             'course_ids' => 'nullable|array',
         ]);
         
-        $user->update([
+        $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $validated['role'],
-            'status' => $validated['status'] ?? 'active',
-            'student_id' => $validated['student_id'] ?? null,
-            'year_level' => $validated['year_level'] ?? null,
-            'department' => $validated['department'] ?? null,
-            'specialization' => $validated['specialization'] ?? null,
-            'qualification' => $validated['qualification'] ?? null,
-            'bio' => $validated['bio'] ?? null,
-        ]);
+        ];
+
+        if ($request->has('status')) $updateData['status'] = $validated['status'];
+        if ($request->has('student_id')) $updateData['student_id'] = $validated['student_id'];
+        if ($request->has('faculty_id')) $updateData['faculty_id'] = $validated['faculty_id'];
+        if ($request->has('year_level')) $updateData['year_level'] = $validated['year_level'];
+        if ($request->has('section')) $updateData['section'] = $validated['section'];
+        if ($request->has('department_id')) $updateData['department_id'] = $validated['department_id'];
+        if ($request->has('program_id')) $updateData['program_id'] = $validated['program_id'];
+        if ($request->has('specialization')) $updateData['specialization'] = $validated['specialization'];
+        if ($request->has('bio')) $updateData['bio'] = $validated['bio'];
+
+        // Sync legacy department string and handle student department mapping
+        if (!empty($updateData['department_id'])) {
+            $dept = Department::find($updateData['department_id']);
+            if ($dept) $updateData['department'] = $dept->name;
+        } elseif (!empty($updateData['program_id'])) {
+            $program = Program::with('department')->find($updateData['program_id']);
+            if ($program && $program->department) {
+                $updateData['department_id'] = $program->department_id;
+                $updateData['department'] = $program->department->name;
+            }
+        } elseif ($request->has('department_id')) {
+            $updateData['department'] = null;
+        }
+
+        $user->update($updateData);
         
         if (!empty($validated['password'])) {
             $user->update(['password' => bcrypt($validated['password'])]);
         }
         
-        // Sync courses for faculty
         if ($user->role === 'faculty' && isset($validated['course_ids'])) {
-            $user->courses()->sync($validated['course_ids']);
-        } elseif ($user->role === 'faculty') {
-            $user->courses()->sync([]);
+            // Fix: Course has one faculty, update the faculty_id in courses table
+            Course::where('faculty_id', $user->id)->update(['faculty_id' => null]);
+            Course::whereIn('id', $validated['course_ids'])->update(['faculty_id' => $user->id]);
         }
         
-        // Log activity
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'update',
             'description' => "Updated user: {$user->name}",
         ]);
         
-        return redirect()->route('admin.users')->with('success', 'User updated successfully.');
+        $redirectRoute = route('admin.users');
+        if ($user->role === 'faculty') {
+            $redirectRoute .= '#faculty';
+        }
+
+        return redirect($redirectRoute)->with('success', 'User updated successfully.');
+
     }
+
+
+
     
     public function showUser($id)
     {
@@ -281,98 +539,222 @@ class AdminController extends Controller
     
     public function courses()
     {
-        $courses = Course::with('faculty')
+        $courses = Course::with(['faculty', 'program', 'sectionRecord'])
             ->withCount(['students', 'quizzes'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('name')
             ->paginate(15);
+            
+        $faculties = User::where('role', 'faculty')->where('status', 'active')->orderBy('name')->get();
+        $programs = Program::orderBy('name')->get();
+        $sections = Section::orderBy('name')->get();
         
-        $faculties = User::where('role', 'faculty')->where('status', 'active')->get();
-        
-        return view('admin.courses', compact('courses', 'faculties'));
+        return view('admin.courses', compact('courses', 'faculties', 'programs', 'sections'));
     }
+
+    public function sections()
+    {
+        $sections = Section::with(['program.department'])
+            ->withCount(['students', 'assignments'])
+            ->orderBy('name')
+            ->get();
+
+        $programs = Program::with('department')->orderBy('name')->get();
+
+        return view('admin.sections', compact('sections', 'programs'));
+    }
+
+    public function storeSection(Request $request)
+    {
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'name' => ['required', 'string', 'max:50'],
+            'year_level' => ['required', 'integer', 'min:1', 'max:10'],
+        ]);
+
+        $section = Section::create($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'create',
+            'description' => "Created section: {$section->name}",
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'section' => $section,
+        ]);
+    }
+
+    public function updateSection(Request $request, $id)
+    {
+        $section = Section::findOrFail($id);
+
+        $validated = $request->validate([
+            'program_id' => ['required', 'exists:programs,id'],
+            'name' => ['required', 'string', 'max:50'],
+            'year_level' => ['required', 'integer', 'min:1', 'max:10'],
+            'is_active' => ['boolean'],
+        ]);
+
+        Section::where('id', $section->id)->update($validated);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'update',
+            'description' => "Updated section: {$validated['name']}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function deleteSection($id)
+    {
+        $section = Section::withCount(['students', 'assignments'])->findOrFail($id);
+
+        if ($section->students_count > 0 || $section->assignments_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This section cannot be deleted because it still has students or faculty assignments.',
+            ], 422);
+        }
+
+        $name = $section->name;
+        Section::where('id', $section->id)->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'delete',
+            'description' => "Deleted section: {$name}",
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getSectionData($id)
+    {
+        $section = Section::with(['program.department'])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'section' => $section,
+        ]);
+    }
+
+    public function subjects()
+    {
+        $subjects = Course::with(['program.department', 'faculty', 'sectionRecord'])
+            ->withCount(['students', 'quizzes'])
+            ->orderBy('name')
+            ->paginate(15);
+
+        $programs = Program::with('department')->orderBy('name')->get();
+        $faculties = User::where('role', 'faculty')->where('status', 'active')->orderBy('name')->get();
+        $sections = Section::orderBy('name')->get();
+
+        return view('admin.subjects', compact('subjects', 'programs', 'faculties', 'sections'));
+    }
+
     
     public function storeCourse(Request $request)
     {
         $validated = $request->validate([
-            'code' => 'required|string|unique:courses',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'credits' => 'required|integer|min:1|max:6',
-            'faculty_id' => 'nullable|exists:users,id',
-            'join_code' => 'nullable|string|unique:courses',
+            'program_id' => ['required', 'exists:programs,id'],
+            'section_id' => ['nullable', 'exists:sections,id'],
+            'faculty_id' => ['nullable', 'exists:users,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', 'unique:courses,code'],
+            'description' => ['nullable', 'string'],
+            'credits' => ['nullable', 'integer', 'min:0'],
         ]);
-        
-        if (empty($validated['join_code'])) {
-            $validated['join_code'] = strtoupper(substr(md5(uniqid()), 0, 6));
+
+        $validated['join_code'] = Str::random(8);
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        if (!empty($validated['section_id'])) {
+            $section = Section::find($validated['section_id']);
+            $validated['section'] = $section->name;
         }
-        
+
         $course = Course::create($validated);
-        
+
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'create',
-            'description' => "Created course: {$course->code} - {$course->name}",
+            'description' => "Created course/subject: {$course->code} - {$course->name}",
         ]);
-        
-        return response()->json(['success' => true]);
+
+        return response()->json([
+            'success' => true,
+            'course' => $course,
+        ]);
     }
+
     
     public function updateCourse(Request $request, $id)
     {
         $course = Course::findOrFail($id);
-        
+
         $validated = $request->validate([
-            'code' => 'required|string|unique:courses,code,' . $id,
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'credits' => 'required|integer|min:1|max:6',
-            'faculty_id' => 'nullable|exists:users,id',
-            'join_code' => 'nullable|string|unique:courses,join_code,' . $id,
+            'program_id' => ['required', 'exists:programs,id'],
+            'section_id' => ['nullable', 'exists:sections,id'],
+            'faculty_id' => ['nullable', 'exists:users,id'],
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:20', Rule::unique('courses', 'code')->ignore($course->id)],
+            'description' => ['nullable', 'string'],
+            'credits' => ['nullable', 'integer', 'min:0'],
         ]);
-        
-        $course->update($validated);
-        
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+
+        if (!empty($validated['section_id'])) {
+            $section = Section::find($validated['section_id']);
+            $validated['section'] = $section->name;
+        }
+
+        Course::where('id', $course->id)->update($validated);
+
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'update',
-            'description' => "Updated course: {$course->code} - {$course->name}",
+            'description' => "Updated course/subject: {$validated['code']} - {$validated['name']}",
         ]);
-        
+
         return response()->json(['success' => true]);
     }
-    
+
     public function deleteCourse($id)
     {
-        $course = Course::findOrFail($id);
-        $courseName = $course->name;
-        $course->delete();
-        
+        $course = Course::withCount(['students', 'quizzes'])->findOrFail($id);
+
+        if ($course->students_count > 0 || $course->quizzes_count > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This course cannot be deleted because it still has students or quizzes.',
+            ], 422);
+        }
+
+        $name = $course->name;
+        Course::where('id', $course->id)->delete();
+
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'delete',
-            'description' => "Deleted course: {$courseName}",
+            'description' => "Deleted course: {$name}",
         ]);
-        
+
         return response()->json(['success' => true]);
     }
-    
+
     public function getCourseData($id)
     {
-        $course = Course::findOrFail($id);
-        
+        $course = Course::with(['program.department', 'sectionRecord'])->findOrFail($id);
+
         return response()->json([
             'success' => true,
-            'course' => [
-                'id' => $course->id,
-                'code' => $course->code,
-                'name' => $course->name,
-                'description' => $course->description,
-                'credits' => $course->credits,
-                'faculty_id' => $course->faculty_id,
-                'join_code' => $course->join_code,
-            ]
+            'course' => $course,
         ]);
     }
+
     
     public function quizzes()
     {
@@ -868,5 +1250,194 @@ public function clearLogs(Request $request)
     return redirect()->back()->with('success', $message);
 }
 
+    public function bulkImport()
+    {
+        return view('admin.bulk-import');
+    }
 
+    public function downloadTemplate(Request $request)
+    {
+        $type = $request->get('type', 'students');
+
+        if ($type === 'students') {
+            $headers = ['name', 'email', 'student_id', 'year_level', 'section', 'program_code'];
+            $sample = [['Juan Dela Cruz', 'juan@example.com', 'IMNHS26001', '11', 'A', 'TECHPRO']];
+            $filename = 'students_import_template.csv';
+        } else {
+            $headers = ['name', 'email', 'faculty_id', 'department', 'specialization'];
+            $sample = [['Maria Santos', 'maria@example.com', 'FAC-001', 'Computer Science', 'Software Engineering']];
+            $filename = 'faculty_import_template.csv';
+        }
+
+        $handle = fopen('php://temp', 'w+');
+
+        fputcsv($handle, $headers);
+
+        foreach ($sample as $row) {
+            fputcsv($handle, $row);
+        }
+
+        rewind($handle);
+
+        $content = stream_get_contents($handle);
+
+        fclose($handle);
+
+        return response($content)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    }
+
+    public function processBulkImport(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:students,faculty',
+            'file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        $type = $request->type;
+        $file = $request->file('file');
+        $handle = fopen($file->getRealPath(), 'r');
+
+        if (!$handle) {
+            return redirect()->back()->with('error', 'Unable to open uploaded CSV file.');
+        }
+
+        fgetcsv($handle);
+
+        $created = 0;
+        $skipped = 0;
+        $errors = [];
+        $rowNumber = 1;
+
+        DB::beginTransaction();
+
+        try {
+            while (($data = fgetcsv($handle)) !== false) {
+                $rowNumber++;
+
+                try {
+                    if ($type === 'students') {
+                        [$name, $email, $studentId, $yearLevel, $section, $programCode] = array_pad($data, 6, null);
+
+                        $name = trim((string) $name);
+                        $email = strtolower(trim((string) $email));
+                        $studentId = trim((string) $studentId);
+                        $yearLevel = trim((string) $yearLevel);
+                        $section = strtoupper(trim((string) $section));
+                        $programCode = strtoupper(trim((string) $programCode));
+
+                        if ($name === '' || $email === '' || $studentId === '' || $section === '' || $programCode === '') {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Missing required student data.";
+                            continue;
+                        }
+
+                        if (User::where('email', $email)->exists()) {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Email '{$email}' already exists.";
+                            continue;
+                        }
+
+                        if (User::where('student_id', $studentId)->exists()) {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Student ID '{$studentId}' already exists.";
+                            continue;
+                        }
+
+                        $program = Program::whereRaw('UPPER(code) = ?', [$programCode])->first();
+
+                        if (!$program) {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Program code '{$programCode}' not found.";
+                            continue;
+                        }
+
+                        User::create([
+                            'name' => $name,
+                            'email' => $email,
+                            'password' => Hash::make($studentId),
+                            'role' => 'student',
+                            'status' => 'active',
+                            'must_change_password' => true,
+                            'student_id' => $studentId,
+                            'year_level' => is_numeric($yearLevel) ? (int) $yearLevel : null,
+                            'section' => $section,
+                            'program_id' => $program->id,
+                            'department_id' => $program->department_id,
+                            'department' => $program->department ? $program->department->code : null,
+                        ]);
+                    } else {
+                        [$name, $email, $facultyId, $department, $specialization] = array_pad($data, 5, null);
+
+                        $name = trim((string) $name);
+                        $email = strtolower(trim((string) $email));
+                        $facultyId = trim((string) $facultyId);
+                        $department = trim((string) $department);
+                        $specialization = trim((string) $specialization);
+
+                        if ($name === '' || $email === '' || $facultyId === '') {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Missing required faculty data.";
+                            continue;
+                        }
+
+                        if (User::where('email', $email)->exists()) {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Email '{$email}' already exists.";
+                            continue;
+                        }
+
+                        if (User::where('faculty_id', $facultyId)->exists()) {
+                            $skipped++;
+                            $errors[] = "Row {$rowNumber}: Faculty ID '{$facultyId}' already exists.";
+                            continue;
+                        }
+
+                        $dept = Department::where('code', $department)->first();
+
+                        User::create([
+                            'name' => $name,
+                            'email' => $email,
+                            'password' => Hash::make($facultyId),
+                            'role' => 'faculty',
+                            'status' => 'active',
+                            'must_change_password' => true,
+                            'faculty_id' => $facultyId,
+                            'department' => $department,
+                            'department_id' => $dept ? $dept->id : null,
+                            'specialization' => $specialization,
+                        ]);
+                    }
+
+                    $created++;
+                } catch (\Throwable $e) {
+                    $skipped++;
+                    $errors[] = "Row {$rowNumber}: " . $e->getMessage();
+                }
+            }
+
+            fclose($handle);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'create',
+                'description' => "Bulk imported {$created} {$type} accounts.",
+            ]);
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            if (is_resource($handle)) {
+                fclose($handle);
+            }
+
+            return redirect()->back()->with('error', 'Bulk import failed: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.bulk-import')
+            ->with('success', "Import complete: {$created} created, {$skipped} skipped.")
+            ->with('import_errors', $errors);
+    }
 }

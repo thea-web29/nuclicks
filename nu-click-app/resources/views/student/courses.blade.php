@@ -39,7 +39,11 @@
                     <i class="ri-notification-line mr-3"></i>
                     <span>Notifications</span>
                 </a>
-                
+                <a href="{{ route('student.faculty.evaluation') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700">
+                    <i class="ri-star-line mr-3"></i>
+                    <span>Faculty Evaluation</span>
+                </a>
+
                 <div class="px-4 mt-6 mb-4">
                     <p class="text-xs text-indigo-300 uppercase tracking-wider">Account</p>
                 </div>

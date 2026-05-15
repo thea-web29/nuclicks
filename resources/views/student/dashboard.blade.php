@@ -388,6 +388,9 @@
                     <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $unreadNotifications }}</span>
                 @endif
             </a>
+            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
+                <i class="ri-star-line"></i> Faculty Evaluation
+            </a>
         </div>
 
         <div class="nav-section">
@@ -579,6 +582,48 @@
                         </div>
                     @endif
                 </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications (Messages from Faculty) -->
+        <div class="mt-8 dashboard-card">
+            <div class="px-6 py-5 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i class="ri-notification-3-line" style="color: var(--gold);"></i> Recent Notifications
+                </h3>
+            </div>
+            <div class="p-6">
+                @if($recentNotifications->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($recentNotifications as $notification)
+                            <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    @if($notification->type === 'message')
+                                        <i class="ri-mail-line text-blue-600"></i>
+                                    @elseif($notification->type === 'quiz')
+                                        <i class="ri-file-list-3-line text-blue-600"></i>
+                                    @else
+                                        <i class="ri-notification-line text-blue-600"></i>
+                                    @endif
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="text-sm font-semibold text-gray-800">{{ $notification->title }}</h4>
+                                        <span class="text-[10px] text-gray-400">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $notification->message }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('student.notifications') }}" class="text-xs font-semibold text-blue-600 hover:underline">View All Notifications</a>
+                    </div>
+                @else
+                    <div class="text-center py-6">
+                        <p class="text-gray-500 text-sm">No recent notifications.</p>
+                    </div>
+                @endif
             </div>
         </div>
 

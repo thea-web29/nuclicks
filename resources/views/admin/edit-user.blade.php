@@ -512,16 +512,29 @@
                                 </select>
                             </div>
                         </div>
-                        <div>
-                            <label class="form-label">Program</label>
-                            <select name="program_id" class="form-input">
-                                <option value="">-- Select Program --</option>
-                                @foreach($programs ?? [] as $program)
-                                    <option value="{{ $program->id }}" {{ old('program_id', $user->program_id) == $program->id ? 'selected' : '' }}>
-                                        {{ $program->code }} – {{ $program->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="form-label">Program</label>
+                                <select name="program_id" class="form-input">
+                                    <option value="">-- Select Program --</option>
+                                    @foreach($programs ?? [] as $program)
+                                        <option value="{{ $program->id }}" {{ old('program_id', $user->program_id) == $program->id ? 'selected' : '' }}>
+                                            {{ $program->code }} – {{ $program->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Department</label>
+                                <select name="department_id" class="form-input">
+                                    <option value="">-- Select Department --</option>
+                                    @foreach($departments ?? [] as $dept)
+                                        <option value="{{ $dept->id }}" {{ old('department_id', $user->department_id) == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->code }} – {{ $dept->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>

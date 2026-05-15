@@ -15,11 +15,18 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
         'student_id',
         'faculty_id',
         'department',
+        'department_id',
+        'program_id',
         'year_level',
+        'section',
+        'specialization',
+        'bio',
     ];
+
 
     protected $hidden = [
         'password',
@@ -48,6 +55,16 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function departmentRel()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class, 'program_id');
     }
 
     // Course relationships

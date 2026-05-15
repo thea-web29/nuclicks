@@ -15,6 +15,8 @@ class Course extends Model
         'description',
         'credits',
         'faculty_id',
+        'program_id',
+        'section_id',
         'join_code',
         'is_active',
     ];
@@ -29,6 +31,16 @@ class Course extends Model
     public function faculty()
     {
         return $this->belongsTo(User::class, 'faculty_id');
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
+
+    public function sectionRecord()
+    {
+        return $this->belongsTo(Section::class, 'section_id');
     }
 
     // Many-to-many relationship with students through enrollments

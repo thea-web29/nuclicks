@@ -97,8 +97,22 @@ class FacultyController extends Controller
 
     public function studentDetails($id)
     {
-        $student = User::with(['enrollments.course', 'quizAttempts.quiz'])->findOrFail($id);
-        return view('faculty.student-details', compact('student'));
+        $student = User::with(['enrollments.course', 'quizAttempts.quiz.course', 'program', 'departmentRel'])->findOrFail($id);
+
+        $enrolledCourses = $student->enrollments()->with('course')->get();
+        $quizAttempts = $student->quizAttempts()->with('quiz.course')->get();
+
+        $totalScore = 0;
+        $totalPossible = 0;
+
+        foreach ($quizAttempts as $attempt) {
+            $totalScore += $attempt->score;
+            $totalPossible += $attempt->quiz->total_points ?? 0;
+        }
+
+        $averageScore = $totalPossible > 0 ? round(($totalScore / $totalPossible) * 100) : 0;
+
+        return view('faculty.student-details', compact('student', 'enrolledCourses', 'quizAttempts', 'averageScore'));
     }
 
     public function enrollStudent(Request $request)
@@ -1625,7 +1639,7 @@ public function addEligibleStudentsToClass($id)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        $notification->update(['read_at' => now()]);
+        $notification->update(['is_read' => true]);
 
         return response()->json(['success' => true]);
     }
@@ -1633,8 +1647,8 @@ public function addEligibleStudentsToClass($id)
     public function markAllNotificationsRead()
     {
         Notification::where('user_id', Auth::id())
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return redirect()->back()->with('success', 'All notifications marked as read.');
     }

@@ -269,6 +269,9 @@
             <a href="{{ route('student.notifications') }}" class="nav-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
                 <i class="ri-notification-line"></i> Notifications
             </a>
+            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
+                <i class="ri-star-line"></i> Faculty Evaluation
+            </a>
         </div>
 
         <div class="nav-section">

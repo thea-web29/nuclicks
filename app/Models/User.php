@@ -57,17 +57,32 @@ class User extends Authenticatable
     }
 
     public function course()
-{
-    return $this->belongsTo(\App\Models\Course::class);
-}
-    public function courses()
     {
-        if ($this->isFaculty()) {
-            return $this->hasMany(Course::class, 'faculty_id');
-        }
+        return $this->belongsTo(\App\Models\Course::class);
+    }
+
+    public function departmentRel()
+    {
+        return $this->belongsTo(Department::class, 'department_id');
+    }
+    public function facultyCourses()
+    {
+        return $this->hasMany(Course::class, 'faculty_id');
+    }
+
+    public function studentCourses()
+    {
         return $this->belongsToMany(Course::class, 'enrollments', 'student_id', 'course_id')
                     ->withPivot('status', 'grade')
                     ->withTimestamps();
+    }
+
+    public function courses()
+    {
+        if ($this->role === 'faculty') {
+            return $this->facultyCourses();
+        }
+        return $this->studentCourses();
     }
 
     public function enrollments()

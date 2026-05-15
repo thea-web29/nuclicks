@@ -135,13 +135,14 @@ class AdminController extends Controller
     public function users()
     {
         $students = User::where('role', 'student')
-            ->with('program')
-            ->withCount(['enrollments', 'quizAttempts'])
+            ->with(['program', 'departmentRel'])
+            ->withCount(['studentCourses', 'enrollments', 'quizAttempts'])
             ->orderBy('name')
             ->paginate(10, ['*'], 'students_page');
 
         $faculty = User::where('role', 'faculty')
-            ->withCount('courses')
+            ->with('departmentRel')
+            ->withCount('facultyCourses')
             ->orderBy('name')
             ->paginate(10, ['*'], 'faculty_page');
 
@@ -194,6 +195,12 @@ class AdminController extends Controller
 
         $mustChangePassword = in_array($request->role, ['student', 'faculty']);
 
+        $departmentCode = null;
+        if ($validated['department_id'] ?? null) {
+            $department = Department::find($validated['department_id']);
+            $departmentCode = $department->code ?? null;
+        }
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => strtolower(trim($validated['email'])),
@@ -202,6 +209,7 @@ class AdminController extends Controller
             'status' => $validated['status'] ?? 'active',
             'must_change_password' => $mustChangePassword,
             'department_id' => $validated['department_id'] ?? null,
+            'department' => $departmentCode, // For backward compatibility
             'student_id' => $validated['student_id'] ?? null,
             'faculty_id' => $validated['faculty_id'] ?? null,
             'year_level' => $validated['year_level'] ?? null,
@@ -251,6 +259,7 @@ class AdminController extends Controller
             'year_level' => 'nullable|integer|min:1|max:12',
             'section' => 'nullable|string|max:50',
             'program_id' => 'nullable|exists:programs,id',
+            'department_id' => 'nullable|exists:departments,id',
             'department' => 'nullable|string|max:255',
             'specialization' => 'nullable|string|max:255',
             'qualification' => 'nullable|string',
@@ -268,11 +277,20 @@ class AdminController extends Controller
             'year_level' => $validated['year_level'] ?? null,
             'section' => isset($validated['section']) ? strtoupper(trim($validated['section'])) : null,
             'program_id' => $validated['program_id'] ?? null,
+            'department_id' => $validated['department_id'] ?? null,
             'department' => $validated['department'] ?? null,
             'specialization' => $validated['specialization'] ?? null,
             'qualification' => $validated['qualification'] ?? null,
             'bio' => $validated['bio'] ?? null,
         ]);
+
+        // Synchronize department code for backward compatibility
+        if ($user->department_id) {
+            $dept = Department::find($user->department_id);
+            if ($dept) {
+                $user->update(['department' => $dept->code]);
+            }
+        }
 
         if (!empty($validated['password'])) {
             $user->update([
@@ -308,7 +326,7 @@ class AdminController extends Controller
             return redirect()->route('admin.faculty.details', $id);
         }
 
-        $student = User::with(['enrollments.course', 'quizAttempts.quiz.course', 'program'])
+        $student = User::with(['enrollments.course', 'quizAttempts.quiz.course', 'program', 'departmentRel'])
             ->findOrFail($id);
 
         $enrolledCourses = $student->enrollments()->with('course')->get();
@@ -481,7 +499,9 @@ class AdminController extends Controller
                             'student_id' => $studentId,
                             'year_level' => is_numeric($yearLevel) ? (int) $yearLevel : null,
                             'section' => $section,
-                            'course_id' => $program->id,
+                            'program_id' => $program->id,
+                            'department_id' => $program->department_id,
+                            'department' => $program->department ? $program->department->code : null,
                         ]);
                     } else {
                         [$name, $email, $facultyId, $department, $specialization] = array_pad($data, 5, null);
@@ -510,6 +530,8 @@ class AdminController extends Controller
                             continue;
                         }
 
+                        $dept = Department::where('code', $department)->first();
+
                         User::create([
                             'name' => $name,
                             'email' => $email,
@@ -519,6 +541,7 @@ class AdminController extends Controller
                             'must_change_password' => true,
                             'faculty_id' => $facultyId,
                             'department' => $department,
+                            'department_id' => $dept ? $dept->id : null,
                             'specialization' => $specialization,
                         ]);
                     }
@@ -890,6 +913,7 @@ class AdminController extends Controller
 
         $faculties = User::where('role', 'faculty')
             ->where('status', 'active')
+            ->with('departmentRel')
             ->orderBy('name')
             ->get();
 
@@ -1586,7 +1610,8 @@ class AdminController extends Controller
     public function faculty()
     {
         $faculty = User::where('role', 'faculty')
-            ->withCount('courses')
+            ->with('departmentRel')
+            ->withCount('facultyCourses')
             ->orderBy('name')
             ->get();
 
@@ -1599,7 +1624,7 @@ class AdminController extends Controller
 
     public function facultyDetails($id)
     {
-        $faculty = User::with(['courses.program', 'courses.students', 'courses.quizzes'])->findOrFail($id);
+        $faculty = User::with(['departmentRel', 'courses.program', 'courses.students', 'courses.quizzes'])->findOrFail($id);
         $allCourses = Course::with('program')->orderBy('name')->get();
         $assignedIds = Course::where('faculty_id', $id)->pluck('id')->toArray();
 
@@ -1828,13 +1853,35 @@ class AdminController extends Controller
         $averageRating = FacultyEvaluation::avg('rating') ?? 0;
         $topFaculty = $this->getTopPerformingFaculty(5);
 
+        $evalStatus = \App\Models\SystemSetting::getValue('evaluation_status', 'open');
+        $evalStart = \App\Models\SystemSetting::getValue('evaluation_start_date');
+        $evalEnd = \App\Models\SystemSetting::getValue('evaluation_end_date');
+
         return view('admin.faculty-evaluations', compact(
             'faculty',
             'evaluations',
             'totalEvaluations',
             'averageRating',
-            'topFaculty'
+            'topFaculty',
+            'evalStatus',
+            'evalStart',
+            'evalEnd'
         ));
+    }
+
+    public function saveEvaluationSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:open,closed',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+        ]);
+
+        \App\Models\SystemSetting::setValue('evaluation_status', $validated['status'], 'evaluation');
+        \App\Models\SystemSetting::setValue('evaluation_start_date', $validated['start_date'] ?? null, 'evaluation');
+        \App\Models\SystemSetting::setValue('evaluation_end_date', $validated['end_date'] ?? null, 'evaluation');
+
+        return redirect()->back()->with('success', 'Evaluation period settings have been successfully updated!');
     }
 
     // ==================== FOLDER & FILES ====================

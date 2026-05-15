@@ -763,6 +763,7 @@
                         <thead>
                             <tr><th>ID</th><th>Student ID</th><th>Name</th><th>Email</th><th>Department</th><th>Year</th><th>Courses</th><th>Quizzes</th><th>Status</th><th>Actions</th></tr>
                         </thead>
+<<<<<<< HEAD
                         <tbody>
                             @forelse($students as $student)
                             <tr>
@@ -801,6 +802,61 @@
                             @empty
                             <tr><td colspan="10" style="text-align:center; padding:2rem;">No students found.</td></tr>
                             @endforelse
+=======
+                        <tbody class="bg-white divide-y divide-gray-100">
+                            @foreach($students as $student)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $student->id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">{{ $student->student_id ?? 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                                                <i class="ri-user-line text-indigo-600 text-sm"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">{{ $student->name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $student->department_id ? ($student->departmentRel->name ?? 'N/A') : ($student->department ?? 'N/A') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->year_level ? $student->year_level . ' Year' : 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->student_courses_count ?? 0 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->quiz_attempts_count ?? 0 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button onclick="toggleStatus({{ $student->id }})" class="status-toggle-{{ $student->id }}">
+                                            @if($student->status === 'active')
+                                                <span class="status-badge bg-green-100 text-green-700">Active</span>
+                                            @else
+                                                <span class="status-badge bg-red-100 text-red-700">Inactive</span>
+                                            @endif
+                                        </button>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex items-center gap-1">
+                                            <a href="{{ route('admin.users.show', $student->id) }}"
+                                               class="p-1.5 rounded-lg text-blue-500 hover:text-blue-700 hover:bg-blue-50 btn-icon transition"
+                                               title="View">
+                                                <i class="ri-eye-line text-base"></i>
+                                            </a>
+                                            <a href="{{ route('admin.users.edit', $student->id) }}"
+                                               class="p-1.5 rounded-lg text-amber-500 hover:text-amber-700 hover:bg-amber-50 btn-icon transition"
+                                               title="Edit">
+                                                <i class="ri-edit-line text-base"></i>
+                                            </a>
+                                            @if($student->id !== Auth::id())
+                                                <button type="button"
+                                                        onclick="openDeleteModal({{ $student->id }}, '{{ addslashes($student->name) }}', '{{ route('admin.users.delete', $student->id) }}')"
+                                                        class="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 btn-icon transition"
+                                                        title="Delete">
+                                                    <i class="ri-delete-bin-line text-base"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                         </tbody>
                     </table>
                 </div>
@@ -852,9 +908,63 @@
                                     </div>
                                 </td>
                             </tr>
+<<<<<<< HEAD
                             @empty
                             <tr><td colspan="7" style="text-align:center; padding:2rem;">No faculty records.</td></tr>
                             @endforelse
+=======
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-100">
+                            @foreach($faculty as $facultyMember)
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $facultyMember->id }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            <div class="h-8 w-8 bg-purple-100 rounded-full flex items-center justify-center">
+                                                <i class="ri-user-star-line text-purple-600 text-sm"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">{{ $facultyMember->name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->email }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ $facultyMember->department_id ? ($facultyMember->departmentRel->name ?? 'N/A') : ($facultyMember->department ?? 'N/A') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $facultyMember->faculty_courses_count ?? 0 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button onclick="toggleStatus({{ $facultyMember->id }})" class="status-toggle-{{ $facultyMember->id }}">
+                                            @if($facultyMember->status === 'active')
+                                                <span class="status-badge bg-green-100 text-green-700">Active</span>
+                                            @else
+                                                <span class="status-badge bg-red-100 text-red-700">Inactive</span>
+                                            @endif
+                                        </button>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex items-center gap-1">
+                                            <a href="{{ route('admin.users.show', $facultyMember->id) }}"
+                                               class="p-1.5 rounded-lg text-blue-500 hover:text-blue-700 hover:bg-blue-50 btn-icon transition"
+                                               title="View">
+                                                <i class="ri-eye-line text-base"></i>
+                                            </a>
+                                            <a href="{{ route('admin.users.edit', $facultyMember->id) }}"
+                                               class="p-1.5 rounded-lg text-amber-500 hover:text-amber-700 hover:bg-amber-50 btn-icon transition"
+                                               title="Edit">
+                                                <i class="ri-edit-line text-base"></i>
+                                            </a>
+                                            @if($facultyMember->id !== Auth::id())
+                                                <button type="button"
+                                                        onclick="openDeleteModal({{ $facultyMember->id }}, '{{ addslashes($facultyMember->name) }}', '{{ route('admin.users.delete', $facultyMember->id) }}')"
+                                                        class="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 btn-icon transition"
+                                                        title="Delete">
+                                                    <i class="ri-delete-bin-line text-base"></i>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                         </tbody>
                     </table>
                 </div>

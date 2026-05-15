@@ -719,12 +719,60 @@
     </div>
 </aside>
 
+<<<<<<< HEAD
 <!-- ══ MAIN CONTENT ══ -->
 <div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
             <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
                 <i class="ri-menu-2-line"></i>
+=======
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+    <div class="top-bar">
+        <button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button>
+        <div>
+            <h2 class="page-title text-lg md:text-xl">Account Creation</h2>
+            <p class="text-sm text-gray-500 hidden md:block">Create individual accounts or bulk import from CSV</p>
+        </div>
+        <a href="{{ route('admin.users') }}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="border: 1px solid #e5e7eb; color: #374151;">
+            <i class="ri-arrow-left-line"></i> Back to Users
+        </a>
+    </div>
+
+    <div class="p-4 md:p-6 max-w-4xl">
+
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                <i class="ri-checkbox-circle-line text-green-600"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                <i class="ri-error-warning-line text-red-600"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+        @if(session('import_errors') && count(session('import_errors')))
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 mb-4 text-yellow-800">
+                <p class="font-semibold mb-1">Some rows were skipped:</p>
+                <ul class="list-disc ml-5 space-y-1 text-sm">
+                    @foreach(session('import_errors') as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Tab Buttons -->
+        <div class="flex gap-3 mb-6 bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit">
+            <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">
+                <i class="ri-user-star-line mr-1.5"></i> Create Individual Faculty
+            </button>
+            <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">
+                <i class="ri-upload-cloud-line mr-1.5"></i> Bulk Faculty Import
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
             </button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
@@ -751,6 +799,7 @@
                     <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
                 </div>
             @endif
+<<<<<<< HEAD
             @if(session('error'))
                 <div class="alert alert-error">
                     <i class="ri-error-warning-line"></i> {{ session('error') }}
@@ -765,6 +814,134 @@
                             @foreach(session('import_errors') as $err)
                                 <li>{{ $err }}</li>
                             @endforeach
+=======
+
+            <div class="bg-white rounded-2xl shadow p-6">
+                <form action="{{ route('admin.users.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="role" value="faculty">
+
+                    {{-- Status --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label class="form-label">Account Status</label>
+                            <select name="status" class="form-input bg-white">
+                                <option value="active" selected>Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center">
+                             <p class="text-sm text-gray-500 italic mt-4"><i class="ri-shield-user-line"></i> Creating <strong>Faculty</strong> account</p>
+                        </div>
+                    </div>
+
+                    {{-- Basic info --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" name="name" required value="{{ old('name') }}" class="form-input" placeholder="e.g. Dr. John Smith">
+                        </div>
+                        <div>
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" name="email" required value="{{ old('email') }}" class="form-input" placeholder="e.g. john.smith@nu.edu">
+                        </div>
+                    </div>
+
+                    {{-- ===== FACULTY FIELDS ===== --}}
+                    <div id="facultyFields">
+                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-indigo-700"><i class="ri-information-line mr-1"></i>
+                            <strong>No password needed.</strong> Initial password = <strong>Faculty ID</strong>. Faculty must change it on first login via OTP email.</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div>
+                                <label class="form-label">Faculty ID *</label>
+                                <input type="text" name="faculty_id" value="{{ old('faculty_id') }}" class="form-input" placeholder="e.g. FAC-001">
+                                <p class="text-xs text-gray-500 mt-1">This will be the initial password.</p>
+                            </div>
+                            <div>
+                                <label class="form-label">Department <span class="text-gray-400 font-normal">(optional)</span></label>
+                                <select name="department_id" class="form-input bg-white">
+                                    <option value="">-- Select Department --</option>
+                                    @foreach($departments ?? [] as $dept)
+                                        <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->code }} – {{ $dept->name }}</option>
+                                    @endforeach
+                                </select>
+                                @if(isset($departments) && $departments->isEmpty())
+                                    <p class="text-xs text-gray-400 mt-1">No departments yet. <a href="{{ route('admin.departments') }}" class="underline text-blue-500">Create one.</a></p>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                            <div>
+                                <label class="form-label">Specialization <span class="text-gray-400 font-normal">(optional)</span></label>
+                                <input type="text" name="specialization" value="{{ old('specialization') }}" class="form-input" placeholder="e.g. Software Engineering">
+                            </div>
+                            <div>
+                                <label class="form-label">Qualification <span class="text-gray-400 font-normal">(optional)</span></label>
+                                <input type="text" name="qualification" value="{{ old('qualification') }}" class="form-input" placeholder="e.g. Master's in CS">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-5"><i class="ri-information-line"></i> Assign subjects to this faculty after creation via <a href="{{ route('admin.faculty') }}" class="text-blue-600 underline">Faculty Management</a>.</p>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <a href="{{ route('admin.users') }}" class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 text-sm font-medium">Cancel</a>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">Create Faculty Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========== TAB: BULK IMPORT ========== -->
+        <div id="panel-bulk" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
+                    <h2 class="text-lg font-bold text-gray-900 mb-1">Upload Faculty CSV</h2>
+                    <p class="text-sm text-gray-500 mb-5">Download the faculty template, fill it in, then import.</p>
+
+                    <form method="POST" action="{{ route('admin.bulk-import.process') }}" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" name="type" value="faculty">
+                        
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-emerald-800"><i class="ri-information-line mr-1"></i>
+                            Importing multiple <strong>Faculty</strong> accounts at once. Initial password will be set to their Faculty ID.</p>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label">CSV File</label>
+                            <input type="file" name="file" accept=".csv,.txt" required
+                                   class="w-full border rounded-xl px-4 py-2.5 bg-gray-50 text-sm mt-1">
+                            <p class="text-xs text-gray-500 mt-1">Accepted: .csv or .txt</p>
+                        </div>
+
+                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">
+                            <i class="ri-upload-cloud-line mr-1"></i> Import Faculty
+                        </button>
+                    </form>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white rounded-2xl shadow p-5">
+                        <h3 class="font-bold text-gray-900 mb-3 text-sm">Download Template</h3>
+                        <div class="space-y-2">
+                            <a href="{{ route('admin.bulk-import.template', ['type' => 'faculty']) }}"
+                               class="block text-center px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+                               <i class="ri-download-line mr-1"></i> Faculty Template
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                        <h3 class="font-bold text-amber-800 text-sm mb-2">Important Notes</h3>
+                        <ul class="text-xs text-amber-700 space-y-1 list-disc ml-4">
+                            <li>Do not add password columns</li>
+                            <li>Faculty use Faculty ID as initial password</li>
+                            <li>Users must change password on first login</li>
+                            <li>Ensure Department codes match existing ones</li>
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                         </ul>
                     </div>
                 </div>
@@ -780,6 +957,7 @@
                 </button>
             </div>
 
+<<<<<<< HEAD
             <!-- ========== TAB: SINGLE ACCOUNT ========== -->
             <div id="panel-single" class="tab-content">
                 @if($errors->any())
@@ -1021,6 +1199,16 @@
                             </div>
                         </div>
                     </div>
+=======
+            <!-- CSV Format Guide -->
+            <div class="bg-white rounded-2xl shadow p-6 mt-5">
+                <h3 class="font-bold text-gray-900 mb-4">Faculty CSV Format Guide</h3>
+                <div class="border rounded-xl p-4">
+                    <h4 class="font-bold text-emerald-700 text-sm mb-2">Faculty CSV</h4>
+                    <code class="block bg-gray-100 p-3 rounded-lg text-xs mb-2">name,email,faculty_id,department,specialization</code>
+                    <p class="text-xs text-gray-500 mb-1">Example:</p>
+                    <code class="block bg-gray-100 p-3 rounded-lg text-xs">Maria Santos,maria@nu.edu,FAC-001,CCS,Software Engineering</code>
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                 </div>
             </div>
         </div>
@@ -1065,6 +1253,7 @@
         document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
+<<<<<<< HEAD
     // role-based fields
     const roleSelect = document.getElementById('role');
     const studentDiv = document.getElementById('studentFields');
@@ -1096,6 +1285,20 @@
     }
 
     // if bulk tab is forced via session
+=======
+    // Tab switching
+    function switchTab(tab) {
+        const tabs = ['single', 'bulk'];
+        tabs.forEach(t => {
+            const panel = document.getElementById(`panel-${t}`);
+            if (panel) panel.classList.toggle('hidden', t !== tab);
+            const btn = document.getElementById(`tab-${t}`);
+            if (btn) btn.classList.toggle('active', t === tab);
+        });
+    }
+
+    // Check if we should open bulk tab
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
     @if(session('tab') === 'bulk')
     switchTab('bulk');
     @endif

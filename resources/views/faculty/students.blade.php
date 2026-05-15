@@ -814,6 +814,7 @@
 <!-- ══ MAIN ══ -->
 <div class="main-content" id="mainContent">
 
+<<<<<<< HEAD
     <!-- Topbar -->
     <header class="topbar">
         <div class="topbar-left">
@@ -823,6 +824,34 @@
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Faculty → Student Management</div>
+=======
+    <div class="p-4 md:p-6">
+        <!-- Search and Filters -->
+        <div class="bg-white rounded-lg shadow-md p-4 mb-6 border-l-4" style="border-left-color: var(--gold);">
+            <div class="flex flex-wrap gap-4">
+                <div class="flex-1 min-w-[200px]">
+                    <div class="relative">
+                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" 
+                               id="searchInput"
+                               placeholder="Search students by name, email, or ID..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold">
+                    </div>
+                </div>
+                <div>
+                    <select id="courseFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold bg-white">
+                        <option value="">All Courses</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->id }}">{{ $course->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <button onclick="filterStudents()" class="px-6 py-2 rounded-lg transition-all flex items-center gap-2" style="background: var(--blue-deep); color: white;">
+                        <i class="ri-filter-line"></i> Search
+                    </button>
+                </div>
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
             </div>
         </div>
         <div class="topbar-right">
@@ -878,6 +907,7 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
+<<<<<<< HEAD
                     <tbody id="studentsTableBody">
                         <!-- Sample Student 1 -->
                         <tr class="student-row" data-student-id="1">
@@ -943,8 +973,43 @@
                                     <button onclick="editStudent(3)" class="action-btn btn-edit" title="Edit Student"><i class="ri-edit-line"></i></button>
                                     <button onclick="deleteStudent(3)" class="action-btn btn-delete" title="Delete Student"><i class="ri-delete-bin-line"></i></button>
                                 </div>
+=======
+                    <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
+                        @forelse($students as $student)
+                        <tr class="student-row hover:bg-gray-50 transition" data-student-id="{{ $student->id }}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">NU-2024-{{ str_pad($student->id, 3, '0', STR_PAD_LEFT) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="ri-user-line text-indigo-600 text-sm"></i>
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->email }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">
+                                {{ $student->enrollments->map(function($enrollment) { return $enrollment->course->name ?? 'Course'; })->implode(', ') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <div class="action-group">
+                                    <a href="{{ route('faculty.student.details', $student->id) }}" class="action-btn btn-view" title="View Student">
+                                        <i class="ri-eye-line"></i>
+                                    </a>
+                                    <button onclick="messageStudent({{ $student->id }})" class="action-btn btn-message" title="Send Message">
+                                        <i class="ri-mail-send-line"></i>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
+                        @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
+                                <i class="ri-user-line text-4xl block mb-2 text-gray-300"></i>
+                                No students enrolled in your courses yet.
+>>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -1216,8 +1281,45 @@
 
     document.getElementById('messageForm').addEventListener('submit', function(e) {
         e.preventDefault();
-        showNotification('Message sent successfully!', 'success');
-        closeMessageModal();
+        const formData = new FormData(this);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
+        submitBtn.disabled = true;
+
+        fetch('{{ route('faculty.students.message') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(async response => {
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || 'Validation failed');
+            }
+            return data;
+        })
+        .then(data => {
+            if(data.success) {
+                showNotification(data.message || 'Message sent successfully!', 'success');
+                closeMessageModal();
+            } else {
+                showNotification(data.message || 'Error sending message', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification(error.message || 'An error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
     });
 
     document.getElementById('editStudentForm').addEventListener('submit', function(e) {
