@@ -801,7 +801,7 @@
         <!-- CTA buttons -->
         <div class="flex flex-col sm:flex-row gap-3 a4">
             <a href="/register" class="btn-gold">
-                <i class="fas fa-rocket text-sm"></i> Launch Portal
+                <i class="fas fa-file text-sm"></i> Manual
             </a>
             <a href="#solutions" class="btn-navy">
                 <i class="fas fa-play-circle text-sm"></i> Explore Features

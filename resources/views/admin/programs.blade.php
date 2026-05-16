@@ -364,6 +364,31 @@
         .program-table tr:last-child td { border-bottom: none; }
         .program-table tr:hover td { background: rgba(10,31,68,0.02); }
 
+        .program-table-sabm {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+        .program-table-sabm th {
+            text-align: left;
+            padding: 0.9rem 1rem;
+            background: #FCFAF7;
+            border-bottom: 1px solid var(--bdr);
+            font-weight: 700;
+            color: var(--txt-2);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .program-table-sabm td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid var(--bdr);
+            color: var(--txt-2);
+            vertical-align: middle;
+        }
+        .program-table-sabm tr:last-child td { border-bottom: none; }
+        .program-table-sabm tr:hover td { background: rgba(10,31,68,0.02); }
+
         .badge-code {
             display: inline-flex;
             align-items: center;
@@ -699,11 +724,10 @@
                 <table class="program-table">
                     <thead>
                         <tr>
+                            <th>Department</th>
                             <th>Code</th>
                             <th>Program Name</th>
                             <th>Description</th>
-                            <th>Subjects</th>
-                            <th>Students</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -736,6 +760,7 @@
                     </tbody>
                 </table>
             </div>
+            </div>
         </div>
     </div>
 </div>
@@ -754,6 +779,8 @@
                 <input type="hidden" id="programId" name="program_id">
 
                 <div class="form-group">
+                    <label class="form-label">Department <span class="required">*</span></label>
+                    <input type="text" id="progCode" name="code" required maxlength="20" class="form-input" placeholder="e.g. SACE">
                     <label class="form-label">Program Code <span class="required">*</span></label>
                     <input type="text" id="progCode" name="code" required maxlength="20" class="form-input" placeholder="e.g. BSCS">
                     <div class="form-hint">Short unique code (auto-uppercased)</div>
