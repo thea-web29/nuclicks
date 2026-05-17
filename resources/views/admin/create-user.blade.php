@@ -46,7 +46,6 @@
             color: var(--txt-1);
         }
 
-        /* scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
@@ -207,6 +206,7 @@
             align-items: center;
             gap: .75rem;
             margin-bottom: .85rem;
+            cursor: pointer;
         }
         .avatar {
             width: 38px; height: 38px;
@@ -311,9 +311,29 @@
             background: #22c55e;
             box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: transparent;
+            border: 1px solid var(--bdr);
+            border-radius: 40px;
+            padding: .45rem 1rem;
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--txt-2);
+            transition: all var(--t);
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: var(--bg);
+            border-color: var(--gold-d);
+            color: var(--navy);
+        }
 
         /* PAGE BODY */
         .page-body { padding: 1.8rem 2rem; flex: 1; }
+        .form-container { max-width: 900px; margin: 0 auto; }
 
         /* Dashboard card */
         .dash-card {
@@ -445,7 +465,7 @@
         }
         @media (max-width: 640px) {
             .form-grid { grid-template-columns: 1fr; }
-            .page-body { padding: 1.2rem 1rem; }
+            .page-body { padding: 1rem; }
             .topbar { padding: .8rem 1rem; }
         }
 
@@ -489,19 +509,13 @@
         @media (max-width: 900px) {
             .bulk-grid { grid-template-columns: 1fr; }
         }
-        .template-card {
-            background: var(--white);
-            border-radius: 14px;
-            border: 1px solid var(--bdr);
-            padding: 1.2rem;
-        }
         .radio-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
+            display: flex;
+            gap: 1rem;
             margin-top: 0.5rem;
         }
         .radio-card {
+            flex: 1;
             border: 1px solid var(--bdr);
             border-radius: 12px;
             padding: 0.8rem;
@@ -514,7 +528,34 @@
         }
         .radio-card input { margin-right: 0.5rem; }
 
-        /* modal (logout) same as dashboard */
+        /* Alerts */
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: rgba(22,163,74,0.08);
+            border-left: 3px solid var(--green);
+            color: #14532d;
+        }
+        .alert-error {
+            background: rgba(220,38,38,0.06);
+            border-left: 3px solid var(--danger);
+            color: #7f1a1a;
+        }
+        .alert-warning {
+            background: rgba(245,158,11,0.08);
+            border-left: 3px solid #f59e0b;
+            color: #92400e;
+        }
+
+        /* Modal (logout) */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -549,28 +590,21 @@
         }
         .modal-head h3 {
             font-family: 'Fraunces', serif;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
             gap: .5rem;
         }
-        .modal-head h3 i { color: var(--gold); }
         .modal-close {
             background: none;
             border: none;
             color: rgba(255,255,255,0.55);
             font-size: 1.3rem;
             cursor: pointer;
-            transition: color var(--t);
         }
-        .modal-close:hover { color: var(--gold); }
-        .modal-body {
-            padding: 1.8rem 1.5rem;
-            text-align: center;
-        }
-        .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.5; }
+        .modal-body { padding: 1.5rem; text-align: center; }
         .modal-foot {
             padding: .9rem 1.4rem 1.3rem;
             display: flex;
@@ -580,28 +614,23 @@
             border-top: 1px solid var(--bdr);
         }
         .btn-cancel {
-            padding: .58rem 1.1rem;
+            padding: .6rem 1.2rem;
             border-radius: 8px;
             border: 1px solid var(--bdr);
             background: var(--white);
-            font-size: .8rem;
             font-weight: 600;
-            color: var(--txt-2);
+            font-size: .8rem;
             cursor: pointer;
-            transition: all var(--t);
         }
         .btn-confirm {
-            padding: .58rem 1.2rem;
+            padding: .6rem 1.2rem;
             border-radius: 8px;
             border: none;
             background: var(--danger);
-            font-size: .8rem;
-            font-weight: 700;
-            color: #fff;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            transition: all var(--t);
         }
-        .btn-confirm:hover { background: var(--danger-d); }
 
         .sidebar-overlay {
             display: none;
@@ -617,32 +646,8 @@
             .main-content { margin-left: 0; }
             .menu-toggle { display: flex; }
         }
-        .hidden { display: none; }
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .alert-success {
-            background: rgba(22,163,74,0.08);
-            border-left: 3px solid var(--green);
-            color: #14532d;
-        }
-        .alert-error {
-            background: rgba(220,38,38,0.06);
-            border-left: 3px solid var(--danger);
-            color: #7f1a1a;
-        }
-        .alert-warning {
-            background: rgba(245,158,11,0.08);
-            border-left: 3px solid #f59e0b;
-            color: #92400e;
-        }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -666,55 +671,33 @@
         <div class="nav-body">
             <div>
                 <div class="nav-section-label">Main</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="ri-dashboard-line"></i> Dashboard
-                </a>
-                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                    <i class="ri-team-line"></i> Users
-                </a>
-                <a href="{{ route('admin.users.create') }}" class="nav-item active">
-                    <i class="ri-user-add-line"></i> Account Creation
-                </a>
-                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                    <i class="ri-user-star-line"></i> Faculty
-                </a>
+                <a href="{{ route('admin.dashboard') }}" class="nav-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="{{ route('admin.users') }}" class="nav-item"><i class="ri-team-line"></i> Users</a>
+                <a href="{{ route('admin.users.create') }}" class="nav-item active"><i class="ri-user-add-line"></i> Account Creation</a>
+                <a href="{{ route('admin.faculty') }}" class="nav-item"><i class="ri-user-star-line"></i> Faculty</a>
             </div>
             <div>
                 <div class="nav-section-label">Academic</div>
-                <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
-                    <i class="ri-graduation-cap-line"></i> Programs
-                </a>
-                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                    <i class="ri-building-2-line"></i> Departments
-                </a>
-                <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
-                    <i class="ri-book-open-line"></i> Subjects
-                </a>
+                <a href="{{ route('admin.programs') }}" class="nav-item"><i class="ri-graduation-cap-line"></i> Programs</a>
+                <a href="{{ route('admin.departments') }}" class="nav-item"><i class="ri-building-2-line"></i> Departments</a>
+                <a href="{{ route('admin.subjects') }}" class="nav-item"><i class="ri-book-open-line"></i> Subjects</a>
             </div>
             <div>
                 <div class="nav-section-label">Assessment</div>
-                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                    <i class="ri-bar-chart-line"></i> Analytics
-                </a>
-                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                    <i class="ri-history-line"></i> Activity Logs
-                </a>
-                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="ri-settings-line"></i> Settings
-                </a>
+                <a href="{{ route('admin.analytics') }}" class="nav-item"><i class="ri-bar-chart-line"></i> Analytics</a>
+                <a href="{{ route('admin.logs') }}" class="nav-item"><i class="ri-history-line"></i> Activity Logs</a>
+                <a href="{{ route('admin.settings') }}" class="nav-item"><i class="ri-settings-line"></i> Settings</a>
             </div>
         </div>
         <div class="sidebar-footer">
-            <div class="profile-row">
+            <div class="profile-row" onclick="window.location='{{ route('admin.profile') }}'">
                 <div class="avatar"><i class="ri-user-line"></i></div>
                 <div>
                     <div class="profile-name">{{ Auth::user()->name }}</div>
                     <div class="profile-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
-            <button onclick="openLogoutModal()" class="logout-btn">
-                <i class="ri-logout-box-line"></i> Sign Out
-            </button>
+            <button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Sign Out</button>
         </div>
     </div>
 </aside>
@@ -723,223 +706,36 @@
 <div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="ri-menu-2-line"></i>
-
-<!-- MAIN CONTENT -->
-<div class="main-content" id="mainContent">
-    <div class="top-bar">
-        <button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button>
-        <div>
-            <h2 class="page-title text-lg md:text-xl">Account Creation</h2>
-            <p class="text-sm text-gray-500 hidden md:block">Create individual accounts or bulk import from CSV</p>
-        </div>
-        <a href="{{ route('admin.users') }}" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="border: 1px solid #e5e7eb; color: #374151;">
-            <i class="ri-arrow-left-line"></i> Back to Users
-        </a>
-    </div>
-
-    <div class="p-4 md:p-6 max-w-4xl">
-
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
-                <i class="ri-checkbox-circle-line text-green-600"></i>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
-                <i class="ri-error-warning-line text-red-600"></i>
-                <span>{{ session('error') }}</span>
-            </div>
-        @endif
-        @if(session('import_errors') && count(session('import_errors')))
-            <div class="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 mb-4 text-yellow-800">
-                <p class="font-semibold mb-1">Some rows were skipped:</p>
-                <ul class="list-disc ml-5 space-y-1 text-sm">
-                    @foreach(session('import_errors') as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <!-- Tab Buttons -->
-        <div class="flex gap-3 mb-6 bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit">
-            <button class="tab-btn active" id="tab-single" onclick="switchTab('single')">
-                <i class="ri-user-star-line mr-1.5"></i> Create Individual Faculty
-            </button>
-            <button class="tab-btn" id="tab-bulk" onclick="switchTab('bulk')">
-                <i class="ri-upload-cloud-line mr-1.5"></i> Bulk Faculty Import
-
-            </button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="ri-menu-2-line"></i></button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Admin → Account Creation</div>
             </div>
         </div>
         <div class="topbar-right">
-            <div class="topbar-badge">
-                <span class="topbar-dot"></span>
-                System Online
-            </div>
-            <div class="topbar-badge">
-                <i class="ri-calendar-line"></i>
-                <span id="topbar-date"></span>
-            </div>
+            <div class="topbar-badge"><span class="topbar-dot"></span> System Online</div>
+            <div class="topbar-badge"><i class="ri-calendar-line"></i><span id="topbar-date"></span></div>
+            <a href="{{ route('admin.users') }}" class="back-btn"><i class="ri-arrow-left-line"></i> Back to Users</a>
         </div>
     </header>
 
     <div class="page-body">
-        <div style="max-width: 1000px; margin: 0 auto;">
+        <div class="form-container">
             <!-- Flash messages -->
             @if(session('success'))
-                <div class="alert alert-success">
-                    <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
-                </div>
+                <div class="alert alert-success"><i class="ri-checkbox-circle-line"></i> {{ session('success') }}</div>
             @endif
-
             @if(session('error'))
-                <div class="alert alert-error">
-                    <i class="ri-error-warning-line"></i> {{ session('error') }}
-                </div>
+                <div class="alert alert-error"><i class="ri-error-warning-line"></i> {{ session('error') }}</div>
             @endif
             @if(session('import_errors') && count(session('import_errors')))
                 <div class="alert alert-warning">
                     <i class="ri-alert-line"></i>
-                    <div>
-                        <strong>Some rows were skipped:</strong>
+                    <div><strong>Some rows were skipped:</strong>
                         <ul style="margin-top: 0.3rem; margin-left: 1rem;">
                             @foreach(session('import_errors') as $err)
                                 <li>{{ $err }}</li>
                             @endforeach
-
-            <div class="bg-white rounded-2xl shadow p-6">
-                <form action="{{ route('admin.users.store') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="role" value="faculty">
-
-                    {{-- Status --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                        <div>
-                            <label class="form-label">Account Status</label>
-                            <select name="status" class="form-input bg-white">
-                                <option value="active" selected>Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center">
-                             <p class="text-sm text-gray-500 italic mt-4"><i class="ri-shield-user-line"></i> Creating <strong>Faculty</strong> account</p>
-                        </div>
-                    </div>
-
-                    {{-- Basic info --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                        <div>
-                            <label class="form-label">Full Name *</label>
-                            <input type="text" name="name" required value="{{ old('name') }}" class="form-input" placeholder="e.g. Dr. John Smith">
-                        </div>
-                        <div>
-                            <label class="form-label">Email Address *</label>
-                            <input type="email" name="email" required value="{{ old('email') }}" class="form-input" placeholder="e.g. john.smith@nu.edu">
-                        </div>
-                    </div>
-
-                    {{-- ===== FACULTY FIELDS ===== --}}
-                    <div id="facultyFields">
-                        <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-5">
-                            <p class="text-sm text-indigo-700"><i class="ri-information-line mr-1"></i>
-                            <strong>No password needed.</strong> Initial password = <strong>Faculty ID</strong>. Faculty must change it on first login via OTP email.</p>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="form-label">Faculty ID *</label>
-                                <input type="text" name="faculty_id" value="{{ old('faculty_id') }}" class="form-input" placeholder="e.g. FAC-001">
-                                <p class="text-xs text-gray-500 mt-1">This will be the initial password.</p>
-                            </div>
-                            <div>
-                                <label class="form-label">Department <span class="text-gray-400 font-normal">(optional)</span></label>
-                                <select name="department_id" class="form-input bg-white">
-                                    <option value="">-- Select Department --</option>
-                                    @foreach($departments ?? [] as $dept)
-                                        <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->code }} – {{ $dept->name }}</option>
-                                    @endforeach
-                                </select>
-                                @if(isset($departments) && $departments->isEmpty())
-                                    <p class="text-xs text-gray-400 mt-1">No departments yet. <a href="{{ route('admin.departments') }}" class="underline text-blue-500">Create one.</a></p>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                            <div>
-                                <label class="form-label">Specialization <span class="text-gray-400 font-normal">(optional)</span></label>
-                                <input type="text" name="specialization" value="{{ old('specialization') }}" class="form-input" placeholder="e.g. Software Engineering">
-                            </div>
-                            <div>
-                                <label class="form-label">Qualification <span class="text-gray-400 font-normal">(optional)</span></label>
-                                <input type="text" name="qualification" value="{{ old('qualification') }}" class="form-input" placeholder="e.g. Master's in CS">
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mb-5"><i class="ri-information-line"></i> Assign subjects to this faculty after creation via <a href="{{ route('admin.faculty') }}" class="text-blue-600 underline">Faculty Management</a>.</p>
-                    </div>
-
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <a href="{{ route('admin.users') }}" class="px-5 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 text-sm font-medium">Cancel</a>
-                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">Create Faculty Account</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- ========== TAB: BULK IMPORT ========== -->
-        <div id="panel-bulk" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow p-6">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1">Upload Faculty CSV</h2>
-                    <p class="text-sm text-gray-500 mb-5">Download the faculty template, fill it in, then import.</p>
-
-                    <form method="POST" action="{{ route('admin.bulk-import.process') }}" enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" name="type" value="faculty">
-                        
-                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-5">
-                            <p class="text-sm text-emerald-800"><i class="ri-information-line mr-1"></i>
-                            Importing multiple <strong>Faculty</strong> accounts at once. Initial password will be set to their Faculty ID.</p>
-                        </div>
-
-                        <div class="mb-5">
-                            <label class="form-label">CSV File</label>
-                            <input type="file" name="file" accept=".csv,.txt" required
-                                   class="w-full border rounded-xl px-4 py-2.5 bg-gray-50 text-sm mt-1">
-                            <p class="text-xs text-gray-500 mt-1">Accepted: .csv or .txt</p>
-                        </div>
-
-                        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-semibold text-white" style="background: var(--blue-deep);">
-                            <i class="ri-upload-cloud-line mr-1"></i> Import Faculty
-                        </button>
-                    </form>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow p-5">
-                        <h3 class="font-bold text-gray-900 mb-3 text-sm">Download Template</h3>
-                        <div class="space-y-2">
-                            <a href="{{ route('admin.bulk-import.template', ['type' => 'faculty']) }}"
-                               class="block text-center px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
-                               <i class="ri-download-line mr-1"></i> Faculty Template
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-                        <h3 class="font-bold text-amber-800 text-sm mb-2">Important Notes</h3>
-                        <ul class="text-xs text-amber-700 space-y-1 list-disc ml-4">
-                            <li>Do not add password columns</li>
-                            <li>Faculty use Faculty ID as initial password</li>
-                            <li>Users must change password on first login</li>
-                            <li>Ensure Department codes match existing ones</li>
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                         </ul>
                     </div>
                 </div>
@@ -971,7 +767,7 @@
                     <form action="{{ route('admin.users.store') }}" method="POST">
                         @csrf
 
-                        <div style="padding: 1.3rem;">
+                        <div class="dash-card-body">
                             <!-- Role + Status -->
                             <div class="form-grid">
                                 <div class="form-group">
@@ -991,7 +787,7 @@
                                 </div>
                             </div>
 
-                            <!-- Basic info -->
+                            <!-- Name + Email -->
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label class="form-label">Full Name <span class="required">*</span></label>
@@ -1053,9 +849,9 @@
                                         <div class="form-hint">This will be the initial password.</div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Department</label>
+                                        <label class="form-label">Department <span class="text-gray-400 font-normal">(optional)</span></label>
                                         <select name="department_id" class="form-select">
-                                            <option value="">-- Select Department --</option>
+                                            <option value="">-- Select Department (optional) --</option>
                                             @foreach($departments ?? [] as $dept)
                                                 <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->code }} – {{ $dept->name }}</option>
                                             @endforeach
@@ -1067,11 +863,11 @@
                                 </div>
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label class="form-label">Specialization</label>
+                                        <label class="form-label">Specialization <span class="text-gray-400 font-normal">(optional)</span></label>
                                         <input type="text" name="specialization" value="{{ old('specialization') }}" class="form-input" placeholder="e.g. Software Engineering">
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label">Qualification</label>
+                                        <label class="form-label">Qualification <span class="text-gray-400 font-normal">(optional)</span></label>
                                         <input type="text" name="qualification" value="{{ old('qualification') }}" class="form-input" placeholder="e.g. Master's in CS">
                                     </div>
                                 </div>
@@ -1111,7 +907,7 @@
                             <i class="ri-upload-cloud-line"></i>
                             <h3>Upload CSV File</h3>
                         </div>
-                        <div style="padding: 1.3rem;">
+                        <div class="dash-card-body">
                             <form method="POST" action="{{ route('admin.bulk-import.process') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group">
@@ -1119,11 +915,11 @@
                                     <div class="radio-group">
                                         <label class="radio-card" id="radio-students-card">
                                             <input type="radio" name="type" value="students" checked> Students
-                                            <div class="form-hint" style="margin-top: 4px;">Initial password = Student ID</div>
+                                            <div class="form-hint">Initial password = Student ID</div>
                                         </label>
                                         <label class="radio-card" id="radio-faculty-card">
                                             <input type="radio" name="type" value="faculty"> Faculty
-                                            <div class="form-hint" style="margin-top: 4px;">Initial password = Faculty ID</div>
+                                            <div class="form-hint">Initial password = Faculty ID</div>
                                         </label>
                                     </div>
                                 </div>
@@ -1132,9 +928,7 @@
                                     <input type="file" name="file" accept=".csv,.txt" required class="form-input">
                                     <div class="form-hint">Accepted: .csv or .txt</div>
                                 </div>
-                                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
-                                    <i class="ri-upload-cloud-line"></i> Import Accounts
-                                </button>
+                                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;"><i class="ri-upload-cloud-line"></i> Import Accounts</button>
                             </form>
                         </div>
                     </div>
@@ -1142,26 +936,16 @@
                     <!-- Right: Templates + notes -->
                     <div>
                         <div class="dash-card" style="margin-bottom: 1rem;">
-                            <div class="dash-card-head">
-                                <i class="ri-download-line"></i>
-                                <h3>Download Templates</h3>
-                            </div>
-                            <div style="padding: 1rem;">
-                                <a href="{{ route('admin.bulk-import.template', ['type' => 'students']) }}" class="btn-primary" style="display: block; text-align: center; margin-bottom: 0.7rem; background: var(--navy-lite);">
-                                    <i class="ri-download-line"></i> Students Template
-                                </a>
-                                <a href="{{ route('admin.bulk-import.template', ['type' => 'faculty']) }}" class="btn-primary" style="display: block; text-align: center; background: #1F3A6D;">
-                                    <i class="ri-download-line"></i> Faculty Template
-                                </a>
+                            <div class="dash-card-head"><i class="ri-download-line"></i><h3>Download Templates</h3></div>
+                            <div class="dash-card-body" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <a href="{{ route('admin.bulk-import.template', ['type' => 'students']) }}" class="btn-primary" style="display: block; text-align: center; background: var(--navy-lite);"><i class="ri-download-line"></i> Students Template</a>
+                                <a href="{{ route('admin.bulk-import.template', ['type' => 'faculty']) }}" class="btn-primary" style="display: block; text-align: center; background: #1F3A6D;"><i class="ri-download-line"></i> Faculty Template</a>
                             </div>
                         </div>
 
                         <div class="dash-card">
-                            <div class="dash-card-head">
-                                <i class="ri-information-line"></i>
-                                <h3>Important Notes</h3>
-                            </div>
-                            <div style="padding: 1rem; font-size: 0.75rem; color: var(--txt-2);">
+                            <div class="dash-card-head"><i class="ri-information-line"></i><h3>Important Notes</h3></div>
+                            <div class="dash-card-body" style="font-size: 0.75rem; color: var(--txt-2);">
                                 <ul style="list-style: disc; margin-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem;">
                                     <li>Do not add password columns</li>
                                     <li>Students use Student ID as initial password</li>
@@ -1176,11 +960,8 @@
 
                 <!-- CSV Format Guide -->
                 <div class="dash-card" style="margin-top: 1.5rem;">
-                    <div class="dash-card-head">
-                        <i class="ri-file-copy-line"></i>
-                        <h3>CSV Format Guide</h3>
-                    </div>
-                    <div style="padding: 1.3rem;">
+                    <div class="dash-card-head"><i class="ri-file-copy-line"></i><h3>CSV Format Guide</h3></div>
+                    <div class="dash-card-body">
                         <div class="form-grid">
                             <div style="border: 1px solid var(--bdr); border-radius: 12px; padding: 1rem;">
                                 <h4 style="font-weight: 700; color: var(--navy); margin-bottom: 0.5rem;">Students CSV</h4>
@@ -1196,49 +977,24 @@
                             </div>
                         </div>
                     </div>
-=======
-            <!-- CSV Format Guide -->
-            <div class="bg-white rounded-2xl shadow p-6 mt-5">
-                <h3 class="font-bold text-gray-900 mb-4">Faculty CSV Format Guide</h3>
-                <div class="border rounded-xl p-4">
-                    <h4 class="font-bold text-emerald-700 text-sm mb-2">Faculty CSV</h4>
-                    <code class="block bg-gray-100 p-3 rounded-lg text-xs mb-2">name,email,faculty_id,department,specialization</code>
-                    <p class="text-xs text-gray-500 mb-1">Example:</p>
-                    <code class="block bg-gray-100 p-3 rounded-lg text-xs">Maria Santos,maria@nu.edu,FAC-001,CCS,Software Engineering</code>
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ══ LOGOUT MODAL ══ -->
+<!-- LOGOUT MODAL -->
 <div class="modal-overlay" id="logoutModal">
     <div class="modal">
-        <div class="modal-head">
-            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to sign out of your account?</p>
-            <p style="font-size:0.7rem; margin-top:0.5rem;">You will be redirected to the login page.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn-confirm">Yes, Sign Out</button>
-            </form>
-        </div>
+        <div class="modal-head"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">×</button></div>
+        <div class="modal-body"><p>Are you sure you want to sign out of your account?</p><p style="font-size:0.7rem; margin-top:0.5rem;">You will be redirected to the login page.</p></div>
+        <div class="modal-foot"><button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="btn-confirm">Yes, Sign Out</button></form></div>
     </div>
 </div>
 
 <script>
-    // date
-    const d = new Date();
-    document.getElementById('topbar-date').textContent = d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    // sidebar toggle
     function toggleSidebar() {
         const s = document.getElementById('sidebar');
         const o = document.getElementById('sidebarOverlay');
@@ -1250,8 +1006,7 @@
         document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
-<<<<<<< HEAD
-    // role-based fields
+    // Role-based field toggle
     const roleSelect = document.getElementById('role');
     const studentDiv = document.getElementById('studentFields');
     const facultyDiv = document.getElementById('facultyFields');
@@ -1266,7 +1021,7 @@
     roleSelect.addEventListener('change', toggleRoleFields);
     toggleRoleFields();
 
-    // tabs
+    // Tab switching
     function switchTab(tab) {
         document.getElementById('panel-single').classList.toggle('hidden', tab !== 'single');
         document.getElementById('panel-bulk').classList.toggle('hidden', tab !== 'bulk');
@@ -1281,45 +1036,28 @@
         }
     }
 
-    // if bulk tab is forced via session
-=======
-    // Tab switching
-    function switchTab(tab) {
-        const tabs = ['single', 'bulk'];
-        tabs.forEach(t => {
-            const panel = document.getElementById(`panel-${t}`);
-            if (panel) panel.classList.toggle('hidden', t !== tab);
-            const btn = document.getElementById(`tab-${t}`);
-            if (btn) btn.classList.toggle('active', t === tab);
-        });
-    }
-
-    // Check if we should open bulk tab
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
     @if(session('tab') === 'bulk')
-    switchTab('bulk');
+        switchTab('bulk');
     @endif
 
-    // radio card styling for bulk type
+    // Radio card styling for bulk type
     const radioStudents = document.querySelector('input[name="type"][value="students"]');
     const radioFaculty = document.querySelector('input[name="type"][value="faculty"]');
     const radioStudentsCard = document.getElementById('radio-students-card');
     const radioFacultyCard = document.getElementById('radio-faculty-card');
 
     function updateRadioCards() {
-        if (radioStudents.checked) {
-            radioStudentsCard.classList.add('active-radio');
-            radioFacultyCard.classList.remove('active-radio');
-        } else {
-            radioFacultyCard.classList.add('active-radio');
-            radioStudentsCard.classList.remove('active-radio');
+        if (radioStudents && radioStudentsCard) {
+            const isStudent = radioStudents.checked;
+            radioStudentsCard.classList.toggle('active-radio', isStudent);
+            if (radioFacultyCard) radioFacultyCard.classList.toggle('active-radio', !isStudent);
         }
     }
-    radioStudents.addEventListener('change', updateRadioCards);
-    radioFaculty.addEventListener('change', updateRadioCards);
+    if (radioStudents) radioStudents.addEventListener('change', updateRadioCards);
+    if (radioFaculty) radioFaculty.addEventListener('change', updateRadioCards);
     updateRadioCards();
 
-    // logout modal
+    // Logout modal
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1328,12 +1066,8 @@
         document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
-    document.getElementById('logoutModal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeLogoutModal();
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeLogoutModal();
-    });
+    document.getElementById('logoutModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeLogoutModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogoutModal(); });
 </script>
 </body>
 </html>

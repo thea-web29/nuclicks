@@ -205,6 +205,7 @@
             align-items: center;
             gap: .75rem;
             margin-bottom: .85rem;
+            cursor: pointer;
         }
         .avatar {
             width: 38px; height: 38px;
@@ -364,31 +365,6 @@
         .program-table tr:last-child td { border-bottom: none; }
         .program-table tr:hover td { background: rgba(10,31,68,0.02); }
 
-        .program-table-sabm {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-        }
-        .program-table-sabm th {
-            text-align: left;
-            padding: 0.9rem 1rem;
-            background: #FCFAF7;
-            border-bottom: 1px solid var(--bdr);
-            font-weight: 700;
-            color: var(--txt-2);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .program-table-sabm td {
-            padding: 0.9rem 1rem;
-            border-bottom: 1px solid var(--bdr);
-            color: var(--txt-2);
-            vertical-align: middle;
-        }
-        .program-table-sabm tr:last-child td { border-bottom: none; }
-        .program-table-sabm tr:hover td { background: rgba(10,31,68,0.02); }
-
         .badge-code {
             display: inline-flex;
             align-items: center;
@@ -540,7 +516,7 @@
             margin-bottom: 0.4rem;
         }
         .form-label .required { color: var(--danger); margin-left: 0.2rem; }
-        .form-input, .form-textarea {
+        .form-input, .form-select, .form-textarea {
             width: 100%;
             padding: 0.65rem 1rem;
             border-radius: 10px;
@@ -551,7 +527,7 @@
             background: var(--white);
             transition: var(--t);
         }
-        .form-input:focus, .form-textarea:focus {
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
             border-color: var(--gold-d);
             box-shadow: 0 0 0 3px rgba(196,154,0,0.1);
@@ -623,55 +599,33 @@
         <div class="nav-body">
             <div>
                 <div class="nav-section-label">Main</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="ri-dashboard-line"></i> Dashboard
-                </a>
-                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                    <i class="ri-team-line"></i> Users
-                </a>
-                <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                    <i class="ri-user-add-line"></i> Account Creation
-                </a>
-                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                    <i class="ri-user-star-line"></i> Faculty
-                </a>
+                <a href="{{ route('admin.dashboard') }}" class="nav-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="{{ route('admin.users') }}" class="nav-item"><i class="ri-team-line"></i> Users</a>
+                <a href="{{ route('admin.users.create') }}" class="nav-item"><i class="ri-user-add-line"></i> Account Creation</a>
+                <a href="{{ route('admin.faculty') }}" class="nav-item"><i class="ri-user-star-line"></i> Faculty</a>
             </div>
             <div>
                 <div class="nav-section-label">Academic</div>
-                <a href="{{ route('admin.programs') }}" class="nav-item active">
-                    <i class="ri-graduation-cap-line"></i> Programs
-                </a>
-                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                    <i class="ri-building-2-line"></i> Departments
-                </a>
-                <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
-                    <i class="ri-book-open-line"></i> Subjects
-                </a>
+                <a href="{{ route('admin.programs') }}" class="nav-item active"><i class="ri-graduation-cap-line"></i> Programs</a>
+                <a href="{{ route('admin.departments') }}" class="nav-item"><i class="ri-building-2-line"></i> Departments</a>
+                <a href="{{ route('admin.subjects') }}" class="nav-item"><i class="ri-book-open-line"></i> Subjects</a>
             </div>
             <div>
                 <div class="nav-section-label">Assessment</div>
-                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                    <i class="ri-bar-chart-line"></i> Analytics
-                </a>
-                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                    <i class="ri-history-line"></i> Activity Logs
-                </a>
-                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="ri-settings-line"></i> Settings
-                </a>
+                <a href="{{ route('admin.analytics') }}" class="nav-item"><i class="ri-bar-chart-line"></i> Analytics</a>
+                <a href="{{ route('admin.logs') }}" class="nav-item"><i class="ri-history-line"></i> Activity Logs</a>
+                <a href="{{ route('admin.settings') }}" class="nav-item"><i class="ri-settings-line"></i> Settings</a>
             </div>
         </div>
         <div class="sidebar-footer">
-            <div class="profile-row">
+            <div class="profile-row" onclick="window.location='{{ route('admin.profile') }}'">
                 <div class="avatar"><i class="ri-user-line"></i></div>
                 <div>
-                    <div class="profile-name">{{ Auth::user()->name ?? 'Admin User' }}</div>
-                    <div class="profile-email">{{ Auth::user()->email ?? 'admin@nu.edu.ph' }}</div>
+                    <div class="profile-name">{{ Auth::user()->name }}</div>
+                    <div class="profile-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
-            <button onclick="openLogoutModal()" class="logout-btn">
-                <i class="ri-logout-box-line"></i> Sign Out
-            </button>
+            <button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Sign Out</button>
         </div>
     </div>
 </aside>
@@ -680,86 +634,59 @@
 <div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="ri-menu-2-line"></i>
-            </button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="ri-menu-2-line"></i></button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Admin → Academic → Programs</div>
             </div>
         </div>
         <div class="topbar-right">
-            <div class="topbar-badge">
-                <span class="topbar-dot"></span>
-                System Online
-            </div>
-            <div class="topbar-badge">
-                <i class="ri-calendar-line"></i>
-                <span id="topbar-date"></span>
-            </div>
+            <div class="topbar-badge"><span class="topbar-dot"></span> System Online</div>
+            <div class="topbar-badge"><i class="ri-calendar-line"></i><span id="topbar-date"></span></div>
         </div>
     </header>
 
     <div class="page-body">
         <!-- Flash messages -->
         @if(session('success'))
-            <div class="alert alert-success">
-                <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
-            </div>
+            <div class="alert alert-success"><i class="ri-checkbox-circle-line"></i> {{ session('success') }}</div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error">
-                <i class="ri-error-warning-line"></i> {{ session('error') }}
-            </div>
+            <div class="alert alert-error"><i class="ri-error-warning-line"></i> {{ session('error') }}</div>
         @endif
 
         <div class="dash-card">
             <div class="dash-card-head">
                 <span class="dash-card-title"><i class="ri-graduation-cap-line"></i> Degree Programs</span>
-                <button onclick="openCreateModal()" class="btn-primary-sm">
-                    <i class="ri-add-line"></i> Add Program
-                </button>
+                <button onclick="openCreateModal()" class="btn-primary-sm"><i class="ri-add-line"></i> Add Program</button>
             </div>
             <div style="overflow-x: auto;">
                 <table class="program-table">
                     <thead>
-                        <tr>
-                            <th>Department</th>
-                            <th>Code</th>
-                            <th>Program Name</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
+                        <tr><th>Department</th><th>Code</th><th>Program Name</th><th>Description</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         @forelse($programs as $program)
                         <tr>
+                            <td><span class="badge-code">{{ $program->department->code ?? 'N/A' }} - {{ $program->department->name ?? 'N/A' }}</span></td>
                             <td><span class="badge-code">{{ $program->code }}</span></td>
                             <td><div style="font-weight: 500;">{{ $program->name }}</div></td>
                             <td><div style="color: var(--txt-3);">{{ Str::limit($program->description, 55) ?: '—' }}</div></td>
-                            <td><span class="badge-count">{{ $program->subjects_count ?? 0 }}</span></td>
-                            <td><span class="badge-count">{{ $program->students_count ?? 0 }}</span></td>
                             <td>
-                                <button onclick="editProgram({{ $program->id }})" class="btn-icon edit" title="Edit">
-                                    <i class="ri-edit-line"></i>
-                                </button>
-                                <button onclick="deleteProgram({{ $program->id }}, '{{ addslashes($program->name) }}')" class="btn-icon delete" title="Delete">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
+                                <button onclick="editProgram({{ $program->id }})" class="btn-icon edit" title="Edit"><i class="ri-edit-line"></i></button>
+                                <button onclick="deleteProgram({{ $program->id }}, '{{ addslashes($program->name) }}')" class="btn-icon delete" title="Delete"><i class="ri-delete-bin-line"></i></button>
                             </td>
                         </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" style="text-align: center; padding: 2rem;">
-                                    <i class="ri-graduation-cap-line" style="font-size: 2rem; color: var(--txt-3); opacity: 0.4;"></i>
-                                    <p style="margin-top: 0.5rem; color: var(--txt-3);">No programs yet.</p>
-                                    <button onclick="openCreateModal()" class="btn-primary-sm" style="margin-top: 0.5rem;">Add Program</button>
-                                </td>
-                            </tr>
+                            <tr><td colspan="5" style="text-align: center; padding: 2rem;">
+                                <i class="ri-graduation-cap-line" style="font-size: 2rem; color: var(--txt-3); opacity: 0.4;"></i>
+                                <p style="margin-top: 0.5rem; color: var(--txt-3);">No programs yet.</p>
+                                <button onclick="openCreateModal()" class="btn-primary-sm" style="margin-top: 0.5rem;">Add Program</button>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>
-            </div>
             </div>
         </div>
     </div>
@@ -780,7 +707,15 @@
 
                 <div class="form-group">
                     <label class="form-label">Department <span class="required">*</span></label>
-                    <input type="text" id="progCode" name="code" required maxlength="20" class="form-input" placeholder="e.g. SACE">
+                    <select name="department_id" id="progDepartment" class="form-select" required>
+                        <option value="">-- Select Department --</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept->id }}">{{ $dept->code }} – {{ $dept->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Program Code <span class="required">*</span></label>
                     <input type="text" id="progCode" name="code" required maxlength="20" class="form-input" placeholder="e.g. BSCS">
                     <div class="form-hint">Short unique code (auto-uppercased)</div>
@@ -805,31 +740,18 @@
     </div>
 </div>
 
-<!-- ══ LOGOUT MODAL ══ -->
+<!-- LOGOUT MODAL -->
 <div class="modal-overlay" id="logoutModal">
     <div class="modal" style="max-width: 400px;">
-        <div class="modal-head">
-            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
-        </div>
-        <div class="modal-body" style="text-align: center;">
-            <p>Are you sure you want to sign out of your account?</p>
-            <p style="font-size:0.7rem; margin-top:0.5rem;">You will be redirected to the login page.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn-confirm" style="background: var(--danger);">Yes, Sign Out</button>
-            </form>
-        </div>
+        <div class="modal-head"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">×</button></div>
+        <div class="modal-body" style="text-align: center;"><p>Are you sure you want to sign out of your account?</p><p style="font-size:0.7rem; margin-top:0.5rem;">You will be redirected to the login page.</p></div>
+        <div class="modal-foot"><button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button><form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="btn-confirm" style="background: var(--danger);">Yes, Sign Out</button></form></div>
     </div>
 </div>
 
 <script>
     // Date
-    const d = new Date();
-    document.getElementById('topbar-date').textContent = d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
     // Sidebar toggle
     function toggleSidebar() {
@@ -868,6 +790,7 @@
             if (data.success) {
                 document.getElementById('modalTitle').innerText = 'Edit Program';
                 document.getElementById('programId').value = data.program.id;
+                document.getElementById('progDepartment').value = data.program.department_id;
                 document.getElementById('progCode').value = data.program.code;
                 document.getElementById('progName').value = data.program.name;
                 document.getElementById('progDescription').value = data.program.description || '';
@@ -881,7 +804,7 @@
         .catch(e => alert('Error loading program: ' + e.message));
     }
 
-    // Delete program with confirmation
+    // Delete program
     function deleteProgram(id, name) {
         if (!confirm(`Delete program "${name}"?\n\nThis will NOT delete subjects or students assigned to this program, but they will lose their program assignment.`)) return;
 
@@ -911,6 +834,13 @@
         const formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         if (id) formData.append('_method', 'PUT');
+
+        const departmentId = document.getElementById('progDepartment').value;
+        if (!departmentId) {
+            alert('Please select a department.');
+            return;
+        }
+        formData.append('department_id', departmentId);
 
         let codeVal = document.getElementById('progCode').value.trim();
         codeVal = codeVal.toUpperCase();
