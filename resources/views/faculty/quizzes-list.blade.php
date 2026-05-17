@@ -6,8 +6,9 @@
     <title>All Quizzes – NU Horizon LMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* ══ DESIGN TOKENS ══ */
+        /* ══ DESIGN TOKENS (identical to Course Management) ══ */
         :root {
             --navy:      #0A1F44;
             --navy-mid:  #1F3A6D;
@@ -30,7 +31,7 @@
             --danger:    #dc2626;
             --danger-d:  #b91c1c;
             --green:     #16a34a;
-            --blue:      #3b82f6;
+            --purple:    #7c3aed;
             --orange:    #ea580c;
         }
 
@@ -44,9 +45,8 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        *:focus { outline: none !important; }
+        *:focus { outline: none !important; box-shadow: none !important; }
 
-        /* ══ SCROLLBAR ══ */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
@@ -308,6 +308,26 @@
             box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
 
+        /* Button Create Quiz – underline removed */
+        .btn-create {
+            display: flex;
+            align-items: center;
+            gap: .45rem;
+            padding: .52rem 1.1rem;
+            border-radius: 9px;
+            border: none;
+            background: var(--navy);
+            color: #fff;
+            font-size: .8rem;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            cursor: pointer;
+            transition: all var(--t);
+            box-shadow: 0 2px 8px rgba(10,31,68,0.18);
+            text-decoration: none;   /* ← removes underline from link */
+        }
+        .btn-create:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(10,31,68,0.22); }
+        .btn-create i { font-size: .95rem; }
 
         /* ══ PAGE BODY ══ */
         .page-body { padding: 1.8rem 2rem; flex: 1; }
@@ -331,35 +351,43 @@
 
         /* ══ ALERT ══ */
         .alert-success {
-            display: flex; align-items: center; gap: .6rem;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
             background: rgba(22,163,74,0.08);
             border: 1px solid rgba(22,163,74,0.20);
             border-left: 4px solid var(--green);
             border-radius: 10px;
             padding: .75rem 1rem;
-            font-size: .8rem; font-weight: 600;
+            font-size: .8rem;
+            font-weight: 600;
             color: var(--green);
             margin-bottom: 1.4rem;
             animation: fadeUp .4s var(--ease) both;
         }
+        .alert-success i { font-size: 1rem; }
 
         @keyframes fadeUp {
             from { opacity:0; transform:translateY(14px); }
             to   { opacity:1; transform:translateY(0); }
         }
 
-        /* ══ QUIZ CARDS ══ */
-        .quiz-list { display: flex; flex-direction: column; gap: .9rem; }
+        /* ══ QUIZ GRID ══ */
+        .quizzes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.1rem;
+        }
+
+        /* ══ QUIZ CARD ══ */
         .quiz-card {
             background: var(--white);
             border-radius: 14px;
             border: 1px solid var(--bdr);
             box-shadow: 0 2px 12px rgba(10,31,68,0.04);
-            padding: 1.2rem 1.3rem;
+            padding: 1.2rem;
             display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 1.2rem;
+            flex-direction: column;
             transition: all var(--t);
             animation: fadeUp .5s var(--ease) both;
             position: relative;
@@ -368,27 +396,34 @@
         .quiz-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0;
-            width: 4px; height: 100%;
-            border-radius: 4px 0 0 4px;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--navy-lite), var(--navy));
+            border-radius: 14px 14px 0 0;
         }
-        .quiz-card.active-quiz::before  { background: var(--green); }
-        .quiz-card.ended-quiz::before   { background: var(--danger); }
-        .quiz-card.upcoming-quiz::before { background: var(--orange); }
-
         .quiz-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(10,31,68,0.09);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(10,31,68,0.10);
             border-color: rgba(10,31,68,0.15);
         }
-        .quiz-card-left { flex: 1; min-width: 0; }
-        .quiz-card-head {
+        .quiz-card-top {
             display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: .55rem;
-            margin-bottom: .45rem;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: .75rem;
+            margin-bottom: .75rem;
         }
+        .quiz-status-badge {
+            font-size: .62rem;
+            font-weight: 700;
+            padding: .18rem .55rem;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: .35rem;
+        }
+        .status-active   { background: rgba(22,163,74,0.12); color: var(--green); }
+        .status-ended    { background: rgba(220,38,38,0.10); color: var(--danger); }
+        .status-upcoming { background: rgba(234,88,12,0.10); color: var(--orange); }
         .quiz-title {
             font-family: 'Fraunces', serif;
             font-size: 1rem;
@@ -396,65 +431,102 @@
             color: var(--navy);
             line-height: 1.25;
         }
-
-        /* Status badges */
-        .status-badge {
-            font-size: .65rem; font-weight: 700;
-            padding: .2rem .6rem;
-            border-radius: 99px;
-            display: inline-flex; align-items: center; gap: .25rem;
-        }
-        .status-active   { background: rgba(22,163,74,0.12); color: var(--green); }
-        .status-ended    { background: rgba(220,38,38,0.10); color: var(--danger); }
-        .status-upcoming { background: rgba(234,88,12,0.10); color: var(--orange); }
-
-        .quiz-desc {
-            font-size: .78rem; color: var(--txt-3);
-            margin-bottom: .65rem;
-            line-height: 1.45;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-        }
-        .quiz-meta-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .9rem;
-        }
-        .quiz-meta-item {
-            display: flex; align-items: center; gap: .3rem;
-            font-size: .72rem; color: var(--txt-3);
-        }
-        .quiz-meta-item i { font-size: .8rem; }
-        .quiz-meta-item.course { color: var(--navy-lite); font-weight: 600; }
-
-        /* Action buttons */
-        .quiz-actions {
+        .quiz-attempts-badge {
+            font-size: .65rem;
+            font-weight: 700;
+            padding: .22rem .6rem;
+            border-radius: 6px;
+            background: var(--gold-pale);
+            color: var(--gold-d);
+            border: 1px solid rgba(196,154,0,0.15);
             display: flex;
             align-items: center;
-            gap: .45rem;
+            gap: .25rem;
+            white-space: nowrap;
             flex-shrink: 0;
         }
-        .qa-btn {
-            display: inline-flex; align-items: center; gap: .35rem;
-            padding: .42rem .85rem;
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: .68rem;
+            color: var(--txt-3);
+            border-top: 1px solid var(--bdr);
+            padding-top: .65rem;
+            margin-top: auto;
+            margin-bottom: .75rem;
+        }
+        .quiz-meta span { display: flex; align-items: center; gap: .3rem; }
+        .quiz-actions { display: flex; gap: .5rem; }
+        .quiz-btn {
+            flex: 1;
+            text-align: center;
+            font-size: .72rem;
+            font-weight: 700;
+            padding: .52rem;
             border-radius: 8px;
-            font-size: .75rem; font-weight: 700;
             text-decoration: none;
             transition: all var(--t);
-            border: 1px solid var(--bdr);
-            background: var(--white);
-            color: var(--txt-2);
             cursor: pointer;
+            border: none;
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        .qa-btn:hover { background: var(--bg); border-color: rgba(10,31,68,0.18); }
-        .qa-btn.edit i    { color: var(--gold-d); }
-        .qa-btn.results i { color: var(--blue); }
-        .qa-btn.delete    { color: var(--danger); border-color: rgba(220,38,38,0.15); }
-        .qa-btn.delete:hover { background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.25); }
+        .quiz-btn.primary { background: var(--navy); color: #fff; }
+        .quiz-btn.primary:hover { background: var(--navy-mid); }
+        .quiz-btn.secondary {
+            background: var(--white);
+            color: var(--txt-2);
+            border: 1px solid var(--bdr);
+        }
+        .quiz-btn.secondary:hover { background: var(--bg); border-color: rgba(10,31,68,0.18); }
+
+        /* More dropdown */
+        .more-wrap { position: relative; }
+        .more-btn {
+            width: 34px; height: 34px;
+            border-radius: 8px;
+            border: 1px solid var(--bdr);
+            background: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            color: var(--txt-3);
+            font-size: 1rem;
+            transition: all var(--t);
+        }
+        .more-btn:hover { border-color: var(--gold-d); color: var(--navy); background: var(--bg); }
+        .dropdown-menu {
+            position: fixed;
+            min-width: 180px;
+            background: var(--white);
+            border: 1px solid var(--bdr);
+            border-radius: 12px;
+            box-shadow: 0 12px 32px rgba(10,31,68,0.14);
+            z-index: 200;
+            overflow: hidden;
+            display: none;
+        }
+        .dropdown-menu.open { display: block; }
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .65rem 1rem;
+            font-size: .78rem;
+            font-weight: 500;
+            color: var(--txt-2);
+            text-decoration: none;
+            transition: background var(--t);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .dropdown-item i { font-size: .9rem; flex-shrink: 0; }
+        .dropdown-item:hover { background: var(--bg); }
+        .dropdown-item.danger { color: var(--danger); }
+        .dropdown-item.danger:hover { background: rgba(220,38,38,0.05); }
+        .dropdown-divider { height: 1px; background: var(--bdr); margin: .3rem 0; }
 
         /* ══ EMPTY STATE ══ */
         .empty-card {
@@ -468,21 +540,9 @@
         }
         .empty-card i { font-size: 3rem; color: var(--txt-3); opacity: .3; display: block; margin-bottom: 1rem; }
         .empty-card h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; }
-        .empty-card p { font-size: .82rem; color: var(--txt-3); max-width: 320px; margin: 0 auto 1.5rem; }
-        .btn-gold {
-            display: inline-flex; align-items: center; gap: .35rem;
-            padding: .42rem .95rem;
-            border-radius: 8px; border: none;
-            background: var(--gold); color: var(--navy);
-            font-size: .75rem; font-weight: 700;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            text-decoration: none; cursor: pointer;
-            transition: all var(--t);
-            box-shadow: 0 2px 8px rgba(255,215,15,0.28);
-        }
-        .btn-gold:hover { background: var(--gold-mid); transform: translateY(-1px); }
+        .empty-card p { font-size: .82rem; color: var(--txt-3); max-width: 320px; margin: 0 auto; }
 
-        /* ══ MODAL ══ */
+        /* ══ MODAL (shared base) ══ */
         .modal-overlay {
             position: fixed; inset: 0;
             background: rgba(10,31,68,0.72);
@@ -495,13 +555,15 @@
         .modal-overlay.active { visibility: visible; opacity: 1; }
         .modal {
             background: var(--white);
-            border-radius: 18px; width: min(440px, 94vw);
+            border-radius: 18px;
+            width: min(560px, 94vw);
             overflow: hidden;
             transform: scale(0.94) translateY(12px);
             transition: transform .28s var(--spring);
             box-shadow: 0 40px 80px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,215,15,0.10);
         }
         .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-sm { width: min(440px, 94vw); }
         .modal-head {
             background: var(--navy);
             padding: 1.2rem 1.4rem;
@@ -521,11 +583,15 @@
         }
         .modal-head h3 i { color: var(--gold); }
         .modal-close {
-            background: none; border: none;
-            color: rgba(255,255,255,0.55); font-size: 1.3rem;
-            cursor: pointer; transition: color var(--t); line-height: 1;
+            background: rgba(255,255,255,0.12);
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.70); font-size: 1.1rem;
+            cursor: pointer; transition: all var(--t);
         }
-        .modal-close:hover { color: var(--gold); }
+        .modal-close:hover { background: var(--gold); color: var(--navy); transform: rotate(90deg); }
         .modal-body { padding: 1.8rem 1.5rem; text-align: center; }
         .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.55; }
         .modal-warn { font-size: .72rem; color: var(--txt-3); margin-top: .5rem; }
@@ -559,16 +625,18 @@
         }
 
         /* ══ RESPONSIVE ══ */
+        @media (max-width: 1200px) {
+            .quizzes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
             .sidebar-overlay { display: block; }
             .main-content { margin-left: 0; }
             .menu-toggle { display: flex; }
-            .quiz-card { flex-direction: column; }
-            .quiz-actions { flex-wrap: wrap; }
         }
         @media (max-width: 640px) {
+            .quizzes-grid { grid-template-columns: 1fr; }
             .page-body { padding: 1.2rem 1rem; }
             .topbar { padding: .8rem 1rem; }
         }
@@ -583,8 +651,6 @@
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-arc"></div>
     <div class="sidebar-inner">
-
-        <!-- Logo -->
         <div class="sidebar-logo">
             <div class="logo-seal-wrap">
                 <div class="logo-seal-ring"></div>
@@ -596,8 +662,6 @@
                 <p>Faculty Portal · National University</p>
             </div>
         </div>
-
-        <!-- Nav -->
         <div class="nav-body">
             <div>
                 <div class="nav-section-label">Main</div>
@@ -619,7 +683,7 @@
                 <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
                     <i class="ri-add-circle-line"></i> Create Quiz
                 </a>
-                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
+                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item active">
                     <i class="ri-list-check"></i> All Quizzes
                 </a>
                 <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
@@ -639,8 +703,6 @@
                 </a>
             </div>
         </div>
-
-        <!-- Footer -->
         <div class="sidebar-footer">
             <div class="profile-row">
                 <div class="avatar"><i class="ri-user-line"></i></div>
@@ -656,7 +718,6 @@
                 </button>
             </form>
         </div>
-
     </div>
 </aside>
 
@@ -683,7 +744,9 @@
                 <i class="ri-calendar-line"></i>
                 <span id="topbar-date"></span>
             </div>
-
+            <a href="{{ route('faculty.quiz.create') }}" class="btn-create">
+                <i class="ri-add-line"></i> Create Quiz
+            </a>
         </div>
     </header>
 
@@ -703,72 +766,71 @@
             </div>
         @endif
 
+        <!-- Quizzes grid -->
         @if(isset($quizzes) && $quizzes->count() > 0)
-            <div class="quiz-list">
+            <div class="quizzes-grid">
                 @foreach($quizzes as $i => $quiz)
                     @php
-                        $statusClass = 'upcoming-quiz';
-                        $statusBadge = 'status-upcoming';
+                        $statusClass = 'status-upcoming';
                         $statusText  = 'Upcoming';
-                        $statusIcon  = 'ri-time-line';
                         if($quiz->hasStarted() && !$quiz->hasEnded()) {
-                            $statusClass = 'active-quiz';
-                            $statusBadge = 'status-active';
+                            $statusClass = 'status-active';
                             $statusText  = 'Active';
-                            $statusIcon  = 'ri-checkbox-circle-line';
                         } elseif($quiz->hasEnded()) {
-                            $statusClass = 'ended-quiz';
-                            $statusBadge = 'status-ended';
+                            $statusClass = 'status-ended';
                             $statusText  = 'Ended';
-                            $statusIcon  = 'ri-close-circle-line';
                         }
                     @endphp
-                    <div class="quiz-card {{ $statusClass }}" style="animation-delay:{{ $i * 0.05 }}s;">
-                        <div class="quiz-card-left">
-                            <div class="quiz-card-head">
+                    <div class="quiz-card" style="animation-delay:{{ $i * 0.06 }}s;">
+                        <div class="quiz-card-top">
+                            <div>
+                                <span class="quiz-status-badge {{ $statusClass }}">{{ $statusText }}</span>
                                 <div class="quiz-title">{{ $quiz->title }}</div>
-                                <span class="status-badge {{ $statusBadge }}">
-                                    <i class="{{ $statusIcon }}"></i> {{ $statusText }}
-                                </span>
                             </div>
-                            <div class="quiz-desc">{{ $quiz->description ?? 'No description provided.' }}</div>
-                            <div class="quiz-meta-row">
-                                <span class="quiz-meta-item course">
-                                    <i class="ri-book-line"></i> {{ $quiz->course->code ?? 'N/A' }}
-                                </span>
-                                <span class="quiz-meta-item">
-                                    <i class="ri-question-line"></i> {{ $quiz->questions->count() }} Questions
-                                </span>
-                                <span class="quiz-meta-item">
-                                    <i class="ri-star-line"></i> {{ $quiz->total_points }} Points
-                                </span>
-                                @if($quiz->duration_minutes)
-                                    <span class="quiz-meta-item">
-                                        <i class="ri-time-line"></i> {{ $quiz->duration_minutes }} min
-                                    </span>
-                                @endif
-                                <span class="quiz-meta-item">
-                                    <i class="ri-user-line"></i> {{ $quiz->attempts->count() }} Attempts
-                                </span>
-                            </div>
+                            <span class="quiz-attempts-badge">
+                                <i class="ri-user-line"></i> {{ $quiz->attempts->count() }} attempts
+                            </span>
+                        </div>
+                        <div class="quiz-meta">
+                            <span><i class="ri-book-line"></i> {{ $quiz->course->code ?? 'N/A' }}</span>
+                            <span><i class="ri-question-line"></i> {{ $quiz->questions->count() }} qns</span>
+                            <span><i class="ri-star-line"></i> {{ $quiz->total_points }} pts</span>
                         </div>
                         <div class="quiz-actions">
-                            <a href="{{ route('faculty.edit.quiz', $quiz->id) }}" class="qa-btn edit">
+                            <a href="{{ route('faculty.edit.quiz', $quiz->id) }}" class="quiz-btn primary">
                                 <i class="ri-edit-line"></i> Edit
                             </a>
-                            <a href="{{ route('faculty.submissions', $quiz->id) }}" class="qa-btn results">
+                            <a href="{{ route('faculty.submissions', $quiz->id) }}" class="quiz-btn secondary">
                                 <i class="ri-bar-chart-line"></i> Results
                             </a>
-                            <form action="{{ route('faculty.delete.quiz', $quiz->id) }}" method="POST"
-                                  style="margin:0;" id="delete-form-{{ $quiz->id }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button"
-                                        class="qa-btn delete"
-                                        onclick="confirmDeleteQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}')">
-                                    <i class="ri-delete-bin-line"></i> Delete
+                            <div class="more-wrap">
+                                <button class="more-btn" onclick="toggleDropdown({{ $quiz->id }}, event)" title="More options">
+                                    <i class="ri-more-2-line"></i>
                                 </button>
-                            </form>
+                                <div id="dropdown-{{ $quiz->id }}" class="dropdown-menu">
+                                    <a href="{{ route('faculty.edit.quiz', $quiz->id) }}" class="dropdown-item">
+                                        <i class="ri-edit-line" style="color:var(--gold-d);"></i> Edit Quiz
+                                    </a>
+                                    <a href="{{ route('faculty.submissions', $quiz->id) }}" class="dropdown-item">
+                                        <i class="ri-bar-chart-line" style="color:var(--navy-lite);"></i> View Results
+                                    </a>
+                                    @if($quiz->questions->count() > 0)
+                                        <a href="{{ route('faculty.question.bank', ['quiz_id' => $quiz->id]) }}" class="dropdown-item">
+                                            <i class="ri-database-2-line"></i> Manage Questions
+                                        </a>
+                                    @endif
+                                    <div class="dropdown-divider"></div>
+                                    <form action="{{ route('faculty.delete.quiz', $quiz->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                                class="dropdown-item danger"
+                                                onclick="confirmDeleteQuiz({{ $quiz->id }}, '{{ addslashes($quiz->title) }}', this)">
+                                            <i class="ri-delete-bin-line"></i> Delete Quiz
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -778,9 +840,6 @@
                 <i class="ri-quiz-line"></i>
                 <h3>No Quizzes Created Yet</h3>
                 <p>Ready to assess your students? Create your first quiz and start building engaging assessments.</p>
-                <a href="{{ route('faculty.quiz.create') }}" class="btn-gold">
-                    <i class="ri-add-line"></i> Create Your First Quiz
-                </a>
             </div>
         @endif
 
@@ -788,14 +847,14 @@
 </div><!-- /main-content -->
 
 <!-- ══ DELETE CONFIRM MODAL ══ -->
-<div id="deleteModal" class="modal-overlay">
-    <div class="modal">
+<div id="deleteQuizModal" class="modal-overlay">
+    <div class="modal modal-sm">
         <div class="modal-head">
             <h3><i class="ri-delete-bin-line"></i> Delete Quiz</h3>
-            <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            <button class="modal-close" onclick="closeDeleteModal()"><i class="ri-close-line"></i></button>
         </div>
         <div class="modal-body">
-            <p>Are you sure you want to delete <strong id="deleteQuizTitle"></strong>?</p>
+            <p>Are you sure you want to delete <strong id="deleteQuizName"></strong>?</p>
             <p class="modal-warn">All questions, submissions, and results will be permanently lost. This cannot be undone.</p>
         </div>
         <div class="modal-foot">
@@ -807,10 +866,10 @@
 
 <!-- ══ LOGOUT MODAL ══ -->
 <div class="modal-overlay" id="logoutModal">
-    <div class="modal">
+    <div class="modal modal-sm">
         <div class="modal-head">
             <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
+            <button class="modal-close" onclick="closeLogoutModal()"><i class="ri-close-line"></i></button>
         </div>
         <div class="modal-body">
             <p>Are you sure you want to sign out of your account?</p>
@@ -840,28 +899,60 @@
         document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
-    /* ── Delete quiz modal ── */
+    /* ── Dropdown ── */
+    let activeDropdown = null;
+
+    function toggleDropdown(quizId, event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById(`dropdown-${quizId}`);
+        const button = event.currentTarget;
+
+        if (activeDropdown && activeDropdown !== dropdown) {
+            activeDropdown.classList.remove('open');
+        }
+
+        if (!dropdown.classList.contains('open')) {
+            const rect = button.getBoundingClientRect();
+            dropdown.style.top  = `${rect.bottom + window.scrollY + 6}px`;
+            dropdown.style.left = `${rect.right - 185}px`;
+            dropdown.classList.add('open');
+            activeDropdown = dropdown;
+        } else {
+            dropdown.classList.remove('open');
+            activeDropdown = null;
+        }
+    }
+
+    document.addEventListener('click', () => {
+        if (activeDropdown) { activeDropdown.classList.remove('open'); activeDropdown = null; }
+    });
+    window.addEventListener('scroll', () => {
+        if (activeDropdown) { activeDropdown.classList.remove('open'); activeDropdown = null; }
+    });
+
+    /* ── Delete Quiz Modal ── */
     let pendingDeleteForm = null;
 
-    function confirmDeleteQuiz(id, title) {
-        pendingDeleteForm = document.getElementById(`delete-form-${id}`);
-        document.getElementById('deleteQuizTitle').textContent = title;
-        document.getElementById('deleteModal').classList.add('active');
+    function confirmDeleteQuiz(id, name, btn) {
+        if (activeDropdown) { activeDropdown.classList.remove('open'); activeDropdown = null; }
+        pendingDeleteForm = btn.closest('form');
+        document.getElementById('deleteQuizName').textContent = name;
+        document.getElementById('deleteQuizModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('active');
+        document.getElementById('deleteQuizModal').classList.remove('active');
         document.body.style.overflow = '';
         pendingDeleteForm = null;
     }
     document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
         if (pendingDeleteForm) pendingDeleteForm.submit();
     });
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
+    document.getElementById('deleteQuizModal').addEventListener('click', function(e) {
         if (e.target === this) closeDeleteModal();
     });
 
-    /* ── Logout modal ── */
+    /* ── Logout Modal ── */
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -880,7 +971,9 @@
         if (e.target === this) closeLogoutModal();
     });
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') { closeDeleteModal(); closeLogoutModal(); }
+        if (e.key === 'Escape') {
+            closeDeleteModal(); closeLogoutModal();
+        }
     });
 </script>
 </body>

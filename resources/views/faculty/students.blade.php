@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Student Management – NU Horizon LMS</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <style>
-        /* ══ DESIGN TOKENS ══ */
+        /* ══ DESIGN TOKENS (mirror dashboard) ══ */
         :root {
             --navy:      #0A1F44;
             --navy-mid:  #1F3A6D;
@@ -42,17 +44,13 @@
             background: var(--bg);
             min-height: 100vh;
             color: var(--txt-1);
-            -webkit-tap-highlight-color: transparent;
         }
 
-        *:focus { outline: none !important; box-shadow: none !important; }
-
-        /* ══ SCROLLBAR ══ */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
 
-        /* ══ SIDEBAR ══ */
+        /* ══ SIDEBAR (identical to dashboard) ══ */
         .sidebar {
             position: fixed;
             top: 0; left: 0;
@@ -104,8 +102,6 @@
             flex-direction: column;
             height: 100%;
         }
-
-        /* Logo */
         .sidebar-logo {
             padding: 1.5rem 1.4rem 1.3rem;
             display: flex;
@@ -156,8 +152,6 @@
             color: rgba(255,255,255,0.40);
             margin-top: .15rem;
         }
-
-        /* Nav */
         .nav-body {
             flex: 1;
             overflow-y: auto;
@@ -200,8 +194,6 @@
             box-shadow: 0 4px 14px rgba(255,215,15,0.30);
         }
         .nav-item.active i { color: var(--navy); }
-
-        /* Sidebar footer */
         .sidebar-footer {
             padding: 1rem 1.2rem;
             border-top: 1px solid rgba(255,215,15,0.14);
@@ -211,6 +203,7 @@
             align-items: center;
             gap: .75rem;
             margin-bottom: .85rem;
+            cursor: pointer;
         }
         .avatar {
             width: 38px; height: 38px;
@@ -233,7 +226,6 @@
             color: #fca5a5;
             font-size: .78rem;
             font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -248,7 +240,7 @@
             box-shadow: 0 4px 12px rgba(220,38,38,0.35);
         }
 
-        /* ══ MAIN ══ */
+        /* ══ MAIN CONTENT ══ */
         .main-content {
             margin-left: var(--sidebar-w);
             min-height: 100vh;
@@ -291,7 +283,11 @@
             letter-spacing: -.02em;
         }
         .topbar-title em { color: var(--gold-d); font-style: normal; }
-        .topbar-breadcrumb { font-size: .72rem; color: var(--txt-3); font-weight: 500; }
+        .topbar-breadcrumb {
+            font-size: .72rem;
+            color: var(--txt-3);
+            font-weight: 500;
+        }
         .topbar-right { display: flex; align-items: center; gap: .75rem; }
         .topbar-badge {
             display: flex; align-items: center; gap: .4rem;
@@ -312,10 +308,9 @@
             box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
         }
 
-        /* ══ PAGE BODY ══ */
+        /* PAGE BODY */
         .page-body { padding: 1.8rem 2rem; flex: 1; }
 
-        /* Section header */
         .section-header { margin-bottom: 1.4rem; }
         .section-header h2 {
             font-size: .65rem;
@@ -334,7 +329,7 @@
             background: var(--bdr);
         }
 
-        /* ══ FILTER CARD ══ */
+        /* Filter card */
         .filter-card {
             background: var(--white);
             border-radius: 14px;
@@ -347,11 +342,6 @@
             flex-wrap: wrap;
             gap: .75rem;
             align-items: center;
-            animation: fadeUp .4s var(--ease) both;
-        }
-        @keyframes fadeUp {
-            from { opacity:0; transform:translateY(14px); }
-            to   { opacity:1; transform:translateY(0); }
         }
         .filter-search-wrap {
             flex: 1;
@@ -365,7 +355,6 @@
             transform: translateY(-50%);
             color: var(--txt-3);
             font-size: .9rem;
-            pointer-events: none;
         }
         .filter-input {
             width: 100%;
@@ -388,9 +377,7 @@
             color: var(--txt-2);
             background: var(--bg);
             cursor: pointer;
-            transition: border-color var(--t);
         }
-        .filter-select:focus { border-color: var(--gold-d); }
         .filter-btn {
             padding: .55rem 1.1rem;
             border-radius: 9px;
@@ -399,7 +386,6 @@
             color: #fff;
             font-size: .8rem;
             font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -408,14 +394,13 @@
         }
         .filter-btn:hover { background: var(--navy-mid); }
 
-        /* ══ TABLE CARD ══ */
+        /* Table card */
         .table-card {
             background: var(--white);
             border-radius: 14px;
             border: 1px solid var(--bdr);
             box-shadow: 0 2px 12px rgba(10,31,68,0.04);
             overflow: hidden;
-            animation: fadeUp .5s var(--ease) .1s both;
         }
         .table-wrap { overflow-x: auto; }
         table {
@@ -444,7 +429,6 @@
             vertical-align: middle;
         }
         tbody tr:last-child td { border-bottom: none; }
-        tbody tr { transition: background var(--t); }
         tbody tr:hover { background: var(--bg); }
 
         .student-id-cell {
@@ -462,7 +446,9 @@
             width: 30px; height: 30px;
             border-radius: 50%;
             background: var(--navy-pale);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: .7rem;
             font-weight: 700;
             color: var(--navy-mid);
@@ -470,9 +456,8 @@
         }
         .student-name { font-size: .82rem; font-weight: 600; color: var(--txt-1); }
         .student-email { font-size: .7rem; color: var(--txt-3); }
-        .courses-cell { font-size: .75rem; color: var(--txt-3); }
 
-        /* ══ ACTION BUTTONS ══ */
+        /* Action buttons */
         .action-group { display: flex; gap: 5px; flex-wrap: nowrap; }
         .action-btn {
             width: 30px; height: 30px;
@@ -495,16 +480,7 @@
         .btn-delete { background: rgba(220,38,38,0.10); color: var(--danger); }
         .btn-delete:hover { background: var(--danger); color: #fff; }
 
-        /* ══ EMPTY STATE ══ */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--txt-3);
-            font-size: .82rem;
-        }
-        .empty-state i { font-size: 2rem; display: block; margin-bottom: .5rem; opacity: .4; }
-
-        /* ══ MODAL (shared) ══ */
+        /* Modals (dashboard style) */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -522,13 +498,14 @@
         .modal {
             background: var(--white);
             border-radius: 18px;
-            width: min(440px, 94vw);
             overflow: hidden;
             transform: scale(0.94) translateY(12px);
             transition: transform .28s var(--spring);
             box-shadow: 0 40px 80px rgba(0,0,0,0.25);
         }
         .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+        .modal-lg { width: min(860px, 96vw); max-height: 90vh; overflow-y: auto; }
+        .modal-md { width: min(500px, 94vw); }
         .modal-head {
             background: var(--navy);
             padding: 1.2rem 1.4rem;
@@ -536,41 +513,24 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid var(--gold);
-            position: relative;
-        }
-        .modal-head::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
         }
         .modal-head h3 {
             font-family: 'Fraunces', serif;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
             gap: .5rem;
         }
-        .modal-head h3 i { color: var(--gold); }
         .modal-close {
             background: none;
             border: none;
             color: rgba(255,255,255,0.55);
             font-size: 1.3rem;
             cursor: pointer;
-            transition: color var(--t);
-            line-height: 1;
         }
-        .modal-close:hover { color: var(--gold); }
-        .modal-body {
-            padding: 1.8rem 1.5rem;
-            text-align: center;
-        }
-        .modal-body p { font-size: .88rem; color: var(--txt-2); line-height: 1.55; }
-        .modal-warn { font-size: .72rem; color: var(--txt-3); margin-top: .5rem; }
+        .modal-body-left { padding: 1.5rem; text-align: left; }
         .modal-foot {
             padding: .9rem 1.4rem 1.3rem;
             display: flex;
@@ -586,12 +546,8 @@
             background: var(--white);
             font-size: .8rem;
             font-weight: 600;
-            color: var(--txt-2);
-            font-family: 'Plus Jakarta Sans', sans-serif;
             cursor: pointer;
-            transition: all var(--t);
         }
-        .btn-cancel:hover { background: var(--bg); }
         .btn-confirm {
             padding: .58rem 1.2rem;
             border-radius: 8px;
@@ -600,25 +556,7 @@
             font-size: .8rem;
             font-weight: 700;
             color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
             cursor: pointer;
-            transition: all var(--t);
-            box-shadow: 0 3px 10px rgba(220,38,38,0.30);
-        }
-        .btn-confirm:hover { background: var(--danger-d); transform: translateY(-1px); }
-
-        /* ══ LARGE MODALS (view / message / edit) ══ */
-        .modal-lg {
-            width: min(860px, 96vw);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-md {
-            width: min(500px, 94vw);
-        }
-        .modal-body-left {
-            padding: 1.5rem;
-            text-align: left;
         }
         .modal-form-group { margin-bottom: 1rem; }
         .modal-form-label {
@@ -635,15 +573,11 @@
             border-radius: 9px;
             font-size: .82rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            color: var(--txt-1);
             background: var(--bg);
-            transition: border-color var(--t);
         }
         .modal-form-input:focus { border-color: var(--gold-d); background: var(--white); }
         textarea.modal-form-input { resize: vertical; min-height: 90px; }
         .modal-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
-
-        /* student view card */
         .view-profile-card {
             background: var(--bg);
             border: 1px solid var(--bdr);
@@ -656,7 +590,9 @@
             width: 64px; height: 64px;
             border-radius: 50%;
             background: var(--navy-pale);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.6rem;
             color: var(--navy-mid);
             margin: 0 auto .75rem;
@@ -672,13 +608,6 @@
             border: 1px solid var(--bdr);
             border-radius: 9px;
             margin-bottom: .5rem;
-        }
-        .view-course-item:last-child { margin-bottom: 0; }
-        .view-course-name { font-size: .8rem; font-weight: 600; color: var(--txt-1); }
-        .view-grade {
-            font-size: .72rem;
-            font-weight: 600;
-            color: var(--txt-3);
         }
         .status-pill {
             font-size: .65rem;
@@ -699,9 +628,7 @@
             align-items: center;
             gap: .4rem;
         }
-        .modal-section-title i { color: var(--gold-d); }
-
-        /* ══ MOBILE OVERLAY ══ */
+        .empty-state { text-align: center; padding: 2rem; color: var(--txt-3); }
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -709,8 +636,6 @@
             background: rgba(10,31,68,0.65);
             z-index: 90;
         }
-
-        /* ══ RESPONSIVE ══ */
         @media (max-width: 1024px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
@@ -719,7 +644,7 @@
             .menu-toggle { display: flex; }
         }
         @media (max-width: 640px) {
-            .page-body { padding: 1.2rem 1rem; }
+            .page-body { padding: 1rem; }
             .topbar { padding: .8rem 1rem; }
             .modal-form-row { grid-template-columns: 1fr; }
         }
@@ -727,416 +652,185 @@
 </head>
 <body>
 
-<!-- Sidebar overlay (mobile) -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- ══ SIDEBAR ══ -->
+<!-- ══ SIDEBAR (Faculty Portal) ══ -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-arc"></div>
     <div class="sidebar-inner">
-
-        <!-- Logo -->
         <div class="sidebar-logo">
             <div class="logo-seal-wrap">
                 <div class="logo-seal-ring"></div>
-                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal"
-                     onerror="this.style.display='none'">
+                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal" onerror="this.style.display='none'">
             </div>
             <div class="logo-text">
                 <h1>NU Horizon <em>LMS</em></h1>
                 <p>Faculty Portal · National University</p>
             </div>
         </div>
-
-        <!-- Nav -->
         <div class="nav-body">
             <div>
                 <div class="nav-section-label">Main</div>
-                <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
-                    <i class="ri-dashboard-line"></i> Dashboard
-                </a>
-                <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
-                    <i class="ri-user-line"></i> Students
-                </a>
-                <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
-                    <i class="ri-book-line"></i> Courses
-                </a>
-                <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
-                    <i class="ri-folder-3-line"></i> Files & Folders
-                </a>
+                <a href="{{ route('faculty.dashboard') }}" class="nav-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="{{ route('faculty.students') }}" class="nav-item active"><i class="ri-user-line"></i> Students</a>
+                <a href="{{ route('faculty.courses') }}" class="nav-item"><i class="ri-book-line"></i> Courses</a>
+                <a href="{{ route('faculty.folder-files') }}" class="nav-item"><i class="ri-folder-3-line"></i> Files & Folders</a>
             </div>
             <div>
                 <div class="nav-section-label">Quiz Management</div>
-                <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
-                    <i class="ri-add-circle-line"></i> Create Quiz
-                </a>
-                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
-                    <i class="ri-list-check"></i> All Quizzes
-                </a>
-                <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
-                    <i class="ri-database-2-line"></i> Question Bank
-                </a>
-                <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
-                    <i class="ri-graduation-cap-line"></i> Grading
-                </a>
+                <a href="{{ route('faculty.quiz.create') }}" class="nav-item"><i class="ri-add-circle-line"></i> Create Quiz</a>
+                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item"><i class="ri-list-check"></i> All Quizzes</a>
+                <a href="{{ route('faculty.question.bank') }}" class="nav-item"><i class="ri-database-2-line"></i> Question Bank</a>
+                <a href="{{ route('faculty.grading') }}" class="nav-item"><i class="ri-graduation-cap-line"></i> Grading</a>
             </div>
             <div>
                 <div class="nav-section-label">Analytics</div>
-                <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
-                    <i class="ri-bar-chart-line"></i> Results & Analytics
-                </a>
-                <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
-                    <i class="ri-star-smile-line"></i> My Evaluation
-                </a>
+                <a href="{{ route('faculty.results.index') }}" class="nav-item"><i class="ri-bar-chart-line"></i> Results & Analytics</a>
+                <a href="{{ route('faculty.my-evaluation') }}" class="nav-item"><i class="ri-star-smile-line"></i> My Evaluation</a>
             </div>
         </div>
-
-        <!-- Footer -->
         <div class="sidebar-footer">
-            <div class="profile-row">
+            <div class="profile-row" onclick="window.location='{{ route('faculty.profile') }}'">
                 <div class="avatar"><i class="ri-user-line"></i></div>
                 <div>
                     <div class="profile-name">{{ Auth::user()->name }}</div>
                     <div class="profile-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
-            <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-                @csrf
-                <button type="button" id="logoutButton" class="logout-btn">
-                    <i class="ri-logout-box-line"></i> Sign Out
-                </button>
-            </form>
+            <button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Sign Out</button>
         </div>
-
     </div>
 </aside>
 
-<!-- ══ MAIN ══ -->
-<div class="main-content" id="mainContent">
-
-    <!-- Topbar -->
+<!-- ══ MAIN CONTENT ══ -->
+<div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="ri-menu-2-line"></i>
-            </button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="ri-menu-2-line"></i></button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Faculty → Student Management</div>
-
-    <div class="p-4 md:p-6">
-        <!-- Search and Filters -->
-        <div class="bg-white rounded-lg shadow-md p-4 mb-6 border-l-4" style="border-left-color: var(--gold);">
-            <div class="flex flex-wrap gap-4">
-                <div class="flex-1 min-w-[200px]">
-                    <div class="relative">
-                        <i class="ri-search-line absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" 
-                               id="searchInput"
-                               placeholder="Search students by name, email, or ID..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold">
-                    </div>
-                </div>
-                <div>
-                    <select id="courseFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gold bg-white">
-                        <option value="">All Courses</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">{{ $course->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <button onclick="filterStudents()" class="px-6 py-2 rounded-lg transition-all flex items-center gap-2" style="background: var(--blue-deep); color: white;">
-                        <i class="ri-filter-line"></i> Search
-                    </button>
-                </div>
-
             </div>
         </div>
         <div class="topbar-right">
-            <div class="topbar-badge">
-                <span class="topbar-dot"></span>
-                System Online
-            </div>
-            <div class="topbar-badge">
-                <i class="ri-calendar-line"></i>
-                <span id="topbar-date"></span>
-            </div>
+            <div class="topbar-badge"><span class="topbar-dot"></span> System Online</div>
+            <div class="topbar-badge"><i class="ri-calendar-line"></i><span id="topbar-date"></span></div>
         </div>
     </header>
 
-    <!-- Page body -->
     <div class="page-body">
-
-        <!-- Section header -->
         <div class="section-header">
-            <h2><i class="ri-group-line" style="color:var(--gold-d);font-size:.85rem;"></i> Student Management</h2>
+            <h2><i class="ri-group-line" style="color:var(--gold-d);font-size:.85rem;"></i> My Students</h2>
         </div>
 
-        <!-- Filter card -->
+        <!-- Filter Card -->
         <div class="filter-card">
             <div class="filter-search-wrap">
                 <i class="ri-search-line"></i>
-                <input type="text"
-                       id="searchInput"
-                       placeholder="Search by name, email, or student ID…"
-                       class="filter-input">
+                <input type="text" id="searchInput" placeholder="Search by name, email, or student ID…" class="filter-input">
             </div>
             <select id="courseFilter" class="filter-select">
                 <option value="">All Courses</option>
-                <option value="CS101">CS101 - Programming</option>
-                <option value="CS201">CS201 - Data Structures</option>
-                <option value="CS301">CS301 - Algorithms</option>
+                @foreach($courses as $course)
+                    <option value="{{ $course->id }}">{{ $course->code }} – {{ $course->name }}</option>
+                @endforeach
             </select>
-            <button onclick="filterStudents()" class="filter-btn">
-                <i class="ri-filter-line"></i> Search
-            </button>
+            <button onclick="filterStudents()" class="filter-btn"><i class="ri-filter-line"></i> Search</button>
         </div>
 
-        <!-- Students table -->
+        <!-- Students Table -->
         <div class="table-card">
             <div class="table-wrap">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Student ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Courses Enrolled</th>
-                            <th>Actions</th>
-                        </tr>
+                        <tr><th>Student ID</th><th>Name</th><th>Email</th><th>Courses Enrolled</th><th>Actions</th></tr>
                     </thead>
-
                     <tbody id="studentsTableBody">
-                        <!-- Sample Student 1 -->
-                        <tr class="student-row" data-student-id="1">
-                            <td><span class="student-id-cell">NU-2024-001</span></td>
-                            <td>
-                                <div class="student-name-cell">
-                                    <div class="student-avatar">MS</div>
-                                    <div>
-                                        <div class="student-name">Maria Santos</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="student-email">maria.santos@nu.edu.ph</span></td>
-                            <td><span class="courses-cell">CS101, CS201</span></td>
-                            <td>
-                                <div class="action-group">
-                                    <button onclick="viewStudent(1)" class="action-btn btn-view" title="View Student"><i class="ri-eye-line"></i></button>
-                                    <button onclick="messageStudent(1)" class="action-btn btn-message" title="Send Message"><i class="ri-mail-send-line"></i></button>
-                                    <button onclick="editStudent(1)" class="action-btn btn-edit" title="Edit Student"><i class="ri-edit-line"></i></button>
-                                    <button onclick="deleteStudent(1)" class="action-btn btn-delete" title="Delete Student"><i class="ri-delete-bin-line"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Sample Student 2 -->
-                        <tr class="student-row" data-student-id="2">
-                            <td><span class="student-id-cell">NU-2024-002</span></td>
-                            <td>
-                                <div class="student-name-cell">
-                                    <div class="student-avatar">JD</div>
-                                    <div>
-                                        <div class="student-name">Juan Dela Cruz</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="student-email">juan.delacruz@nu.edu.ph</span></td>
-                            <td><span class="courses-cell">CS101, CS301</span></td>
-                            <td>
-                                <div class="action-group">
-                                    <button onclick="viewStudent(2)" class="action-btn btn-view" title="View Student"><i class="ri-eye-line"></i></button>
-                                    <button onclick="messageStudent(2)" class="action-btn btn-message" title="Send Message"><i class="ri-mail-send-line"></i></button>
-                                    <button onclick="editStudent(2)" class="action-btn btn-edit" title="Edit Student"><i class="ri-edit-line"></i></button>
-                                    <button onclick="deleteStudent(2)" class="action-btn btn-delete" title="Delete Student"><i class="ri-delete-bin-line"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- Sample Student 3 -->
-                        <tr class="student-row" data-student-id="3">
-                            <td><span class="student-id-cell">NU-2024-003</span></td>
-                            <td>
-                                <div class="student-name-cell">
-                                    <div class="student-avatar">AR</div>
-                                    <div>
-                                        <div class="student-name">Anna Reyes</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="student-email">anna.reyes@nu.edu.ph</span></td>
-                            <td><span class="courses-cell">CS201, CS301</span></td>
-                            <td>
-                                <div class="action-group">
-                                    <button onclick="viewStudent(3)" class="action-btn btn-view" title="View Student"><i class="ri-eye-line"></i></button>
-                                    <button onclick="messageStudent(3)" class="action-btn btn-message" title="Send Message"><i class="ri-mail-send-line"></i></button>
-                                    <button onclick="editStudent(3)" class="action-btn btn-edit" title="Edit Student"><i class="ri-edit-line"></i></button>
-                                    <button onclick="deleteStudent(3)" class="action-btn btn-delete" title="Delete Student"><i class="ri-delete-bin-line"></i></button>
-                                </div>
-
-                    <tbody id="studentsTableBody" class="bg-white divide-y divide-gray-200">
                         @forelse($students as $student)
-                        <tr class="student-row hover:bg-gray-50 transition" data-student-id="{{ $student->id }}">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">NU-2024-{{ str_pad($student->id, 3, '0', STR_PAD_LEFT) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
-                                        <i class="ri-user-line text-indigo-600 text-sm"></i>
+                        <tr class="student-row" data-student-id="{{ $student->id }}" data-student-name="{{ $student->name }}" data-student-email="{{ $student->email }}" data-student-id-number="{{ $student->student_id }}">
+                            <td class="student-id-cell">{{ $student->student_id ?? 'N/A' }}</td>
+                            <td>
+                                <div class="student-name-cell">
+                                    <div class="student-avatar">{{ strtoupper(substr($student->name, 0, 2)) }}</div>
+                                    <div>
+                                        <div class="student-name">{{ $student->name }}</div>
                                     </div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $student->name }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $student->email }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">
-                                {{ $student->enrollments->map(function($enrollment) { return $enrollment->course->name ?? 'Course'; })->implode(', ') }}
+                            <td class="student-email">{{ $student->email }}</td>
+                            <td>
+                                @php
+                                    $courseList = $student->enrollments->map(function($e) {
+                                        return $e->course->code ?? $e->course->name;
+                                    })->implode(', ');
+                                @endphp
+                                {{ $courseList ?: '—' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <td>
                                 <div class="action-group">
-                                    <a href="{{ route('faculty.student.details', $student->id) }}" class="action-btn btn-view" title="View Student">
-                                        <i class="ri-eye-line"></i>
-                                    </a>
-                                    <button onclick="messageStudent({{ $student->id }})" class="action-btn btn-message" title="Send Message">
-                                        <i class="ri-mail-send-line"></i>
-                                    </button>
+                                    <button onclick="viewStudent({{ $student->id }})" class="action-btn btn-view" title="View Student"><i class="ri-eye-line"></i></button>
+                                    <button onclick="messageStudent({{ $student->id }})" class="action-btn btn-message" title="Send Message"><i class="ri-mail-send-line"></i></button>
                                 </div>
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                <i class="ri-user-line text-4xl block mb-2 text-gray-300"></i>
-                                No students enrolled in your courses yet.
-
-                            </td>
-                        </tr>
+                        <tr><td colspan="5" class="empty-state"><i class="ri-user-line"></i> No students enrolled in your courses yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
-
-    </div><!-- /page-body -->
-</div><!-- /main-content -->
-
-<!-- ══ VIEW STUDENT MODAL ══ -->
-<div id="studentModal" class="modal-overlay">
-    <div class="modal modal-lg">
-        <div class="modal-head">
-            <h3><i class="ri-user-star-line"></i> Student Details</h3>
-            <button class="modal-close" onclick="closeStudentModal()">×</button>
-        </div>
-        <div class="modal-body-left" id="modalContent">
-            <div class="empty-state"><i class="ri-user-line"></i> Select a student to view details.</div>
-        </div>
     </div>
 </div>
 
-<!-- ══ MESSAGE MODAL ══ -->
+<!-- ══ MODALS ══ -->
+
+<!-- View Student Modal -->
+<div id="studentModal" class="modal-overlay">
+    <div class="modal modal-lg">
+        <div class="modal-head"><h3><i class="ri-user-star-line"></i> Student Details</h3><button class="modal-close" onclick="closeStudentModal()">×</button></div>
+        <div class="modal-body-left" id="modalContent">Loading...</div>
+    </div>
+</div>
+
+<!-- Message Modal -->
 <div id="messageModal" class="modal-overlay">
     <div class="modal modal-md">
-        <div class="modal-head">
-            <h3><i class="ri-mail-send-line"></i> Send Message</h3>
-            <button class="modal-close" onclick="closeMessageModal()">×</button>
-        </div>
+        <div class="modal-head"><h3><i class="ri-mail-send-line"></i> Send Message</h3><button class="modal-close" onclick="closeMessageModal()">×</button></div>
         <div class="modal-body-left">
             <form id="messageForm">
                 <input type="hidden" id="messageStudentId" name="student_id">
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Subject</label>
-                    <input type="text" name="subject" required class="modal-form-input" placeholder="Enter subject…">
-                </div>
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Message</label>
-                    <textarea name="message" rows="4" required class="modal-form-input" placeholder="Write your message…"></textarea>
-                </div>
-                <div class="modal-foot" style="padding:1rem 0 0;background:transparent;border:none;">
-                    <button type="button" onclick="closeMessageModal()" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-confirm" style="background:var(--navy);">
-                        <i class="ri-send-plane-line"></i> Send Message
-                    </button>
-                </div>
+                <div class="modal-form-group"><label class="modal-form-label">Subject</label><input type="text" name="subject" required class="modal-form-input" placeholder="Enter subject…"></div>
+                <div class="modal-form-group"><label class="modal-form-label">Message</label><textarea name="message" rows="4" required class="modal-form-input" placeholder="Write your message…"></textarea></div>
+                <div class="modal-foot" style="padding:1rem 0 0;background:transparent;border:none;"><button type="button" onclick="closeMessageModal()" class="btn-cancel">Cancel</button><button type="submit" class="btn-confirm" style="background:var(--navy);"><i class="ri-send-plane-line"></i> Send Message</button></div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- ══ EDIT STUDENT MODAL ══ -->
-<div id="editStudentModal" class="modal-overlay">
-    <div class="modal modal-md">
-        <div class="modal-head">
-            <h3><i class="ri-edit-line"></i> Edit Student</h3>
-            <button class="modal-close" onclick="closeEditModal()">×</button>
-        </div>
-        <div class="modal-body-left">
-            <form id="editStudentForm">
-                <input type="hidden" id="editStudentId">
-                <div class="modal-form-row">
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Student ID</label>
-                        <input type="text" id="editStudentIdInput" required class="modal-form-input">
-                    </div>
-                    <div class="modal-form-group">
-                        <label class="modal-form-label">Full Name</label>
-                        <input type="text" id="editStudentName" required class="modal-form-input">
-                    </div>
-                </div>
-                <div class="modal-form-group">
-                    <label class="modal-form-label">Email</label>
-                    <input type="email" id="editStudentEmail" required class="modal-form-input">
-                </div>
-                <div class="modal-foot" style="padding:1rem 0 0;background:transparent;border:none;">
-                    <button type="button" onclick="closeEditModal()" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-confirm" style="background:var(--navy);">
-                        <i class="ri-save-line"></i> Save Changes
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- ══ DELETE CONFIRM MODAL ══ -->
+<!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-head">
-            <h3><i class="ri-delete-bin-line"></i> Confirm Delete</h3>
-            <button class="modal-close" id="closeDeleteModalBtn">×</button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to delete this student?</p>
-            <p class="modal-warn">This action cannot be undone.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" id="cancelDeleteBtn">Cancel</button>
-            <button class="btn-confirm" id="confirmDeleteBtn">Yes, Delete</button>
-        </div>
+    <div class="modal modal-md">
+        <div class="modal-head"><h3><i class="ri-delete-bin-line"></i> Confirm Delete</h3><button class="modal-close" onclick="closeDeleteModal()">×</button></div>
+        <div class="modal-body-left"><p>Are you sure you want to delete this student? This action cannot be undone.</p></div>
+        <div class="modal-foot"><button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button><button class="btn-confirm" id="confirmDeleteBtn" style="background:var(--danger);">Yes, Delete</button></div>
     </div>
 </div>
 
-<!-- ══ LOGOUT MODAL ══ -->
+<!-- Logout Modal -->
 <div class="modal-overlay" id="logoutModal">
-    <div class="modal">
-        <div class="modal-head">
-            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <p>Are you sure you want to sign out of your account?</p>
-            <p class="modal-warn">You will be redirected to the login page.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <button class="btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
-        </div>
+    <div class="modal modal-md">
+        <div class="modal-head"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">×</button></div>
+        <div class="modal-body-left"><p>Are you sure you want to sign out of your account?</p><p class="modal-warn">You will be redirected to the login page.</p></div>
+        <div class="modal-foot"><button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button><button class="btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button></div>
     </div>
 </div>
 
 <script>
-    /* ── Topbar date ── */
-    const d = new Date();
-    document.getElementById('topbar-date').textContent =
-        d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    // Date
+    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    /* ── Sidebar toggle ── */
+    // Sidebar toggle
     function toggleSidebar() {
         const s = document.getElementById('sidebar');
         const o = document.getElementById('sidebarOverlay');
@@ -1148,71 +842,65 @@
         document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
-    /* ── Sample student data ── */
-    const studentsData = {
-        1: { id: 1, student_id: 'NU-2024-001', name: 'Maria Santos',    email: 'maria.santos@nu.edu.ph',    courses: ['CS101 - Programming', 'CS201 - Data Structures'], grades: { 'CS101': 92, 'CS201': 88 } },
-        2: { id: 2, student_id: 'NU-2024-002', name: 'Juan Dela Cruz',  email: 'juan.delacruz@nu.edu.ph',   courses: ['CS101 - Programming', 'CS301 - Algorithms'],       grades: { 'CS101': 78, 'CS301': 85 } },
-        3: { id: 3, student_id: 'NU-2024-003', name: 'Anna Reyes',      email: 'anna.reyes@nu.edu.ph',      courses: ['CS201 - Data Structures', 'CS301 - Algorithms'],   grades: { 'CS201': 95, 'CS301': 91 } }
-    };
-
-    let currentDeleteId = null;
-
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    // Filter students (client-side)
+    function filterStudents() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const courseFilter = document.getElementById('courseFilter').value;
+        const rows = document.querySelectorAll('#studentsTableBody .student-row');
+        rows.forEach(row => {
+            const name = row.getAttribute('data-student-name')?.toLowerCase() || '';
+            const email = row.getAttribute('data-student-email')?.toLowerCase() || '';
+            const id = row.getAttribute('data-student-id-number')?.toLowerCase() || '';
+            const coursesCell = row.querySelector('td:nth-child(4)')?.textContent.toLowerCase() || '';
+            const matchesSearch = name.includes(search) || email.includes(search) || id.includes(search);
+            const matchesCourse = !courseFilter || coursesCell.includes(courseFilter);
+            row.style.display = (matchesSearch && matchesCourse) ? '' : 'none';
+        });
     }
+    document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') filterStudents(); });
 
-    function showNotification(message, type = 'info') {
-        const n = document.createElement('div');
-        n.style.cssText = `
-            position:fixed; top:5.5rem; right:1.5rem; z-index:9999;
-            padding:.65rem 1.1rem; border-radius:10px;
-            font-family:'Plus Jakarta Sans',sans-serif; font-size:.8rem; font-weight:600;
-            color:#fff; box-shadow:0 8px 24px rgba(0,0,0,0.18);
-            background:${type === 'success' ? 'var(--green)' : 'var(--navy-lite)'};
-            animation:fadeUp .3s ease both;
-        `;
-        n.textContent = message;
-        document.body.appendChild(n);
-        setTimeout(() => n.remove(), 3000);
-    }
-
-    /* ── View Student ── */
+    // View student details (AJAX)
     function viewStudent(id) {
-        const s = studentsData[id];
-        if (!s) return;
-        document.getElementById('modalContent').innerHTML = `
-            <div class="view-profile-card">
-                <div class="view-avatar-lg"><i class="ri-user-line"></i></div>
-                <div class="view-name">${escapeHtml(s.name)}</div>
-                <div class="view-email">${escapeHtml(s.email)}</div>
-                <div class="view-id">Student ID: ${escapeHtml(s.student_id)}</div>
-            </div>
-            <div class="modal-section-title"><i class="ri-book-line"></i> Enrolled Courses</div>
-            ${s.courses.map(c => {
-                const code = c.split(' - ')[0];
-                const grade = s.grades[code] || 'N/A';
-                return `
-                <div class="view-course-item">
-                    <div>
-                        <div class="view-course-name">${escapeHtml(c)}</div>
-                        <div class="view-grade">Grade: ${grade}</div>
+        fetch(`/faculty/students/${id}/details`, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const s = data.student;
+                const coursesHtml = s.courses.map(c => `
+                    <div class="view-course-item">
+                        <div><div class="view-course-name">${escapeHtml(c.code)} – ${escapeHtml(c.name)}</div><div class="view-grade">Grade: ${c.grade ?? 'N/A'}</div></div>
+                        <span class="status-pill">Enrolled</span>
                     </div>
-                    <span class="status-pill">Active</span>
-                </div>`;
-            }).join('')}
-        `;
-        document.getElementById('studentModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
+                `).join('');
+                document.getElementById('modalContent').innerHTML = `
+                    <div class="view-profile-card">
+                        <div class="view-avatar-lg"><i class="ri-user-line"></i></div>
+                        <div class="view-name">${escapeHtml(s.name)}</div>
+                        <div class="view-email">${escapeHtml(s.email)}</div>
+                        <div class="view-id">Student ID: ${escapeHtml(s.student_id ?? 'N/A')}</div>
+                    </div>
+                    <div class="modal-section-title"><i class="ri-book-line"></i> Enrolled Courses</div>
+                    ${coursesHtml || '<p class="empty-state">No courses enrolled.</p>'}
+                `;
+            } else {
+                document.getElementById('modalContent').innerHTML = '<div class="empty-state">Failed to load student details.</div>';
+            }
+            document.getElementById('studentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        })
+        .catch(() => {
+            document.getElementById('modalContent').innerHTML = '<div class="empty-state">Error loading student data.</div>';
+            document.getElementById('studentModal').classList.add('active');
+        });
     }
     function closeStudentModal() {
         document.getElementById('studentModal').classList.remove('active');
         document.body.style.overflow = '';
     }
 
-    /* ── Message Student ── */
+    // Message student
     function messageStudent(id) {
         document.getElementById('messageStudentId').value = id;
         document.getElementById('messageModal').classList.add('active');
@@ -1224,129 +912,70 @@
         document.getElementById('messageForm').reset();
     }
 
-    /* ── Edit Student ── */
-    function editStudent(id) {
-        const s = studentsData[id];
-        if (!s) return;
-        document.getElementById('editStudentId').value = id;
-        document.getElementById('editStudentIdInput').value = s.student_id;
-        document.getElementById('editStudentName').value = s.name;
-        document.getElementById('editStudentEmail').value = s.email;
-        document.getElementById('editStudentModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeEditModal() {
-        document.getElementById('editStudentModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
+    // Submit message via AJAX
+    document.getElementById('messageForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        formData.append('_token', '{{ csrf_token() }}');
+        const btn = this.querySelector('button[type="submit"]');
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
+        btn.disabled = true;
+        fetch('{{ route('faculty.students.message') }}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message || 'Message sent successfully!');
+                closeMessageModal();
+            } else {
+                alert(data.message || 'Error sending message');
+            }
+        })
+        .catch(err => alert('Network error: ' + err.message))
+        .finally(() => { btn.innerHTML = original; btn.disabled = false; });
+    });
 
-    /* ── Delete Student ── */
+    // Delete student (with confirmation)
+    let deleteId = null;
     function deleteStudent(id) {
-        currentDeleteId = id;
+        deleteId = id;
         document.getElementById('deleteModal').classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.remove('active');
         document.body.style.overflow = '';
-        currentDeleteId = null;
+        deleteId = null;
     }
-    function confirmDelete() {
-        if (currentDeleteId) {
-            const row = document.querySelector(`.student-row[data-student-id="${currentDeleteId}"]`);
-            if (row) { row.remove(); delete studentsData[currentDeleteId]; }
-            showNotification('Student deleted successfully!', 'success');
-            closeDeleteModal();
-        }
-    }
-
-    /* ── Filter ── */
-    function filterStudents() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const course = document.getElementById('courseFilter').value.toLowerCase();
-        document.querySelectorAll('.student-row').forEach(row => {
-            const name    = row.querySelector('.student-name')?.textContent.toLowerCase() || '';
-            const email   = row.querySelector('.student-email')?.textContent.toLowerCase() || '';
-            const sid     = row.querySelector('.student-id-cell')?.textContent.toLowerCase() || '';
-            const courses = row.querySelector('.courses-cell')?.textContent.toLowerCase() || '';
-            const ok = (name.includes(search) || email.includes(search) || sid.includes(search))
-                    && (!course || courses.includes(course));
-            row.style.display = ok ? '' : 'none';
-        });
-    }
-
-    /* ── Event listeners ── */
-    document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') filterStudents(); });
-
-    document.getElementById('messageForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        formData.append('_token', '{{ csrf_token() }}');
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sending...';
-        submitBtn.disabled = true;
-
-        fetch('{{ route('faculty.students.message') }}', {
-            method: 'POST',
-            body: formData,
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (!deleteId) return;
+        fetch(`/faculty/students/${deleteId}`, {
+            method: 'DELETE',
             headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json'
             }
         })
-        .then(async response => {
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.message || 'Validation failed');
-            }
-            return data;
-        })
+        .then(r => r.json())
         .then(data => {
-            if(data.success) {
-                showNotification(data.message || 'Message sent successfully!', 'success');
-                closeMessageModal();
+            if (data.success) {
+                const row = document.querySelector(`.student-row[data-student-id="${deleteId}"]`);
+                if (row) row.remove();
+                alert('Student deleted successfully!');
             } else {
-                showNotification(data.message || 'Error sending message', 'error');
+                alert(data.message || 'Error deleting student');
             }
+            closeDeleteModal();
         })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification(error.message || 'An error occurred. Please try again.', 'error');
-        })
-        .finally(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
+        .catch(err => { alert('Error: ' + err.message); closeDeleteModal(); });
     });
 
-    document.getElementById('editStudentForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const id    = document.getElementById('editStudentId').value;
-        const name  = document.getElementById('editStudentName').value;
-        const email = document.getElementById('editStudentEmail').value;
-        const sid   = document.getElementById('editStudentIdInput').value;
-        if (studentsData[id]) {
-            studentsData[id] = { ...studentsData[id], name, email, student_id: sid };
-            const row = document.querySelector(`.student-row[data-student-id="${id}"]`);
-            if (row) {
-                row.querySelector('.student-name').textContent  = name;
-                row.querySelector('.student-email').textContent = email;
-                row.querySelector('.student-id-cell').textContent = sid;
-                row.querySelector('.student-avatar').textContent =
-                    name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
-            }
-        }
-        showNotification('Student updated successfully!', 'success');
-        closeEditModal();
-    });
-
-    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDelete);
-    document.getElementById('cancelDeleteBtn').addEventListener('click', closeDeleteModal);
-    document.getElementById('closeDeleteModalBtn').addEventListener('click', closeDeleteModal);
-
-    /* ── Logout modal ── */
+    // Logout modal
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1355,20 +984,36 @@
         document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
-    document.getElementById('logoutButton').addEventListener('click', openLogoutModal);
-    document.getElementById('confirmLogoutBtn').addEventListener('click', () => document.getElementById('logoutForm').submit());
-    document.getElementById('logoutModal').addEventListener('click', function(e) { if (e.target === this) closeLogoutModal(); });
+    document.getElementById('confirmLogoutBtn').addEventListener('click', () => {
+        document.getElementById('logoutForm')?.submit() || (window.location = '{{ route('logout') }}');
+    });
+    // Add logout form if not present (fallback)
+    if (!document.getElementById('logoutForm')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route('logout') }}';
+        form.innerHTML = '@csrf';
+        form.id = 'logoutForm';
+        form.style.display = 'none';
+        document.body.appendChild(form);
+    }
+    document.getElementById('logoutModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeLogoutModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLogoutModal(); });
 
-    /* ── Close modals on overlay click ── */
-    ['studentModal','messageModal','editStudentModal','deleteModal'].forEach(id => {
-        document.getElementById(id).addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        });
+    // Close modals when clicking overlay
+    ['studentModal', 'messageModal', 'deleteModal'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', e => { if (e.target === e.currentTarget) { e.currentTarget.classList.remove('active'); document.body.style.overflow = ''; } });
     });
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
 </script>
 </body>
 </html>
