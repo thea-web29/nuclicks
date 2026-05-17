@@ -205,6 +205,7 @@
             align-items: center;
             gap: .75rem;
             margin-bottom: .85rem;
+            cursor: pointer;
         }
         .avatar {
             width: 38px; height: 38px;
@@ -327,6 +328,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 8px;
         }
         .dash-card-title {
@@ -583,55 +585,33 @@
         <div class="nav-body">
             <div>
                 <div class="nav-section-label">Main</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="ri-dashboard-line"></i> Dashboard
-                </a>
-                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                    <i class="ri-team-line"></i> Users
-                </a>
-                <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                    <i class="ri-user-add-line"></i> Account Creation
-                </a>
-                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                    <i class="ri-user-star-line"></i> Faculty
-                </a>
+                <a href="{{ route('admin.dashboard') }}" class="nav-item"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="{{ route('admin.users') }}" class="nav-item"><i class="ri-team-line"></i> Users</a>
+                <a href="{{ route('admin.users.create') }}" class="nav-item"><i class="ri-user-add-line"></i> Account Creation</a>
+                <a href="{{ route('admin.faculty') }}" class="nav-item active"><i class="ri-user-star-line"></i> Faculty</a>
             </div>
             <div>
                 <div class="nav-section-label">Academic</div>
-                <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
-                    <i class="ri-graduation-cap-line"></i> Programs
-                </a>
-                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                    <i class="ri-building-2-line"></i> Departments
-                </a>
-                <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
-                    <i class="ri-book-open-line"></i> Subjects
-                </a>
+                <a href="{{ route('admin.programs') }}" class="nav-item"><i class="ri-graduation-cap-line"></i> Programs</a>
+                <a href="{{ route('admin.departments') }}" class="nav-item"><i class="ri-building-2-line"></i> Departments</a>
+                <a href="{{ route('admin.subjects') }}" class="nav-item"><i class="ri-book-open-line"></i> Subjects</a>
             </div>
             <div>
                 <div class="nav-section-label">Assessment</div>
-                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                    <i class="ri-bar-chart-line"></i> Analytics
-                </a>
-                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                    <i class="ri-history-line"></i> Activity Logs
-                </a>
-                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="ri-settings-line"></i> Settings
-                </a>
+                <a href="{{ route('admin.analytics') }}" class="nav-item"><i class="ri-bar-chart-line"></i> Analytics</a>
+                <a href="{{ route('admin.logs') }}" class="nav-item"><i class="ri-history-line"></i> Activity Logs</a>
+                <a href="{{ route('admin.settings') }}" class="nav-item"><i class="ri-settings-line"></i> Settings</a>
             </div>
         </div>
         <div class="sidebar-footer">
-            <div class="profile-row">
+            <div class="profile-row" onclick="window.location='{{ route('admin.profile') }}'">
                 <div class="avatar"><i class="ri-user-line"></i></div>
                 <div>
                     <div class="profile-name">{{ Auth::user()->name }}</div>
                     <div class="profile-email">{{ Auth::user()->email }}</div>
                 </div>
             </div>
-            <button onclick="openLogoutModal()" class="logout-btn">
-                <i class="ri-logout-box-line"></i> Sign Out
-            </button>
+            <button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Sign Out</button>
         </div>
     </div>
 </aside>
@@ -640,51 +620,32 @@
 <div class="main-content">
     <header class="topbar">
         <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="ri-menu-2-line"></i>
-            </button>
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="ri-menu-2-line"></i></button>
             <div>
                 <div class="topbar-title">NU Horizon <em>LMS</em></div>
                 <div class="topbar-breadcrumb">Admin → Faculty Management</div>
             </div>
         </div>
         <div class="topbar-right">
-            <div class="topbar-badge">
-                <span class="topbar-dot"></span>
-                System Online
-            </div>
-            <div class="topbar-badge">
-                <i class="ri-calendar-line"></i>
-                <span id="topbar-date"></span>
-            </div>
+            <div class="topbar-badge"><span class="topbar-dot"></span> System Online</div>
+            <div class="topbar-badge"><i class="ri-calendar-line"></i><span id="topbar-date"></span></div>
         </div>
     </header>
 
     <div class="page-body">
-        <!-- Flash messages -->
         @if(session('success'))
-            <div class="alert alert-success">
-                <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
-            </div>
+            <div class="alert alert-success"><i class="ri-checkbox-circle-line"></i> {{ session('success') }}</div>
         @endif
 
         <div class="dash-card">
             <div class="dash-card-head">
                 <span class="dash-card-title"><i class="ri-user-star-line"></i> Faculty Directory</span>
-                <a href="{{ route('admin.users.create') }}" class="btn-primary-sm">
-                    <i class="ri-add-line"></i> Add Faculty
-                </a>
+                <a href="{{ route('admin.users.create') }}" class="btn-primary-sm"><i class="ri-add-line"></i> Add Faculty</a>
             </div>
             <div style="overflow-x: auto;">
                 <table class="faculty-table">
                     <thead>
-                        <tr>
-                            <th>Faculty</th>
-                            <th>Faculty ID</th>
-                            <th>Department</th>
-                            <th>Assigned Subjects</th>
-                            <th>Actions</th>
-                        </tr>
+                        <tr><th>Faculty</th><th>Faculty ID</th><th>Department</th><th>Assigned Subjects</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
                         @forelse($faculty as $member)
@@ -700,17 +661,9 @@
                                     </div>
                                 </div>
                             </td>
-<<<<<<< HEAD
                             <td style="font-family: monospace; font-size: 0.75rem;">{{ $member->faculty_id ?? '—' }}</td>
-                            <td>{{ $member->department ?? '—' }}</td>
+                            <td>{{ $member->department_id ? ($member->departmentRel->name ?? '—') : ($member->department ?? '—') }}</td>
                             <td>
-=======
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $member->faculty_id ?? '—' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                {{ $member->department_id ? ($member->departmentRel->name ?? '—') : ($member->department ?? '—') }}
-                            </td>
-                            <td class="px-6 py-4">
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
                                 @php $assigned = $courses->where('faculty_id', $member->id); @endphp
                                 @if($assigned->count())
                                     <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
@@ -781,14 +734,12 @@
         </div>
         <div class="modal-foot">
             <button class="btn-cancel" onclick="closeAssignModal()">Cancel</button>
-            <button class="btn-confirm" onclick="saveAssignments()">
-                <i class="ri-save-line"></i> Save Assignments
-            </button>
+            <button class="btn-confirm" onclick="saveAssignments()"><i class="ri-save-line"></i> Save Assignments</button>
         </div>
     </div>
 </div>
 
-<!-- ══ LOGOUT MODAL ══ -->
+<!-- LOGOUT MODAL -->
 <div class="modal-overlay" id="logoutModal">
     <div class="modal" style="max-width: 400px;">
         <div class="modal-head">
@@ -810,11 +761,8 @@
 </div>
 
 <script>
-    // date
-    const d = new Date();
-    document.getElementById('topbar-date').textContent = d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
 
-    // sidebar
     function toggleSidebar() {
         const s = document.getElementById('sidebar');
         const o = document.getElementById('sidebarOverlay');
@@ -826,14 +774,12 @@
         document.getElementById('sidebarOverlay').style.display = 'none';
     }
 
-    // assign modal state
     let currentFacultyId = null;
 
     function openAssignModal(facultyId, name) {
         currentFacultyId = facultyId;
         document.getElementById('assignModalTitle').textContent = 'Assign Subjects — ' + name;
 
-        // fetch current assignments
         fetch(`/admin/faculty/${facultyId}/data`, {
             headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
         })
@@ -892,7 +838,6 @@
         .catch(() => alert('Network error.'));
     }
 
-    // logout modal
     function openLogoutModal() {
         document.getElementById('logoutModal').classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -901,12 +846,8 @@
         document.getElementById('logoutModal').classList.remove('active');
         document.body.style.overflow = '';
     }
-    document.getElementById('logoutModal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeLogoutModal();
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') { closeAssignModal(); closeLogoutModal(); }
-    });
+    document.getElementById('logoutModal')?.addEventListener('click', e => { if (e.target === e.currentTarget) closeLogoutModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAssignModal(); closeLogoutModal(); } });
 </script>
 </body>
 </html>
