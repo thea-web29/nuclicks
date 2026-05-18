@@ -1,1136 +1,283 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Subject Management – NU Horizon LMS</title>
-
-    <!-- Fonts + Icons (dashboard style) -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Department Management - NU Clicks LMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* ══ DESIGN TOKENS (mirror dashboard) ══ */
-        :root {
-            --navy:      #0A1F44;
-            --navy-mid:  #1F3A6D;
-            --navy-lite: #3D5FA0;
-            --navy-pale: #EEF3FB;
-            --gold:      #FFD70F;
-            --gold-d:    #C49A00;
-            --gold-mid:  #F5C800;
-            --gold-pale: #FFFBEA;
-            --bg:        #F8F6F1;
-            --white:     #FFFFFF;
-            --txt-1:     #0A1F44;
-            --txt-2:     #2C3E5C;
-            --txt-3:     #637089;
-            --bdr:       rgba(10,31,68,0.10);
-            --ease:      cubic-bezier(0.22,1,0.36,1);
-            --spring:    cubic-bezier(0.34,1.56,0.64,1);
-            --t:         0.26s var(--ease);
-            --sidebar-w: 272px;
-            --danger:    #dc2626;
-            --danger-d:  #b91c1c;
-            --green:     #16a34a;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#F5F7FB;overflow-x:hidden}:root{--blue-deep:#0A1F44;--gold:#FFD70F;--gray-border:#E9EDF2;--danger-red:#dc2626;--transition:all .25s ease}@media(max-width:1024px){.sidebar.mobile-open{transform:translateX(0)}}.logo-text h1 span{color:var(--gold)}.nav-section{padding:0 1rem;margin-top:1.5rem}.nav-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,215,15,.6);margin-bottom:.75rem;font-weight:600}.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:12px;color:rgba(255,255,255,.85);transition:var(--transition);margin-bottom:.25rem;font-weight:500;text-decoration:none}.nav-item i{font-size:1.2rem;width:1.5rem}.nav-item:hover{background:rgba(255,215,15,.15);color:white}.nav-item.active{background:var(--gold);color:var(--blue-deep)}.sidebar-footer{margin-top:auto;padding:1.2rem;border-top:1px solid rgba(255,215,15,.2)}.logout-btn{width:100%;background:rgba(220,38,38,.15);border:none;padding:.6rem;border-radius:40px;color:#fca5a5;font-weight:600;display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer}.logout-btn:hover{background:var(--danger-red);color:white}.top-bar{background:white;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.03);border-bottom:1px solid var(--gray-border);position:sticky;top:0;z-index:20}.menu-toggle{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--blue-deep)}@media(max-width:1024px){.menu-toggle{display:block}}.btn-icon{transition:var(--transition)}.btn-icon:hover{transform:translateY(-1px)}.table-card{background:white;border-radius:1rem;box-shadow:0 8px 20px rgba(10,31,68,.05);border:1px solid #e5e7eb;overflow:hidden}.data-table{width:100%;border-collapse:collapse}.data-table thead{background:#f9fafb}.data-table th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e5e7eb;white-space:nowrap}.data-table td{padding:1rem 1.5rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}.data-table tbody tr:hover{background:#f8fafc}.badge{display:inline-flex;align-items:center;padding:.32rem .8rem;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}.badge-navy{background:rgba(10,31,68,.1);color:var(--blue-deep)}.badge-blue{background:#dbeafe;color:#1d4ed8}.badge-green{background:#dcfce7;color:#15803d}.badge-gold{background:rgba(255,215,15,.18);color:#a16207}.modal-overlay{position:fixed;inset:0;background:rgba(10,31,68,.75);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:all .2s ease}.modal-overlay.active{visibility:visible;opacity:1}.modal-box{background:white;width:90%;max-width:650px;border-radius:1.5rem;box-shadow:0 25px 40px rgba(0,0,0,.2);overflow:hidden;transform:scale(.95);transition:transform .2s cubic-bezier(.2,.9,.4,1.1)}.modal-overlay.active .modal-box{transform:scale(1)}.modal-header{background:var(--blue-deep);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}.modal-header h3{font-size:1.1rem;font-weight:700;color:white;display:flex;align-items:center;gap:.5rem}.modal-header h3 i{color:var(--gold)}.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.6rem;cursor:pointer}input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,215,15,.2)}
+    
+        
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-            color: var(--txt-1);
-        }
+        
 
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
+        
 
-        /* ══ SIDEBAR (identical to dashboard) ══ */
-        .sidebar {
-            position: fixed;
-            top: 0; left: 0;
-            width: var(--sidebar-w);
-            height: 100vh;
-            background: var(--navy);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: transform .3s var(--ease);
-            box-shadow: 4px 0 32px rgba(0,0,0,0.18);
-        }
-        .sidebar::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 4s linear infinite;
-        }
-        @keyframes shimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position:  200% center; }
-        }
-        .sidebar::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-            background-size: 32px 32px;
-            pointer-events: none;
-        }
-        .sidebar-arc {
-            position: absolute;
-            width: 340px; height: 340px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,215,15,0.06);
-            bottom: -60px; left: -100px;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .sidebar-inner {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        .sun-rays .ray-1 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(-64deg); }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(-48deg); }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(-32deg); }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(-16deg); }
+        .sun-rays .ray-5 { height: 34px; opacity: 1; width: 2.5px; transform: translateX(-50%) rotate(0deg); }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(16deg); }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(32deg); }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(48deg); }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(64deg); }
+
+    
+        /* UNIFIED PREMIUM LOGO STYLING - PREVENTS SIZING JUMPS */
         .sidebar-logo {
-            padding: 1.5rem 1.4rem 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: .85rem;
-            border-bottom: 1px solid rgba(255,215,15,0.14);
+            padding: 1.5rem !important;
+            border-bottom: 1px solid rgba(255, 215, 15, 0.2) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.82rem !important;
+            min-height: 96px !important;
+            height: 96px !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
         }
-        .logo-seal-wrap {
-            position: relative;
-            flex-shrink: 0;
+
+        .sidebar-logo-img {
+            height: 45px !important;
+            width: auto !important;
+            flex-shrink: 0 !important;
         }
-        .logo-seal {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            object-fit: contain;
-            background: rgba(255,255,255,0.07);
-            border: 1.5px solid rgba(255,215,15,0.30);
-            display: block;
+
+        .logo-text {
+            position: relative !important;
+            min-width: 0 !important;
+            overflow: visible !important;
         }
-        .logo-seal-ring {
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(255,215,15,0.28);
-            animation: rotateSlow 14s linear infinite;
-        }
-        @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-        .logo-seal-ring::before {
-            content: "";
-            position: absolute;
-            top: -2px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--gold);
-            box-shadow: 0 0 5px var(--gold);
-        }
+
         .logo-text h1 {
-            font-family: 'Fraunces', serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -.02em;
-            line-height: 1.1;
+            font-family: 'Fraunces', serif !important;
+            font-size: 1.3rem !important;
+            font-weight: 800 !important;
+            color: white !important;
+            letter-spacing: -0.3px !important;
+            line-height: 1.05 !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
         }
-        .logo-text h1 em { color: var(--gold); font-style: normal; }
+
         .logo-text p {
-            font-size: .65rem;
-            font-weight: 600;
-            letter-spacing: .10em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.40);
-            margin-top: .15rem;
-        }
-        .nav-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.2rem .85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.6rem;
-        }
-        .nav-section-label {
-            font-size: .62rem;
-            font-weight: 700;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: rgba(255,215,15,0.50);
-            margin-bottom: .4rem;
-            padding-left: .4rem;
-        }
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: .7rem;
-            padding: .62rem .85rem;
-            border-radius: 10px;
-            color: rgba(255,255,255,0.70);
-            text-decoration: none;
-            font-size: .82rem;
-            font-weight: 500;
-            transition: all var(--t);
-            margin-bottom: .15rem;
-        }
-        .nav-item i { font-size: 1.05rem; width: 1.25rem; flex-shrink: 0; }
-        .nav-item:hover {
-            background: rgba(255,215,15,0.10);
-            color: rgba(255,255,255,0.92);
-        }
-        .nav-item.active {
-            background: var(--gold);
-            color: var(--navy);
-            font-weight: 700;
-            box-shadow: 0 4px 14px rgba(255,215,15,0.30);
-        }
-        .nav-item.active i { color: var(--navy); }
-        .sidebar-footer {
-            padding: 1rem 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.14);
-        }
-        .profile-row {
-            display: flex;
-            align-items: center;
-            gap: .75rem;
-            margin-bottom: .85rem;
-        }
-        .avatar {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            background: rgba(255,215,15,0.15);
-            border: 1.5px solid rgba(255,215,15,0.30);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--gold);
-            font-size: 1rem;
-            flex-shrink: 0;
-        }
-        .profile-name { font-size: .82rem; font-weight: 700; color: #fff; }
-        .profile-email { font-size: .68rem; color: rgba(255,255,255,0.42); margin-top: .1rem; }
-        .logout-btn {
-            width: 100%;
-            padding: .58rem .9rem;
-            border-radius: 8px;
-            background: rgba(220,38,38,0.12);
-            border: 1px solid rgba(220,38,38,0.22);
-            color: #fca5a5;
-            font-size: .78rem;
-            font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            cursor: pointer;
-            transition: all var(--t);
-        }
-        .logout-btn:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(220,38,38,0.35);
+            font-size: 0.55rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            color: rgba(255,255,255,0.5) !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0 !important;
         }
 
-        /* ══ MAIN CONTENT ══ */
+        .horizon-logo-wrap {
+            position: relative !important;
+            display: inline-block !important;
+            margin-left: 0.05rem !important;
+            color: var(--gold) !important;
+            overflow: visible !important;
+        }
+
+        .horizon-word {
+            position: relative !important;
+            display: inline-block !important;
+            color: var(--gold) !important;
+            z-index: 2 !important;
+        }
+
+        .sun-rays {
+            position: absolute !important;
+            left: 50% !important;
+            top: -1.48rem !important;
+            width: 108px !important;
+            height: 36px !important;
+            transform: translateX(-50%) !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+            overflow: visible !important;
+        }
+
+        .sun-rays::after {
+            content: "" !important;
+            position: absolute !important;
+            left: 50% !important;
+            bottom: -2px !important;
+            width: 62px !important;
+            height: 18px !important;
+            transform: translateX(-50%) !important;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 15, 0.30), transparent 72%) !important;
+            border-radius: 999px !important;
+        }
+
+        .sun-rays .ray {
+            position: absolute !important;
+            left: 50% !important;
+            bottom: 0 !important;
+            width: 2px !important;
+            border-radius: 999px !important;
+            background: linear-gradient(
+                to top,
+                rgba(255, 215, 15, 0.95) 0%,
+                rgba(255, 215, 15, 0.55) 42%,
+                rgba(255, 215, 15, 0.00) 100%
+            ) !important;
+            transform-origin: bottom center !important;
+            filter: drop-shadow(0 -1px 3px rgba(255, 215, 15, 0.18)) !important;
+        }
+
+        .sun-rays .ray-1 { height: 20px !important; opacity: 0.45 !important; transform: translateX(-50%) rotate(-64deg) !important; }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(-48deg) !important; }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(-32deg) !important; }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(-16deg) !important; }
+        .sun-rays .ray-5 { height: 34px; opacity: 1 !important; width: 2.5px !important; transform: translateX(-50%) rotate(0deg) !important; }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(16deg) !important; }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(32deg) !important; }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(48deg) !important; }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45 !important; transform: translateX(-50%) rotate(64deg) !important; }
+
+        /* LOCKED SIDEBAR AND MAIN CONTENT LAYOUT */
+        .sidebar {
+            background-color: var(--blue-deep) !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100% !important;
+            z-index: 40 !important;
+            transition: transform 0.3s ease !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08) !important;
+            box-sizing: border-box !important;
+        }
+
         .main-content {
-            margin-left: var(--sidebar-w);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            margin-left: 280px !important;
+            transition: margin-left 0.3s ease !important;
+            min-height: 100vh !important;
+            box-sizing: border-box !important;
         }
 
-        /* Topbar */
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(248,246,241,0.88);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--bdr);
-            padding: .9rem 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-        }
-        .topbar-left { display: flex; align-items: center; gap: 1rem; }
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: 1px solid var(--bdr);
-            border-radius: 8px;
-            padding: .4rem .55rem;
-            color: var(--txt-2);
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all var(--t);
-        }
-        .menu-toggle:hover { border-color: var(--gold-d); color: var(--navy); }
-        .topbar-title {
-            font-family: 'Fraunces', serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--navy);
-            letter-spacing: -.02em;
-        }
-        .topbar-title em { color: var(--gold-d); font-style: normal; }
-        .topbar-breadcrumb {
-            font-size: .72rem;
-            color: var(--txt-3);
-            font-weight: 500;
-        }
-        .topbar-right { display: flex; align-items: center; gap: .75rem; }
-        .topbar-badge {
-            display: flex; align-items: center; gap: .4rem;
-            font-size: .72rem;
-            font-weight: 600;
-            color: var(--txt-3);
-            background: var(--white);
-            border: 1px solid var(--bdr);
-            border-radius: 8px;
-            padding: .4rem .75rem;
-            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
-        }
-        .topbar-badge i { font-size: .85rem; color: var(--gold-d); }
-        .topbar-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
-        }
-
-        /* PAGE BODY */
-        .page-body { padding: 1.8rem 2rem; flex: 1; }
-
-        /* Dashboard card & table */
-        .dash-card {
-            background: var(--white);
-            border-radius: 14px;
-            border: 1px solid var(--bdr);
-            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
-            overflow: hidden;
-        }
-        .dash-card-head {
-            padding: 1rem 1.3rem;
-            border-bottom: 1px solid var(--bdr);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-        .dash-card-title {
-            font-size: .82rem;
-            font-weight: 700;
-            color: var(--txt-1);
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-        .dash-card-title i { color: var(--gold-d); font-size: .9rem; }
-
-        .subject-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-        }
-        .subject-table th {
-            text-align: left;
-            padding: 0.9rem 1rem;
-            background: #FCFAF7;
-            border-bottom: 1px solid var(--bdr);
-            font-weight: 700;
-            color: var(--txt-2);
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .subject-table td {
-            padding: 0.9rem 1rem;
-            border-bottom: 1px solid var(--bdr);
-            color: var(--txt-2);
-            vertical-align: middle;
-        }
-        .subject-table tr:last-child td { border-bottom: none; }
-        .subject-table tr:hover td { background: rgba(10,31,68,0.02); }
-
-        .badge-code {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.7rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            background: rgba(10,31,68,0.08);
-            color: var(--navy);
-        }
-        .badge-count {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.2rem 0.6rem;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: var(--bg);
-        }
-        .btn-primary-sm {
-            background: var(--navy);
-            color: white;
-            padding: 0.45rem 1rem;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: var(--t);
-            border: none;
-            cursor: pointer;
-        }
-        .btn-primary-sm:hover {
-            background: var(--navy-mid);
-            transform: translateY(-1px);
-        }
-        .btn-icon {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--txt-3);
-            padding: 0.25rem;
-            border-radius: 6px;
-            transition: var(--t);
-            font-size: 1.1rem;
-        }
-        .btn-icon:hover { background: rgba(10,31,68,0.05); }
-        .btn-icon.edit:hover { color: #d97706; }
-        .btn-icon.delete:hover { color: var(--danger); background: rgba(220,38,38,0.08); }
-        .btn-icon.view:hover { color: var(--navy-lite); }
-
-        /* Modal (dashboard style) */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(10,31,68,0.72);
-            backdrop-filter: blur(6px);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            visibility: hidden;
-            opacity: 0;
-            transition: all .22s var(--ease);
-        }
-        .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal {
-            background: var(--white);
-            border-radius: 18px;
-            width: min(800px, 94vw);
-            overflow: hidden;
-            transform: scale(0.94) translateY(12px);
-            transition: transform .28s var(--spring);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.25);
-            display: flex;
-            flex-direction: column;
-            max-height: 90vh;
-        }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-        .modal-head {
-            background: var(--navy);
-            padding: 1.2rem 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--gold);
-            flex-shrink: 0;
-        }
-        .modal-head h3 {
-            font-family: 'Fraunces', serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
-        .modal-head h3 i { color: var(--gold); }
-        .modal-close {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.55);
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: color var(--t);
-        }
-        .modal-close:hover { color: var(--gold); }
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-        .modal-foot {
-            padding: .9rem 1.4rem 1.3rem;
-            display: flex;
-            gap: .6rem;
-            justify-content: flex-end;
-            background: var(--bg);
-            border-top: 1px solid var(--bdr);
-            flex-shrink: 0;
-        }
-        .btn-cancel {
-            padding: .58rem 1.1rem;
-            border-radius: 8px;
-            border: 1px solid var(--bdr);
-            background: var(--white);
-            font-size: .8rem;
-            font-weight: 600;
-            color: var(--txt-2);
-            cursor: pointer;
-            transition: all var(--t);
-        }
-        .btn-confirm {
-            padding: .58rem 1.2rem;
-            border-radius: 8px;
-            border: none;
-            background: var(--navy);
-            font-size: .8rem;
-            font-weight: 700;
-            color: #fff;
-            cursor: pointer;
-            transition: all var(--t);
-        }
-        .btn-confirm:hover { background: var(--navy-mid); }
-        .btn-danger {
-            background: var(--danger);
-        }
-        .btn-danger:hover { background: var(--danger-d); }
-
-        /* Form elements */
-        .form-group { margin-bottom: 1.2rem; }
-        .form-label {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--txt-3);
-            display: block;
-            margin-bottom: 0.4rem;
-        }
-        .form-label .required { color: var(--danger); margin-left: 0.2rem; }
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 0.65rem 1rem;
-            border-radius: 10px;
-            border: 1px solid var(--bdr);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.8rem;
-            color: var(--txt-1);
-            background: var(--white);
-            transition: var(--t);
-        }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--gold-d);
-            box-shadow: 0 0 0 3px rgba(196,154,0,0.1);
-        }
-        .form-hint {
-            font-size: 0.68rem;
-            color: var(--txt-3);
-            margin-top: 0.3rem;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        @media (max-width: 640px) {
-            .grid-2 { grid-template-columns: 1fr; }
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .alert-success {
-            background: rgba(22,163,74,0.08);
-            border-left: 3px solid var(--green);
-            color: #14532d;
-        }
-        .alert-error {
-            background: rgba(220,38,38,0.06);
-            border-left: 3px solid var(--danger);
-            color: #7f1a1a;
-        }
-
-        /* Pagination */
-        .pagination-wrap {
-            padding: 1rem 1.3rem;
-            border-top: 1px solid var(--bdr);
-            background: var(--bg);
-        }
-        .pagination {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-            flex-wrap: wrap;
-        }
-        .pagination a, .pagination span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            height: 32px;
-            padding: 0 8px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--txt-2);
-            transition: var(--t);
-            text-decoration: none;
-        }
-        .pagination a:hover { background: var(--bg); color: var(--navy); }
-        .pagination .active span {
-            background: var(--navy);
-            color: white;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10,31,68,0.65);
-            z-index: 90;
-        }
         @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay { display: block; }
-            .main-content { margin-left: 0; }
-            .menu-toggle { display: flex; }
-            .page-body { padding: 1.2rem 1rem; }
-            .topbar { padding: .8rem 1rem; }
+            .sidebar {
+                transform: translateX(-100%) !important;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0) !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
         }
-        .hidden { display: none; }
-        .inline-block { display: inline-block; }
+
     </style>
-</head>
-<body>
-
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- ══ SIDEBAR (identical to dashboard) ══ -->
+</head><body>
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-arc"></div>
-    <div class="sidebar-inner">
         <div class="sidebar-logo">
-            <div class="logo-seal-wrap">
-                <div class="logo-seal-ring"></div>
-                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal" onerror="this.style.display='none'">
-            </div>
-            <div class="logo-text">
-                <h1>NU Horizon <em>LMS</em></h1>
-                <p>Admin Portal · National University</p>
-            </div>
-        </div>
-        <div class="nav-body">
-            <div>
-                <div class="nav-section-label">Main</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="ri-dashboard-line"></i> Dashboard
-                </a>
-                <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                    <i class="ri-team-line"></i> Users
-                </a>
-                <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                    <i class="ri-user-add-line"></i> Account Creation
-                </a>
-                <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                    <i class="ri-user-star-line"></i> Faculty
-                </a>
-            </div>
-            <div>
-                <div class="nav-section-label">Academic</div>
-                <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
-                    <i class="ri-graduation-cap-line"></i> Programs
-                </a>
-                <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                    <i class="ri-building-2-line"></i> Departments
-                </a>
-                <a href="{{ route('admin.subjects') }}" class="nav-item active">
-                    <i class="ri-book-open-line"></i> Subjects
-                </a>
-            </div>
-            <div>
-                <div class="nav-section-label">Assessment</div>
-                <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                    <i class="ri-bar-chart-line"></i> Analytics
-                </a>
-                <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                    <i class="ri-history-line"></i> Activity Logs
-                </a>
-                <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                    <i class="ri-settings-line"></i> Settings
-                </a>
-            </div>
-        </div>
-        <div class="sidebar-footer">
-            <div class="profile-row">
-                <div class="avatar"><i class="ri-user-line"></i></div>
-                <div>
-                    <div class="profile-name">{{ Auth::user()->name ?? 'Admin User' }}</div>
-                    <div class="profile-email">{{ Auth::user()->email ?? 'admin@nu.edu.ph' }}</div>
-                </div>
-            </div>
-            <button onclick="openLogoutModal()" class="logout-btn">
-                <i class="ri-logout-box-line"></i> Sign Out
-            </button>
+        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img" onerror="this.src='https://placehold.co/45x45/0A1F44/FFD70F?text=NU'">
+
+        <div class="logo-text">
+            <h1>
+                NU
+                <span class="horizon-logo-wrap">
+                    <span class="sun-rays" aria-hidden="true">
+                        <span class="ray ray-1"></span>
+                        <span class="ray ray-2"></span>
+                        <span class="ray ray-3"></span>
+                        <span class="ray ray-4"></span>
+                        <span class="ray ray-5"></span>
+                        <span class="ray ray-6"></span>
+                        <span class="ray ray-7"></span>
+                        <span class="ray ray-8"></span>
+                        <span class="ray ray-9"></span>
+                    </span>
+
+                    <span class="horizon-word">HORIZON</span>
+                </span>
+            </h1>
+
+            <p>Admin Portal</p>
         </div>
     </div>
+        <div style="flex:1; overflow-y: auto;">
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
+                <i class="ri-user-add-line"></i> Account Creation
+            </a>
+            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                <i class="ri-team-line"></i> Users
+            </a>
+            <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
+                <i class="ri-user-star-line"></i> Faculty
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Academic</div>
+            <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
+                <i class="ri-building-2-line"></i> Departments
+            </a>
+            <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
+                <i class="ri-graduation-cap-line"></i> Programs/Courses
+            </a>
+            <a href="{{ route('admin.sections') }}" class="nav-item {{ request()->routeIs('admin.sections*') ? 'active' : '' }}">
+                <i class="ri-layout-grid-line"></i> Sections
+            </a>
+            <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
+                <i class="ri-book-open-line"></i> Subjects
+            </a>
+            <a href="{{ route('admin.faculty-assignments') }}" class="nav-item {{ request()->routeIs('admin.faculty-assignments*') ? 'active' : '' }}">
+                <i class="ri-user-settings-line"></i> Faculty Assignments
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
+            </a>
+            <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
+                <i class="ri-bar-chart-line"></i> Analytics
+            </a>
+            <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
+                <i class="ri-history-line"></i> Activity Logs
+            </a>
+            <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                <i class="ri-settings-line"></i> Settings
+            </a>
+        </div>
+    </div>
+    <div class="sidebar-footer"><a href="{{ route('admin.profile') }}" style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;text-decoration:none;"><div style="width:42px;height:42px;background:rgba(255,215,15,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);"><i class="ri-user-line"></i></div><div><p style="color:white;font-weight:600;font-size:.85rem;margin:0;">{{ Auth::user()->name ?? 'Admin User' }}</p><span style="color:rgba(255,255,255,.6);font-size:.7rem;display:block;">{{ Auth::user()->email ?? 'admin@nuclicks.edu' }}</span></div></a><button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Logout</button></div>
 </aside>
 
-<!-- ══ MAIN CONTENT ══ -->
-<div class="main-content">
-    <header class="topbar">
-        <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="ri-menu-2-line"></i>
-            </button>
-            <div>
-                <div class="topbar-title">NU Horizon <em>LMS</em></div>
-                <div class="topbar-breadcrumb">Admin → Academic → Subjects</div>
-            </div>
-        </div>
-        <div class="topbar-right">
-            <div class="topbar-badge">
-                <span class="topbar-dot"></span>
-                System Online
-            </div>
-            <div class="topbar-badge">
-                <i class="ri-calendar-line"></i>
-                <span id="topbar-date"></span>
-            </div>
-        </div>
-    </header>
 
-    <div class="page-body">
-        <!-- Flash messages -->
-        @if(session('success'))
-            <div class="alert alert-success">
-                <i class="ri-checkbox-circle-line"></i> {{ session('success') }}
-            </div>
-        @endif
-        @if(session('error'))
-            <div class="alert alert-error">
-                <i class="ri-error-warning-line"></i> {{ session('error') }}
-            </div>
-        @endif
-
-        <div class="dash-card">
-            <div class="dash-card-head">
-                <span class="dash-card-title"><i class="ri-book-open-line"></i> All Subjects</span>
-                <button onclick="openCreateModal()" class="btn-primary-sm">
-                    <i class="ri-add-line"></i> Create Subject
-                </button>
-            </div>
-            <div style="overflow-x: auto;">
-                <table class="subject-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Subject Name</th>
-                            <th>Faculty</th>
-                            <th>Program</th>
-                            <th>Section</th>
-                            <th>Students</th>
-                            <th>Quizzes</th>
-                            <th>Join Code</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($courses as $course)
-                        <tr>
-                            <td>{{ $course->id }}</td>
-                            <td>
-                                <div style="font-weight: 500;">{{ $course->name }}</div>
-                                @if($course->description)
-                                    <div style="font-size: 0.65rem; color: var(--txt-3);">{{ Str::limit($course->description, 45) }}</div>
-                                @endif
-                            </td>
-                            <td>
-                                @if($course->faculty)
-                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                        <div style="width: 24px; height: 24px; background: rgba(124,58,237,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                            <i class="ri-user-star-line" style="font-size: 0.7rem; color: #7c3aed;"></i>
-                                        </div>
-                                        <span>{{ $course->faculty->name }}</span>
-                                    </div>
-                                @else
-                                    <span style="color: var(--txt-3); font-style: italic;">Not assigned</span>
-                                @endif
-                            </td>
-                            <td>{{ $course->program->code ?? '—' }}</td>
-                            <td><span class="badge-code">{{ $course->section ?? '—' }}</span></td>
-                            <td><span class="badge-count">{{ $course->students_count ?? 0 }}</span></td>
-                            <td><span class="badge-count">{{ $course->quizzes_count ?? 0 }}</span></td>
-                            <td><code style="font-size: 0.7rem; background: var(--bg); padding: 0.2rem 0.4rem; border-radius: 6px;">{{ $course->join_code ?? 'N/A' }}</code></td>
-                            <td><span class="badge-code" style="background: rgba(22,163,74,0.1); color: var(--green);">Active</span></td>
-                            <td>
-                                <a href="{{ route('admin.courses.show', $course->id) }}" class="btn-icon view" title="View Details">
-                                    <i class="ri-eye-line"></i>
-                                </a>
-                                <button onclick="editCourse({{ $course->id }})" class="btn-icon edit" title="Edit">
-                                    <i class="ri-edit-line"></i>
-                                </button>
-                                <button onclick="openDeleteModal({{ $course->id }}, '{{ addslashes($course->name) }}')" class="btn-icon delete" title="Delete">
-                                    <i class="ri-delete-bin-line"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        @empty
-                            <tr>
-                                <td colspan="10" style="text-align: center; padding: 2rem;">
-                                    <i class="ri-book-open-line" style="font-size: 2rem; color: var(--txt-3); opacity: 0.4;"></i>
-                                    <p style="margin-top: 0.5rem; color: var(--txt-3);">No subjects found.</p>
-                                    <button onclick="openCreateModal()" class="btn-primary-sm" style="margin-top: 0.5rem;">Create Subject</button>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            @if($courses->hasPages())
-                <div class="pagination-wrap">
-                    {{ $courses->links() }}
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
-
-<!-- ══ CREATE/EDIT SUBJECT MODAL ══ -->
-<div id="courseModal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-head">
-            <h3><i class="ri-book-open-line"></i> <span id="modalTitle">Create Subject</span></h3>
-            <button class="modal-close" onclick="closeModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <p style="font-size: 0.75rem; color: var(--txt-3); margin-bottom: 1rem;">Fill in the subject details below.</p>
-            <form id="courseForm">
-                @csrf
-                <input type="hidden" id="courseId" name="course_id">
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">Subject Code <span class="required">*</span></label>
-                        <input type="text" id="code" name="code" required class="form-input" placeholder="e.g. CS101">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Subject Name <span class="required">*</span></label>
-                        <input type="text" id="name" name="name" required class="form-input" placeholder="e.g. Introduction to Programming">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea id="description" name="description" rows="3" class="form-textarea" placeholder="Course description, objectives, prerequisites..."></textarea>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">Program <span class="required">*</span></label>
-                        <select id="program_id" name="program_id" required class="form-select">
-                            <option value="">-- Select Program --</option>
-                            @foreach($programs ?? [] as $program)
-                                <option value="{{ $program->id }}">{{ $program->code }} – {{ $program->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Section <span class="required">*</span></label>
-                        <input type="text" id="section" name="section" required class="form-input" placeholder="e.g. A, B, C">
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label class="form-label">Credits</label>
-                        <input type="number" id="credits" name="credits" min="1" max="6" value="3" class="form-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Assign Faculty</label>
-                        <select id="faculty_id" name="faculty_id" class="form-select">
-                            <option value="">-- Select Faculty --</option>
-                            @foreach($faculties ?? [] as $faculty)
-                                <option value="{{ $faculty->id }}">{{ $faculty->name }} – {{ $faculty->department ?? 'No dept' }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Join Code</label>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="join_code" name="join_code" readonly class="form-input" style="background: var(--bg);">
-                        <button type="button" onclick="generateJoinCode()" class="btn-primary-sm" style="padding: 0 1rem;">Generate</button>
-                    </div>
-                    <div class="form-hint">Auto-generated — faculty can regenerate this to email all eligible students.</div>
-                </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1rem;">
-                    <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
-                    <button type="submit" id="submitBtn" class="btn-confirm">Save Subject</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- ══ DELETE CONFIRMATION MODAL ══ -->
-<div id="deleteModal" class="modal-overlay">
-    <div class="modal" style="max-width: 450px;">
-        <div class="modal-head">
-            <h3><i class="ri-delete-bin-line"></i> Delete Subject</h3>
-            <button class="modal-close" onclick="closeDeleteModal()">×</button>
-        </div>
-        <div class="modal-body" style="text-align: center;">
-            <i class="ri-alert-line" style="font-size: 2rem; color: var(--danger); display: block; margin-bottom: 0.5rem;"></i>
-            <p>Are you sure you want to delete <strong id="deleteCourseName"></strong>?</p>
-            <p style="font-size: 0.7rem; color: var(--txt-3); margin-top: 0.5rem;">All associated quizzes, enrollments, and submissions will be permanently lost. This action cannot be undone.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-            <button id="confirmDeleteBtn" class="btn-confirm btn-danger">Yes, Delete</button>
-        </div>
-    </div>
-</div>
-
-<!-- ══ LOGOUT MODAL ══ -->
-<div class="modal-overlay" id="logoutModal">
-    <div class="modal" style="max-width: 400px;">
-        <div class="modal-head">
-            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
-        </div>
-        <div class="modal-body" style="text-align: center;">
-            <p>Are you sure you want to sign out of your account?</p>
-            <p style="font-size:0.7rem; margin-top:0.5rem;">You will be redirected to the login page.</p>
-        </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn-confirm btn-danger">Yes, Sign Out</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<<<<<<< HEAD
-=======
 <div class="main-content" id="mainContent"><div class="top-bar"><button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button><div><h2 style="font-weight:700;color:var(--blue-deep);font-size:1.1rem;">Subject Management</h2><p class="text-sm text-gray-500 hidden md:block">Subjects are assigned to Program/Course and Section</p></div><div class="flex items-center gap-3">@if(View::exists('admin.partials.notification-bell')) @include('admin.partials.notification-bell') @endif<button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="background:var(--blue-deep);color:white;"><i class="ri-add-line"></i>Add Subject</button></div></div><div class="p-4 md:p-6"><div class="table-card"><div class="overflow-x-auto"><table class="data-table"><thead><tr><th>Code</th><th>Subject Name</th><th>Department</th><th>Program/Course</th><th>Section</th><th>Faculty</th><th>Quizzes</th><th>Actions</th></tr></thead><tbody>@forelse($courses as $course)<tr><td><span class="badge badge-navy">{{ $course->code }}</span></td><td><div class="font-semibold">{{ $course->name }}</div><div class="text-xs text-gray-500">{{ Str::limit($course->description, 45) }}</div></td><td>@if($course->program && $course->program->department)<span class="badge badge-gold">{{ $course->program->department->code }}</span>@else<span class="text-red-500 text-sm">No department</span>@endif</td><td><div class="font-semibold">{{ $course->program->code ?? '—' }}</div><div class="text-xs text-gray-500">{{ $course->program->name ?? '' }}</div></td><td><span class="badge badge-blue">{{ $course->sectionRecord->name ?? $course->section ?? '—' }}</span></td><td><div class="font-semibold text-sm">{{ $course->faculty->name ?? 'Not assigned' }}</div></td><td><span class="badge badge-green">{{ $course->quizzes_count ?? 0 }}</span></td><td><div class="flex gap-3"><button onclick="editSubject({{ $course->id }})" class="text-yellow-600"><i class="ri-edit-line text-lg"></i></button><button onclick="deleteSubject({{ $course->id }}, '{{ addslashes($course->name) }}')" class="text-red-600"><i class="ri-delete-bin-line text-lg"></i></button></div></td></tr>@empty<tr><td colspan="8" class="text-center py-12 text-gray-500">No subjects yet.</td></tr>@endforelse</tbody></table></div></div><div class="mt-4">{{ $courses->links() }}</div></div></div>
 <div id="subjectModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3><i class="ri-book-open-line"></i><span id="modalTitle">Add Subject</span></h3><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="p-6"><form id="subjectForm">@csrf<input type="hidden" id="subjectId"><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label class="block text-sm font-semibold mb-2">Program/Course *</label><select id="programId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Program/Course</option>@foreach($programs as $program)<option value="{{ $program->id }}">{{ $program->code }} - {{ $program->name }} @if($program->department) ({{ $program->department->code }}) @endif</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Section *</label><select id="sectionId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Section</option>@foreach($sections as $section)<option value="{{ $section->id }}" data-program="{{ $section->program_id }}">{{ $section->name }} - {{ $section->program->code ?? '' }}</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Subject Code *</label><input id="subjectCode" required maxlength="50" class="w-full border rounded-xl px-4 py-2.5 uppercase" placeholder="IT101"></div><div><label class="block text-sm font-semibold mb-2">Subject Name *</label><input id="subjectName" required class="w-full border rounded-xl px-4 py-2.5" placeholder="Introduction to Computing"></div><div><label class="block text-sm font-semibold mb-2">Faculty</label><select id="facultyId" class="w-full border rounded-xl px-4 py-2.5"><option value="">Not assigned</option>@foreach($faculties as $faculty)<option value="{{ $faculty->id }}">{{ $faculty->name }} @if($faculty->department_id || $faculty->department) ({{ $faculty->department_id ? ($faculty->departmentRel->code ?? 'N/A') : $faculty->department }}) @endif</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Credits/Units *</label><input type="number" id="credits" value="3" min="1" max="6" required class="w-full border rounded-xl px-4 py-2.5"></div></div><div class="mb-6"><label class="block text-sm font-semibold mb-2">Description</label><textarea id="subjectDesc" rows="3" class="w-full border rounded-xl px-4 py-2.5"></textarea></div><div class="flex justify-end gap-3 pt-4 border-t"><button type="button" onclick="closeModal()" class="px-5 py-2.5 border rounded-xl">Cancel</button><button type="submit" id="submitBtn" class="px-6 py-2.5 rounded-xl font-semibold" style="background:var(--blue-deep);color:white;">Save Subject</button></div></form></div></div></div>
->>>>>>> 95cf8eb6cac99de3a335b21478d22a95268738d0
 <script>
-    // Date
-    const d = new Date();
-    document.getElementById('topbar-date').textContent = d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-
-    // Sidebar toggle
-    function toggleSidebar() {
-        const s = document.getElementById('sidebar');
-        const o = document.getElementById('sidebarOverlay');
-        const open = s.classList.toggle('open');
-        o.style.display = open ? 'block' : 'none';
-    }
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').style.display = 'none';
-    }
-
-    // Modal handlers for subject form
-    function openCreateModal() {
-        document.getElementById('modalTitle').innerText = 'Create Subject';
-        document.getElementById('courseForm').reset();
-        document.getElementById('courseId').value = '';
-        document.getElementById('join_code').value = '';
-        generateJoinCode();
-        document.getElementById('courseModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        document.getElementById('courseModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    function generateJoinCode() {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        document.getElementById('join_code').value = code;
-    }
-
-    // Edit course - fetch data
-    function editCourse(id) {
-        fetch(`/admin/courses/${id}/edit-data`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('modalTitle').innerText = 'Edit Subject';
-                document.getElementById('courseId').value = data.course.id;
-                document.getElementById('code').value = data.course.code;
-                document.getElementById('name').value = data.course.name;
-                document.getElementById('description').value = data.course.description || '';
-                document.getElementById('credits').value = data.course.credits;
-                document.getElementById('faculty_id').value = data.course.faculty_id || '';
-                document.getElementById('program_id').value = data.course.program_id || '';
-                document.getElementById('section').value = data.course.section || '';
-                document.getElementById('join_code').value = data.course.join_code || '';
-                document.getElementById('courseModal').classList.add('active');
-                document.body.style.overflow = 'hidden';
-            } else {
-                alert(data.message || 'Error loading course');
-            }
-        })
-        .catch(error => {
-            alert('Error loading course: ' + error.message);
-        });
-    }
-
-    // Delete modal state
-    let deleteCourseId = null;
-
-    function openDeleteModal(id, name) {
-        deleteCourseId = id;
-        document.getElementById('deleteCourseName').innerText = name;
-        document.getElementById('deleteModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.remove('active');
-        document.body.style.overflow = '';
-        deleteCourseId = null;
-    }
-
-    // Confirm delete via AJAX
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-        if (!deleteCourseId) return;
-
-        fetch(`/admin/courses/${deleteCourseId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                alert(data.message || 'Error deleting subject');
-                closeDeleteModal();
-            }
-        })
-        .catch(e => {
-            alert('Error: ' + e.message);
-            closeDeleteModal();
-        });
-    });
-
-    // Form submission (create / update)
-    document.getElementById('courseForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const id = document.getElementById('courseId').value;
-        const url = id ? `/admin/courses/${id}` : '/admin/courses';
-
-        const formData = new FormData();
-        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-        if (id) formData.append('_method', 'PUT');
-
-        formData.append('code', document.getElementById('code').value);
-        formData.append('name', document.getElementById('name').value);
-        formData.append('description', document.getElementById('description').value);
-        formData.append('credits', document.getElementById('credits').value);
-        formData.append('faculty_id', document.getElementById('faculty_id').value);
-        formData.append('program_id', document.getElementById('program_id').value);
-        formData.append('section', document.getElementById('section').value);
-        formData.append('join_code', document.getElementById('join_code').value);
-
-        fetch(url, {
-            method: 'POST',
-            body: formData,
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
-                let errorMsg = data.message || 'Error saving subject';
-                if (data.errors) {
-                    const errs = Object.values(data.errors).flat();
-                    errorMsg = errs.join('\n');
-                }
-                alert(errorMsg);
-            }
-        })
-        .catch(e => alert('Error: ' + e.message));
-    });
-
-    // Close modal when clicking overlay
-    document.getElementById('courseModal').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-    });
-    document.getElementById('deleteModal').addEventListener('click', function(e) {
-        if (e.target === this) closeDeleteModal();
-    });
-
-    // Logout modal
-    function openLogoutModal() {
-        document.getElementById('logoutModal').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function closeLogoutModal() {
-        document.getElementById('logoutModal').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    document.getElementById('logoutModal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeLogoutModal();
-    });
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (document.getElementById('courseModal').classList.contains('active')) closeModal();
-            if (document.getElementById('deleteModal').classList.contains('active')) closeDeleteModal();
-            if (document.getElementById('logoutModal').classList.contains('active')) closeLogoutModal();
-        }
-    });
+function filterSections(){const p=programId.value;[...sectionId.options].forEach(o=>{if(!o.value)return;o.hidden=p&&o.dataset.program!==p})}function openCreateModal(){subjectForm.reset();subjectId.value='';credits.value=3;modalTitle.innerText='Add Subject';submitBtn.innerText='Save Subject';subjectModal.classList.add('active');document.body.style.overflow='hidden';filterSections()}function closeModal(){subjectModal.classList.remove('active');document.body.style.overflow=''}programId.addEventListener('change',()=>{sectionId.value='';filterSections()});function editSubject(id){fetch(`/admin/courses/${id}/edit-data`,{headers:{Accept:'application/json','X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success){modalTitle.innerText='Edit Subject';subjectId.value=d.course.id;programId.value=d.course.program_id||'';filterSections();sectionId.value=d.course.section_id||'';subjectCode.value=d.course.code||'';subjectName.value=d.course.name||'';subjectDesc.value=d.course.description||'';facultyId.value=d.course.faculty_id||'';credits.value=d.course.credits||3;submitBtn.innerText='Update Subject';subjectModal.classList.add('active');document.body.style.overflow='hidden'}else alert(d.message||'Failed to load subject')})}function deleteSubject(id,name){if(!confirm(`Delete subject "${name}"?`))return;fetch(`/admin/courses/${id}`,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}',Accept:'application/json','X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||'Error deleting subject')})}subjectForm.addEventListener('submit',e=>{e.preventDefault();const id=subjectId.value,url=id?`/admin/courses/${id}`:'/admin/courses',fd=new FormData();fd.append('_token','{{ csrf_token() }}');if(id)fd.append('_method','PUT');fd.append('program_id',programId.value);fd.append('section_id',sectionId.value);fd.append('code',subjectCode.value.trim().toUpperCase());fd.append('name',subjectName.value.trim());fd.append('description',subjectDesc.value.trim());fd.append('faculty_id',facultyId.value);fd.append('credits',credits.value);fetch(url,{method:'POST',body:fd,headers:{'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||(d.errors?Object.values(d.errors).flat().join('\n'):'Error saving subject'))})});subjectCode.addEventListener('input',function(){this.value=this.value.toUpperCase()});subjectModal.addEventListener('click',e=>{if(e.target.id==='subjectModal')closeModal()});
 </script>
-</body>
-</html>
+<div id="logoutModal" class="modal-overlay"><div class="modal-box" style="max-width:450px;"><div class="modal-header"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">&times;</button></div><div style="padding:1.8rem 1.5rem;text-align:center;"><p>Are you sure you want to sign out?</p><p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p></div><div style="padding:1rem 1.5rem 1.5rem;display:flex;gap:.75rem;justify-content:flex-end;background:#f9fafb;border-top:1px solid var(--gray-border);"><button onclick="closeLogoutModal()" style="padding:.6rem 1.25rem;border-radius:40px;background:#eef2ff;color:#1e293b;border:none;font-weight:600;cursor:pointer;">Cancel</button><form method="POST" action="{{ route('logout') }}" style="margin:0;">@csrf<button type="submit" style="padding:.6rem 1.25rem;border-radius:40px;background:#dc2626;color:white;border:none;font-weight:600;cursor:pointer;">Yes, Sign Out</button></form></div></div></div>
+<script>
+const menuToggle=document.getElementById('menuToggle'),sidebar=document.getElementById('sidebar');if(menuToggle){menuToggle.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'))}document.addEventListener('click',e=>{const m=window.innerWidth<=1024;if(m&&sidebar&&sidebar.classList.contains('mobile-open')&&!sidebar.contains(e.target)&&!menuToggle.contains(e.target)){sidebar.classList.remove('mobile-open')}});function openLogoutModal(){document.getElementById('logoutModal').classList.add('active');document.body.style.overflow='hidden'}function closeLogoutModal(){document.getElementById('logoutModal').classList.remove('active');document.body.style.overflow=''}document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));document.body.style.overflow=''}});
+</script>
+</body></html>

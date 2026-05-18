@@ -1356,7 +1356,7 @@ public function addEligibleStudentsToClass($id)
 
         $course->update($validated);
 
-        return redirect()->route('faculty.course.details', $id)
+        return redirect()->back()
             ->with('success', 'Course updated successfully.');
     }
 

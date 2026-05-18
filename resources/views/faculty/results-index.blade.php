@@ -3,729 +3,793 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Results & Analytics – Select Course | NU Horizon LMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&display=swap" rel="stylesheet">
+    <title>Select Course - Results & Analytics | NU Clicks LMS</title>
+    <!-- Google Fonts + Remix Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <style>
-        /* ══ DESIGN TOKENS (identical to dashboard) ══ */
-        :root {
-            --navy:      #0A1F44;
-            --navy-mid:  #1F3A6D;
-            --navy-lite: #3D5FA0;
-            --navy-pale: #EEF3FB;
-            --gold:      #FFD70F;
-            --gold-d:    #C49A00;
-            --gold-mid:  #F5C800;
-            --gold-pale: #FFFBEA;
-            --bg:        #F8F6F1;
-            --white:     #FFFFFF;
-            --txt-1:     #0A1F44;
-            --txt-2:     #2C3E5C;
-            --txt-3:     #637089;
-            --bdr:       rgba(10,31,68,0.10);
-            --ease:      cubic-bezier(0.22,1,0.36,1);
-            --spring:    cubic-bezier(0.34,1.56,0.64,1);
-            --t:         0.26s var(--ease);
-            --sidebar-w: 272px;
-            --danger:    #dc2626;
-            --danger-d:  #b91c1c;
-            --green:     #16a34a;
-            --purple:    #7c3aed;
-            --orange:    #ea580c;
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false },
         }
-
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg);
-            min-height: 100vh;
-            color: var(--txt-1);
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+            background: #F5F7FB;
+            overflow-x: hidden;
         }
 
-        *:focus { outline: none !important; }
-
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(10,31,68,0.15); border-radius: 99px; }
-
-        /* ══ SIDEBAR (identical to dashboard) ══ */
-        .sidebar {
-            position: fixed;
-            top: 0; left: 0;
-            width: var(--sidebar-w);
-            height: 100vh;
-            background: var(--navy);
-            display: flex;
-            flex-direction: column;
-            z-index: 100;
-            transition: transform .3s var(--ease);
-            box-shadow: 4px 0 32px rgba(0,0,0,0.18);
-        }
-        .sidebar::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold), var(--gold-mid), transparent);
-            background-size: 200% 100%;
-            animation: shimmer 4s linear infinite;
-        }
-        @keyframes shimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position:  200% center; }
-        }
-        .sidebar::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-            background-size: 32px 32px;
-            pointer-events: none;
-        }
-        .sidebar-arc {
-            position: absolute;
-            width: 340px; height: 340px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,215,15,0.06);
-            bottom: -60px; left: -100px;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .sidebar-inner {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        :root {
+            --blue-deep: #0A1F44;
+            --gold: #FFD70F;
+            --gold-dark: #e5c20c;
+            --gray-light: #F8FAFF;
+            --gray-border: #E9EDF2;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            --transition: all 0.25s ease;
+            --danger-red: #dc2626;
+            --danger-dark: #b91c1c;
         }
 
-        /* Logo */
-        .sidebar-logo {
-            padding: 1.5rem 1.4rem 1.3rem;
-            display: flex;
-            align-items: center;
-            gap: .85rem;
-            border-bottom: 1px solid rgba(255,215,15,0.14);
+        /* Sidebar (identical to all previous pages) */
+        
+
+        @media (max-width: 1024px) {
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
         }
-        .logo-seal-wrap { position: relative; flex-shrink: 0; }
-        .logo-seal {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            object-fit: contain;
-            background: rgba(255,255,255,0.07);
-            border: 1.5px solid rgba(255,215,15,0.30);
-            display: block;
+
+        
+        
+        
+        
+        
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-top: 1.5rem;
         }
-        .logo-seal-ring {
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(255,215,15,0.28);
-            animation: rotateSlow 14s linear infinite;
-        }
-        @keyframes rotateSlow { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-        .logo-seal-ring::before {
-            content: "";
-            position: absolute;
-            top: -2px; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 4px;
-            border-radius: 50%;
-            background: var(--gold);
-            box-shadow: 0 0 5px var(--gold);
-        }
-        .logo-text h1 {
-            font-family: 'Fraunces', serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -.02em;
-            line-height: 1.1;
-        }
-        .logo-text h1 em { color: var(--gold); font-style: normal; }
-        .logo-text p {
-            font-size: .65rem;
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,215,15,0.6);
+            margin-bottom: 0.75rem;
             font-weight: 600;
-            letter-spacing: .10em;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.40);
-            margin-top: .15rem;
-        }
-
-        /* Nav */
-        .nav-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.2rem .85rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.6rem;
-        }
-        .nav-section-label {
-            font-size: .62rem;
-            font-weight: 700;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: rgba(255,215,15,0.50);
-            margin-bottom: .4rem;
-            padding-left: .4rem;
         }
         .nav-item {
             display: flex;
             align-items: center;
-            gap: .7rem;
-            padding: .62rem .85rem;
-            border-radius: 10px;
-            color: rgba(255,255,255,0.70);
-            text-decoration: none;
-            font-size: .82rem;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.85);
+            transition: var(--transition);
+            margin-bottom: 0.25rem;
             font-weight: 500;
-            transition: all var(--t);
-            margin-bottom: .15rem;
+            text-decoration: none;   /* REMOVE UNDERLINE */
         }
-        .nav-item i { font-size: 1.05rem; width: 1.25rem; flex-shrink: 0; }
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 1.5rem;
+        }
         .nav-item:hover {
-            background: rgba(255,215,15,0.10);
-            color: rgba(255,255,255,0.92);
+            background: rgba(255,215,15,0.15);
+            color: white;
         }
         .nav-item.active {
             background: var(--gold);
-            color: var(--navy);
-            font-weight: 700;
-            box-shadow: 0 4px 14px rgba(255,215,15,0.30);
+            color: var(--blue-deep);
         }
-        .nav-item.active i { color: var(--navy); }
+        .nav-item.active i {
+            color: var(--blue-deep);
+        }
 
-        /* Sidebar footer */
         .sidebar-footer {
-            padding: 1rem 1.2rem;
-            border-top: 1px solid rgba(255,215,15,0.14);
+            margin-top: auto;
+            padding: 1.2rem;
+            border-top: 1px solid rgba(255,215,15,0.2);
         }
-        .profile-row {
+        .profile-info {
             display: flex;
             align-items: center;
-            gap: .75rem;
-            margin-bottom: .85rem;
-            cursor: pointer;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
         }
         .avatar {
-            width: 38px; height: 38px;
+            width: 42px;
+            height: 42px;
+            background: rgba(255,215,15,0.2);
             border-radius: 50%;
-            background: rgba(255,215,15,0.15);
-            border: 1.5px solid rgba(255,215,15,0.30);
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--gold);
-            font-size: 1rem;
-            flex-shrink: 0;
         }
-        .profile-name { font-size: .82rem; font-weight: 700; color: #fff; }
-        .profile-email { font-size: .68rem; color: rgba(255,255,255,0.42); margin-top: .1rem; }
+        .profile-details p {
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .profile-details span {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.7rem;
+        }
+        
+        /* ===== RED LOGOUT BUTTON (SIDEBAR) ===== */
         .logout-btn {
             width: 100%;
-            padding: .58rem .9rem;
-            border-radius: 8px;
-            background: rgba(220,38,38,0.12);
-            border: 1px solid rgba(220,38,38,0.22);
+            background: rgba(220, 38, 38, 0.15);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 40px;
             color: #fca5a5;
-            font-size: .78rem;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: .5rem;
+            gap: 0.5rem;
             cursor: pointer;
-            transition: all var(--t);
+            transition: var(--transition);
         }
         .logout-btn:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(220,38,38,0.35);
+            background: var(--danger-red);
+            color: white;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+        }
+        .logout-btn i {
+            font-size: 1.1rem;
         }
 
-        /* ══ MAIN CONTENT ══ */
-        .main-content {
-            margin-left: var(--sidebar-w);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(248,246,241,0.88);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--bdr);
-            padding: .9rem 2rem;
+        /* Main content area */
+        
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-bottom: 1px solid var(--gray-border);
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
-        .topbar-left { display: flex; align-items: center; gap: 1rem; }
         .menu-toggle {
             display: none;
             background: none;
-            border: 1px solid var(--bdr);
-            border-radius: 8px;
-            padding: .4rem .55rem;
-            color: var(--txt-2);
-            font-size: 1.1rem;
+            border: none;
+            font-size: 1.5rem;
             cursor: pointer;
-            transition: all var(--t);
+            color: var(--blue-deep);
         }
-        .menu-toggle:hover { border-color: var(--gold-d); color: var(--navy); }
-        .topbar-title {
-            font-family: 'Fraunces', serif;
-            font-size: 1.2rem;
+        .page-title {
             font-weight: 700;
-            color: var(--navy);
-            letter-spacing: -.02em;
+            color: var(--blue-deep);
         }
-        .topbar-title em { color: var(--gold-d); font-style: normal; }
-        .topbar-breadcrumb {
-            font-size: .72rem;
-            color: var(--txt-3);
-            font-weight: 500;
-        }
-        .topbar-right { display: flex; align-items: center; gap: .75rem; }
-        .topbar-badge {
-            display: flex; align-items: center; gap: .4rem;
-            font-size: .72rem;
-            font-weight: 600;
-            color: var(--txt-3);
-            background: var(--white);
-            border: 1px solid var(--bdr);
-            border-radius: 8px;
-            padding: .4rem .75rem;
-            box-shadow: 0 1px 4px rgba(10,31,68,0.04);
-        }
-        .topbar-badge i { font-size: .85rem; color: var(--gold-d); }
-        .topbar-dot {
-            width: 7px; height: 7px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+            
         }
 
-        /* PAGE BODY */
-        .page-body { padding: 1.8rem 2rem; flex: 1; }
-        .section-header { margin-bottom: 1.4rem; }
-        .section-header h2 {
-            font-size: .65rem;
-            font-weight: 700;
-            letter-spacing: .14em;
-            text-transform: uppercase;
-            color: var(--txt-3);
-            display: flex;
-            align-items: center;
-            gap: .5rem;
+        /* Course analytics card styling */
+        .analytics-card {
+            background: white;
+            border-radius: 1.2rem;
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.03);
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
         }
-        .section-header h2::after {
-            content: ""; flex: 1; height: 1px;
-            background: var(--bdr);
+        .analytics-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 28px rgba(0, 0, 0, 0.08);
         }
-
-        /* Course grid (same as All Quizzes) */
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.1rem;
-        }
-
-        .course-card {
-            background: var(--white);
-            border-radius: 14px;
-            border: 1px solid var(--bdr);
-            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
-            padding: 1.2rem;
-            display: flex;
-            flex-direction: column;
-            transition: all var(--t);
-            animation: fadeUp .5s var(--ease) both;
-            position: relative;
-            overflow: hidden;
-        }
-        .course-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--navy-lite), var(--navy));
-            border-radius: 14px 14px 0 0;
-        }
-        .course-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 28px rgba(10,31,68,0.10);
-            border-color: rgba(10,31,68,0.15);
-        }
-        .course-card-top {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: .75rem;
-            margin-bottom: .75rem;
-        }
-        .course-code-badge {
-            font-size: .62rem;
-            font-weight: 700;
-            padding: .18rem .55rem;
-            border-radius: 5px;
-            background: var(--navy-pale);
-            color: var(--navy-mid);
-            display: inline-block;
-            margin-bottom: .35rem;
-        }
-        .course-name {
-            font-family: 'Fraunces', serif;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--navy);
-            line-height: 1.25;
-        }
-        .stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.6rem;
-            margin: 0.8rem 0;
-        }
-        .stat-pill {
-            background: var(--bg);
-            border-radius: 8px;
+        .stat-badge {
+            background: #F8FAFF;
+            border-radius: 1rem;
             padding: 0.5rem;
             text-align: center;
         }
-        .stat-label {
-            font-size: 0.65rem;
-            color: var(--txt-3);
-            margin-bottom: 0.2rem;
-        }
-        .stat-number {
-            font-family: 'Fraunces', serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--navy);
-        }
-        .course-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        .btn-primary-sm {
-            flex: 1;
-            background: var(--navy);
+        .btn-analytics {
+            background: var(--blue-deep);
             color: white;
-            padding: 0.45rem 0.5rem;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-decoration: none;
-            text-align: center;
-            transition: all var(--t);
-            display: inline-flex;
+            transition: var(--transition);
+        }
+        .btn-analytics:hover {
+            background: #0e2a5c;
+        }
+        .btn-download {
+            background: #4B5563;
+            transition: var(--transition);
+        }
+        .btn-download:hover {
+            background: #374151;
+        }
+
+        /* ===== LOGOUT CONFIRMATION MODAL STYLES (THEMED: gold/blue, red confirm) ===== */
+        .logout-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 31, 68, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1100;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.3rem;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s ease;
         }
-        .btn-primary-sm:hover {
-            background: var(--navy-mid);
-            transform: translateY(-1px);
+        .logout-modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
         }
-        .btn-icon {
-            background: var(--bg);
-            border: 1px solid var(--bdr);
-            color: var(--txt-2);
-            padding: 0.45rem 0.7rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: all var(--t);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-icon:hover {
-            background: var(--gold-pale);
-            border-color: var(--gold-d);
-            color: var(--navy);
-        }
-
-        @keyframes fadeUp {
-            from { opacity:0; transform:translateY(16px); }
-            to   { opacity:1; transform:translateY(0); }
-        }
-
-        /* Empty state */
-        .empty-card {
-            background: var(--white);
-            border-radius: 16px;
-            border: 1px solid var(--bdr);
-            box-shadow: 0 2px 12px rgba(10,31,68,0.04);
-            text-align: center;
-            padding: 4rem 2rem;
-            animation: fadeUp .5s var(--ease) both;
-        }
-        .empty-card i { font-size: 3rem; color: var(--txt-3); opacity: .3; margin-bottom: 1rem; }
-        .empty-card h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: .5rem; }
-        .empty-card p { font-size: .82rem; color: var(--txt-3); max-width: 320px; margin: 0 auto; }
-
-        /* Modal (same as dashboard) */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(10,31,68,0.72);
-            backdrop-filter: blur(6px);
-            z-index: 500;
-            display: flex; align-items: center; justify-content: center;
-            visibility: hidden; opacity: 0;
-            transition: all .22s var(--ease);
-        }
-        .modal-overlay.active { visibility: visible; opacity: 1; }
-        .modal {
-            background: var(--white);
-            border-radius: 18px; width: min(440px, 94vw);
+        .logout-confirmation-modal {
+            background: white;
+            max-width: 450px;
+            width: 90%;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
             overflow: hidden;
-            transform: scale(0.94) translateY(12px);
-            transition: transform .28s var(--spring);
-            box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-        .modal-head {
-            background: var(--navy);
-            padding: 1.2rem 1.4rem;
-            display: flex; align-items: center; justify-content: space-between;
+        .logout-modal-overlay.active .logout-confirmation-modal {
+            transform: scale(1);
+        }
+        .logout-modal-header {
+            background: var(--blue-deep);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-bottom: 2px solid var(--gold);
         }
-        .modal-head h3 {
-            font-family: 'Fraunces', serif;
-            font-size: 1rem; font-weight: 700; color: #fff;
-            display: flex; align-items: center; gap: .5rem;
+        .logout-modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .modal-close {
-            background: none; border: none;
-            color: rgba(255,255,255,0.55); font-size: 1.3rem;
+        .logout-modal-header h3 i {
+            color: var(--gold);
+            font-size: 1.4rem;
+        }
+        .logout-modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.6rem;
             cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+            padding: 0;
         }
-        .modal-body { padding: 1.5rem; text-align: center; }
-        .modal-warn { font-size: .72rem; color: var(--txt-3); margin-top: .5rem; }
-        .modal-foot {
-            padding: .9rem 1.4rem 1.3rem;
-            display: flex; gap: .6rem; justify-content: flex-end;
-            background: var(--bg); border-top: 1px solid var(--bdr);
+        .logout-modal-close:hover {
+            color: var(--gold);
         }
-        .btn-cancel {
-            padding: .58rem 1.1rem; border-radius: 8px;
-            border: 1px solid var(--bdr); background: var(--white);
-            font-size: .8rem; font-weight: 600; color: var(--txt-2);
+        .logout-modal-body {
+            padding: 1.8rem 1.5rem;
+            background: white;
+            text-align: center;
+        }
+        .logout-modal-body p {
+            font-size: 1rem;
+            color: #1f2937;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+        .logout-modal-footer {
+            padding: 1rem 1.5rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            background: #f9fafb;
+            border-top: 1px solid var(--gray-border);
+        }
+        .logout-modal-btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
             cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-family: 'Inter', sans-serif;
         }
-        .btn-confirm {
-            padding: .58rem 1.2rem; border-radius: 8px; border: none;
-            background: var(--danger); font-size: .8rem; font-weight: 700; color: #fff;
-            cursor: pointer;
+        .logout-modal-btn-cancel {
+            background: #eef2ff;
+            color: #1e293b;
         }
-        .btn-confirm:hover { background: var(--danger-d); transform: translateY(-1px); }
+        .logout-modal-btn-cancel:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        .logout-modal-btn-confirm {
+            background: var(--danger-red);
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .logout-modal-btn-confirm:hover {
+            background: var(--danger-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.2);
+        }
+        @media (max-width: 500px) {
+            .logout-modal-footer {
+                flex-direction: column-reverse;
+            }
+            .logout-modal-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    
+        
 
-        .sidebar-overlay {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(10,31,68,0.65); z-index: 90;
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        .sun-rays .ray-1 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(-64deg); }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(-48deg); }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(-32deg); }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(-16deg); }
+        .sun-rays .ray-5 { height: 34px; opacity: 1; width: 2.5px; transform: translateX(-50%) rotate(0deg); }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(16deg); }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(32deg); }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(48deg); }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(64deg); }
+
+    
+        /* UNIFIED PREMIUM LOGO STYLING - PREVENTS SIZING JUMPS */
+        .sidebar-logo {
+            padding: 1.5rem !important;
+            border-bottom: 1px solid rgba(255, 215, 15, 0.2) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.82rem !important;
+            min-height: 96px !important;
+            height: 96px !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
         }
 
-        @media (max-width: 1200px) {
-            .courses-grid { grid-template-columns: repeat(2, 1fr); }
+        .sidebar-logo-img {
+            height: 45px !important;
+            width: auto !important;
+            flex-shrink: 0 !important;
         }
+
+        .logo-text {
+            position: relative !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+        }
+
+        .logo-text h1 {
+            font-family: 'Fraunces', serif !important;
+            font-size: 1.3rem !important;
+            font-weight: 800 !important;
+            color: white !important;
+            letter-spacing: -0.3px !important;
+            line-height: 1.05 !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+        }
+
+        .logo-text p {
+            font-size: 0.55rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            color: rgba(255,255,255,0.5) !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        .horizon-logo-wrap {
+            position: relative !important;
+            display: inline-block !important;
+            margin-left: 0.05rem !important;
+            color: var(--gold) !important;
+            overflow: visible !important;
+        }
+
+        .horizon-word {
+            position: relative !important;
+            display: inline-block !important;
+            color: var(--gold) !important;
+            z-index: 2 !important;
+        }
+
+        .sun-rays {
+            position: absolute !important;
+            left: 50% !important;
+            top: -1.48rem !important;
+            width: 108px !important;
+            height: 36px !important;
+            transform: translateX(-50%) !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+            overflow: visible !important;
+        }
+
+        .sun-rays::after {
+            content: "" !important;
+            position: absolute !important;
+            left: 50% !important;
+            bottom: -2px !important;
+            width: 62px !important;
+            height: 18px !important;
+            transform: translateX(-50%) !important;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 15, 0.30), transparent 72%) !important;
+            border-radius: 999px !important;
+        }
+
+        .sun-rays .ray {
+            position: absolute !important;
+            left: 50% !important;
+            bottom: 0 !important;
+            width: 2px !important;
+            border-radius: 999px !important;
+            background: linear-gradient(
+                to top,
+                rgba(255, 215, 15, 0.95) 0%,
+                rgba(255, 215, 15, 0.55) 42%,
+                rgba(255, 215, 15, 0.00) 100%
+            ) !important;
+            transform-origin: bottom center !important;
+            filter: drop-shadow(0 -1px 3px rgba(255, 215, 15, 0.18)) !important;
+        }
+
+        .sun-rays .ray-1 { height: 20px !important; opacity: 0.45 !important; transform: translateX(-50%) rotate(-64deg) !important; }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(-48deg) !important; }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(-32deg) !important; }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(-16deg) !important; }
+        .sun-rays .ray-5 { height: 34px; opacity: 1 !important; width: 2.5px !important; transform: translateX(-50%) rotate(0deg) !important; }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(16deg) !important; }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(32deg) !important; }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(48deg) !important; }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45 !important; transform: translateX(-50%) rotate(64deg) !important; }
+
+        /* LOCKED SIDEBAR AND MAIN CONTENT LAYOUT */
+        .sidebar {
+            background-color: var(--blue-deep) !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100% !important;
+            z-index: 40 !important;
+            transition: transform 0.3s ease !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08) !important;
+            box-sizing: border-box !important;
+        }
+
+        .main-content {
+            margin-left: 280px !important;
+            transition: margin-left 0.3s ease !important;
+            min-height: 100vh !important;
+            box-sizing: border-box !important;
+        }
+
         @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay { display: block; }
-            .main-content { margin-left: 0; }
-            .menu-toggle { display: flex; }
+            .sidebar {
+                transform: translateX(-100%) !important;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0) !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
         }
-        @media (max-width: 640px) {
-            .courses-grid { grid-template-columns: 1fr; }
-            .page-body { padding: 1rem; }
-            .topbar { padding: .8rem 1rem; }
-        }
+
     </style>
 </head>
 <body>
 
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-<!-- ══ SIDEBAR (identical to dashboard) ══ -->
+<!-- ========== SIDEBAR (UPDATED: RED LOGOUT BUTTON) ========== -->
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-arc"></div>
-    <div class="sidebar-inner">
         <div class="sidebar-logo">
-            <div class="logo-seal-wrap">
-                <div class="logo-seal-ring"></div>
-                <img src="/logo/NatU.png" alt="NU seal" class="logo-seal" onerror="this.style.display='none'">
-            </div>
-            <div class="logo-text">
-                <h1>NU Horizon <em>LMS</em></h1>
-                <p>Faculty Portal · National University</p>
-            </div>
+        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img" onerror="this.src='https://placehold.co/45x45/0A1F44/FFD70F?text=NU'">
+
+        <div class="logo-text">
+            <h1>
+                NU
+                <span class="horizon-logo-wrap">
+                    <span class="sun-rays" aria-hidden="true">
+                        <span class="ray ray-1"></span>
+                        <span class="ray ray-2"></span>
+                        <span class="ray ray-3"></span>
+                        <span class="ray ray-4"></span>
+                        <span class="ray ray-5"></span>
+                        <span class="ray ray-6"></span>
+                        <span class="ray ray-7"></span>
+                        <span class="ray ray-8"></span>
+                        <span class="ray ray-9"></span>
+                    </span>
+
+                    <span class="horizon-word">HORIZON</span>
+                </span>
+            </h1>
+
+            <p>Faculty Portal</p>
         </div>
-        <div class="nav-body">
-            <div>
-                <div class="nav-section-label">Main</div>
-                <a href="{{ route('faculty.dashboard') }}" class="nav-item"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="{{ route('faculty.students') }}" class="nav-item"><i class="ri-user-line"></i> Students</a>
-                <a href="{{ route('faculty.courses') }}" class="nav-item"><i class="ri-book-line"></i> Courses</a>
-                <a href="{{ route('faculty.folder-files') }}" class="nav-item"><i class="ri-folder-3-line"></i> Files & Folders</a>
-            </div>
-            <div>
-                <div class="nav-section-label">Quiz Management</div>
-                <a href="{{ route('faculty.quiz.create') }}" class="nav-item"><i class="ri-add-circle-line"></i> Create Quiz</a>
-                <a href="{{ route('faculty.quizzes.list') }}" class="nav-item"><i class="ri-list-check"></i> All Quizzes</a>
-                <a href="{{ route('faculty.question.bank') }}" class="nav-item"><i class="ri-database-2-line"></i> Question Bank</a>
-                <a href="{{ route('faculty.grading') }}" class="nav-item"><i class="ri-graduation-cap-line"></i> Grading</a>
-            </div>
-            <div>
-                <div class="nav-section-label">Analytics</div>
-                <a href="{{ route('faculty.results.index') }}" class="nav-item active"><i class="ri-bar-chart-line"></i> Results & Analytics</a>
-                <a href="{{ route('faculty.my-evaluation') }}" class="nav-item"><i class="ri-star-smile-line"></i> My Evaluation</a>
-            </div>
+    </div>
+
+    <div style="flex:1; overflow-y: auto;">
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <a href="{{ route('faculty.dashboard') }}" class="nav-item {{ request()->routeIs('faculty.dashboard') ? 'active' : '' }}">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+            <a href="{{ route('faculty.students') }}" class="nav-item {{ request()->routeIs('faculty.students*') ? 'active' : '' }}">
+                <i class="ri-user-line"></i> Students
+            </a>
+            <a href="{{ route('faculty.courses') }}" class="nav-item {{ request()->routeIs('faculty.courses*') ? 'active' : '' }}">
+                <i class="ri-book-line"></i> Courses
+            </a>
+            <a href="{{ route('faculty.folder-files') }}" class="nav-item {{ request()->routeIs('faculty.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Files & Folders
+            </a>
         </div>
-        <div class="sidebar-footer">
-            <div class="profile-row" onclick="window.location='{{ route('faculty.profile') }}'">
-                <div class="avatar"><i class="ri-user-line"></i></div>
-                <div>
-                    <div class="profile-name">{{ Auth::user()->name }}</div>
-                    <div class="profile-email">{{ Auth::user()->email }}</div>
-                </div>
-            </div>
-            <form method="POST" action="{{ route('logout') }}" id="logoutForm">
-                @csrf
-                <button type="button" id="logoutButton" class="logout-btn"><i class="ri-logout-box-line"></i> Sign Out</button>
-            </form>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Quiz Management</div>
+            <a href="{{ route('faculty.quiz.create') }}" class="nav-item {{ request()->routeIs('faculty.quiz.create*') ? 'active' : '' }}">
+                <i class="ri-add-circle-line"></i> Create Quiz
+            </a>
+            <a href="{{ route('faculty.quizzes.list') }}" class="nav-item {{ request()->routeIs('faculty.quizzes.list*') ? 'active' : '' }}">
+                <i class="ri-list-check"></i> All Quizzes
+            </a>
+            <a href="{{ route('faculty.question.bank') }}" class="nav-item {{ request()->routeIs('faculty.question.bank*') ? 'active' : '' }}">
+                <i class="ri-database-2-line"></i> Question Bank
+            </a>
+            <a href="{{ route('faculty.grading') }}" class="nav-item {{ request()->routeIs('faculty.grading*') ? 'active' : '' }}">
+                <i class="ri-graduation-cap-line"></i> Grading
+            </a>
         </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Analytics</div>
+            <a href="{{ route('faculty.results.index') }}" class="nav-item {{ request()->routeIs('faculty.results*') ? 'active' : '' }}">
+                <i class="ri-bar-chart-line"></i> Results & Analytics
+            </a>
+            <a href="{{ route('faculty.my-evaluation') }}" class="nav-item {{ request()->routeIs('faculty.my-evaluation*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> My Evaluation
+            </a>
+        </div>
+    </div>
+
+    <div class="sidebar-footer">
+        <a href="{{ route('faculty.profile') }}" class="profile-info" style="text-decoration: none;">
+            <div class="avatar">
+                <i class="ri-user-line"></i>
+            </div>
+            <div class="profile-details">
+                <p>{{ Auth::user()->name }}</p>
+                <span>{{ Auth::user()->email }}</span>
+            </div>
+        </a>
+        <!-- Logout form with full account logout + modal trigger -->
+        <form method="POST" action="{{ route('logout') }}" id="logoutForm">
+            @csrf
+            <button type="button" id="logoutButton" class="logout-btn">
+                <i class="ri-logout-box-r-line"></i> Sign Out
+            </button>
+        </form>
     </div>
 </aside>
 
-<!-- ══ MAIN CONTENT ══ -->
-<div class="main-content">
-    <header class="topbar">
-        <div class="topbar-left">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()"><i class="ri-menu-2-line"></i></button>
-            <div>
-                <div class="topbar-title">NU Horizon <em>LMS</em></div>
-                <div class="topbar-breadcrumb">Faculty → Results & Analytics</div>
-            </div>
+<!-- ========== MAIN CONTENT ========== -->
+<div class="main-content" id="mainContent">
+    <div class="top-bar">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="ri-menu-line"></i>
+        </button>
+        <div>
+            <h2 class="page-title text-lg md:text-xl">Results & Analytics</h2>
+            <p class="text-sm text-gray-500 hidden md:block">Select a course to view detailed performance analytics</p>
         </div>
-        <div class="topbar-right">
-            <div class="topbar-badge"><span class="topbar-dot"></span> System Online</div>
-            <div class="topbar-badge"><i class="ri-calendar-line"></i><span id="topbar-date"></span></div>
-        </div>
-    </header>
+        <div class="w-8"></div>
+    </div>
 
-    <div class="page-body">
-        <div class="section-header">
-            <h2><i class="ri-bar-chart-line" style="color:var(--gold-d);font-size:.85rem;"></i> Select Course – Performance Analytics</h2>
-        </div>
-
+    <div class="p-4 md:p-6">
         @if(isset($courses) && $courses->count() > 0)
-            <div class="courses-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($courses as $course)
-                    <div class="course-card">
-                        <div class="course-card-top">
-                            <div>
-                                <span class="course-code-badge">{{ $course->code }}</span>
-                                <div class="course-name">{{ $course->name }}</div>
+                    <div class="analytics-card overflow-hidden">
+                        <!-- Top accent bar with gradient -->
+                        <div class="h-1.5" style="background: linear-gradient(90deg, var(--gold), var(--blue-deep));"></div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-indigo-100 text-indigo-800">{{ $course->code }}</span>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ $course->name }}</h3>
+                                </div>
+                                <i class="ri-bar-chart-2-line text-3xl text-gray-300"></i>
                             </div>
-                            <i class="ri-bar-chart-2-line" style="font-size: 1.6rem; color: var(--txt-3); opacity: 0.4;"></i>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-pill">
-                                <div class="stat-label">Enrolled Students</div>
-                                <div class="stat-number">{{ $course->students_count ?? 0 }}</div>
+                            
+                            <!-- Stats row -->
+                            <div class="grid grid-cols-2 gap-3 mb-5">
+                                <div class="stat-badge">
+                                    <p class="text-xs text-gray-500">Enrolled Students</p>
+                                    <p class="text-2xl font-bold" style="color: var(--blue-deep);">{{ $course->students_count ?? 0 }}</p>
+                                </div>
+                                <div class="stat-badge">
+                                    <p class="text-xs text-gray-500">Total Quizzes</p>
+                                    <p class="text-2xl font-bold text-indigo-600">{{ $course->quizzes_count ?? 0 }}</p>
+                                </div>
                             </div>
-                            <div class="stat-pill">
-                                <div class="stat-label">Total Quizzes</div>
-                                <div class="stat-number">{{ $course->quizzes_count ?? 0 }}</div>
+                            
+                            <!-- Action buttons -->
+                            <div class="flex gap-2">
+                                <a href="{{ route('faculty.results', $course->id) }}" 
+                                   class="flex-1 text-center text-sm font-semibold py-2.5 rounded-xl btn-analytics shadow-sm transition flex items-center justify-center gap-1">
+                                    <i class="ri-bar-chart-line"></i> View Analytics
+                                </a>
+                                <a href="{{ route('faculty.download.results', $course->id) }}" 
+                                   class="btn-download text-white px-3 py-2.5 rounded-xl transition flex items-center justify-center">
+                                    <i class="ri-download-line text-lg"></i>
+                                </a>
                             </div>
-                        </div>
-                        <div class="course-actions">
-                            <a href="{{ route('faculty.results', $course->id) }}" class="btn-primary-sm">
-                                <i class="ri-bar-chart-line"></i> View Analytics
-                            </a>
-                            <a href="{{ route('faculty.download.results', $course->id) }}" class="btn-icon" title="Download CSV">
-                                <i class="ri-download-line"></i>
-                            </a>
                         </div>
                     </div>
                 @endforeach
             </div>
         @else
-            <div class="empty-card">
-                <i class="ri-bar-chart-2-line"></i>
-                <h3>No Courses Found</h3>
-                <p>You don't have any courses yet. Create a course to start tracking student performance and analytics.</p>
+            <!-- Empty state (matches other pages) -->
+            <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden text-center py-16 px-4 transition-all">
+                <i class="ri-bar-chart-2-line text-6xl text-gray-300 mb-5 block"></i>
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">No Courses Found</h3>
+                <p class="text-gray-500 max-w-sm mx-auto mb-7">You don't have any courses yet. Create a course to start tracking student performance and analytics.</p>
             </div>
         @endif
     </div>
 </div>
 
-<!-- LOGOUT MODAL -->
-<div class="modal-overlay" id="logoutModal">
-    <div class="modal">
-        <div class="modal-head">
-            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
-            <button class="modal-close" onclick="closeLogoutModal()">×</button>
+<!-- ======================= LOGOUT CONFIRMATION MODAL (THEMED: red confirm button) ======================= -->
+<div id="logoutModal" class="logout-modal-overlay">
+    <div class="logout-confirmation-modal">
+        <div class="logout-modal-header">
+            <h3>
+                <i class="ri-logout-box-r-line"></i> 
+                Confirm Sign Out
+            </h3>
+            <button class="logout-modal-close" id="closeLogoutModalBtn">&times;</button>
         </div>
-        <div class="modal-body">
-            <p>Are you sure you want to sign out of your account?</p>
-            <p class="modal-warn">You will be redirected to the login page.</p>
+        <div class="logout-modal-body">
+            <p>Are you sure you want to sign out of your faculty account?</p>
+            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page and will need to sign in again.</p>
         </div>
-        <div class="modal-foot">
-            <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-            <button class="btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
+        <div class="logout-modal-footer">
+            <button class="logout-modal-btn logout-modal-btn-cancel" id="cancelLogoutBtn">Cancel</button>
+            <button class="logout-modal-btn logout-modal-btn-confirm" id="confirmLogoutBtn">Yes, Sign Out</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Topbar date
-    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
-
-    // Sidebar toggle
-    function toggleSidebar() {
-        const s = document.getElementById('sidebar');
-        const o = document.getElementById('sidebarOverlay');
-        const open = s.classList.toggle('open');
-        o.style.display = open ? 'block' : 'none';
+    // Mobile sidebar toggle (identical to all pages)
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('mobile-open');
+        });
     }
-    function closeSidebar() {
-        document.getElementById('sidebar').classList.remove('open');
-        document.getElementById('sidebarOverlay').style.display = 'none';
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        const isMobile = window.innerWidth <= 1024;
+        if (isMobile && sidebar.classList.contains('mobile-open')) {
+            if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+    });
+
+    // Active nav highlight based on current route
+    const currentUrl = window.location.pathname;
+    document.querySelectorAll('.nav-item').forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && currentUrl.includes(href) && href !== '/faculty/dashboard') {
+            item.classList.add('active');
+        } else if (currentUrl === '/faculty/dashboard' && href === '/faculty/dashboard') {
+            item.classList.add('active');
+        }
+    });
+    // Force "Results & Analytics" active highlight
+    if (currentUrl.includes('/faculty/results') || currentUrl.includes('/faculty/results/index')) {
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('href') === '{{ route("faculty.results.index") }}') {
+                item.classList.add('active');
+            }
+        });
     }
 
-    // Logout modal
+    // ======================= LOGOUT CONFIRMATION MODAL LOGIC (FULL ACCOUNT LOGOUT) =======================
+    const logoutButton = document.getElementById('logoutButton');
+    const logoutModal = document.getElementById('logoutModal');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const closeLogoutModalBtn = document.getElementById('closeLogoutModalBtn');
+    const logoutForm = document.getElementById('logoutForm');
+
     function openLogoutModal() {
-        document.getElementById('logoutModal').classList.add('active');
+        logoutModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     function closeLogoutModal() {
-        document.getElementById('logoutModal').classList.remove('active');
+        logoutModal.classList.remove('active');
         document.body.style.overflow = '';
     }
-    document.getElementById('logoutButton')?.addEventListener('click', (e) => {
-        e.preventDefault();
-        openLogoutModal();
-    });
-    document.getElementById('confirmLogoutBtn')?.addEventListener('click', () => {
-        document.getElementById('logoutForm').submit();
-    });
-    document.getElementById('logoutModal')?.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeLogoutModal();
+
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            openLogoutModal();
+        });
+    }
+    if (confirmLogoutBtn) {
+        confirmLogoutBtn.addEventListener('click', () => {
+            if (logoutForm) {
+                logoutForm.submit();
+            } else {
+                window.location.href = "{{ route('logout') }}";
+            }
+        });
+    }
+    if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', closeLogoutModal);
+    if (closeLogoutModalBtn) closeLogoutModalBtn.addEventListener('click', closeLogoutModal);
+    logoutModal.addEventListener('click', (e) => {
+        if (e.target === logoutModal) closeLogoutModal();
     });
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeLogoutModal();
+        if (e.key === 'Escape' && logoutModal.classList.contains('active')) closeLogoutModal();
     });
 </script>
 </body>
-</html>
+</html> 

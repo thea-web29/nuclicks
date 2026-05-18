@@ -4,214 +4,562 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Faculty Evaluation - NU Clicks LMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#F5F7FB;overflow-x:hidden}:root{--blue-deep:#0A1F44;--gold:#FFD70F;--gray-border:#E9EDF2;--danger-red:#dc2626;--transition:all .25s ease}@media(max-width:1024px){.sidebar.mobile-open{transform:translateX(0)}}.logo-text h1 span{color:var(--gold)}.nav-section{padding:0 1rem;margin-top:1.5rem}.nav-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,215,15,.6);margin-bottom:.75rem;font-weight:600}.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:12px;color:rgba(255,255,255,.85);transition:var(--transition);margin-bottom:.25rem;font-weight:500;text-decoration:none}.nav-item i{font-size:1.2rem;width:1.5rem}.nav-item:hover{background:rgba(255,215,15,.15);color:white}.nav-item.active{background:var(--gold);color:var(--blue-deep)}.sidebar-footer{margin-top:auto;padding:1.2rem;border-top:1px solid rgba(255,215,15,.2)}.logout-btn{width:100%;background:rgba(220,38,38,.15);border:none;padding:.6rem;border-radius:40px;color:#fca5a5;font-weight:600;display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer}.logout-btn:hover{background:var(--danger-red);color:white}.top-bar{background:white;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.03);border-bottom:1px solid var(--gray-border);position:sticky;top:0;z-index:20}.menu-toggle{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--blue-deep)}@media(max-width:1024px){.menu-toggle{display:block}}.btn-icon{transition:var(--transition)}.btn-icon:hover{transform:translateY(-1px)}.table-card{background:white;border-radius:1rem;box-shadow:0 8px 20px rgba(10,31,68,.05);border:1px solid #e5e7eb;overflow:hidden}.data-table{width:100%;border-collapse:collapse}.data-table thead{background:#f9fafb}.data-table th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e5e7eb;white-space:nowrap}.data-table td{padding:1rem 1.5rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}.data-table tbody tr:hover{background:#f8fafc}.badge{display:inline-flex;align-items:center;padding:.32rem .8rem;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}.badge-navy{background:rgba(10,31,68,.1);color:var(--blue-deep)}.badge-blue{background:#dbeafe;color:#1d4ed8}.badge-green{background:#dcfce7;color:#15803d}.badge-gold{background:rgba(255,215,15,.18);color:#a16207}.modal-overlay{position:fixed;inset:0;background:rgba(10,31,68,.75);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:all .2s ease}.modal-overlay.active{visibility:visible;opacity:1}.modal-box{background:white;width:90%;max-width:650px;border-radius:1.5rem;box-shadow:0 25px 40px rgba(0,0,0,.2);overflow:hidden;transform:scale(.95);transition:transform .2s cubic-bezier(.2,.9,.4,1.1)}.modal-overlay.active .modal-box{transform:scale(1)}.modal-header{background:var(--blue-deep);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}.modal-header h3{font-size:1.1rem;font-weight:700;color:white;display:flex;align-items:center;gap:.5rem}.modal-header h3 i{color:var(--gold)}.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.6rem;cursor:pointer}input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,215,15,.2)}
+    
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        .sun-rays .ray-1 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(-64deg); }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(-48deg); }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(-32deg); }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(-16deg); }
+        .sun-rays .ray-5 { height: 34px; opacity: 1; width: 2.5px; transform: translateX(-50%) rotate(0deg); }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82; transform: translateX(-50%) rotate(16deg); }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70; transform: translateX(-50%) rotate(32deg); }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58; transform: translateX(-50%) rotate(48deg); }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45; transform: translateX(-50%) rotate(64deg); }
+
+    
+        /* UNIFIED PREMIUM LOGO STYLING - PREVENTS SIZING JUMPS */
+        .sidebar-logo {
+            padding: 1.5rem !important;
+            border-bottom: 1px solid rgba(255, 215, 15, 0.2) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.82rem !important;
+            min-height: 96px !important;
+            height: 96px !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
+        }
+
+        .sidebar-logo-img {
+            height: 45px !important;
+            width: auto !important;
+            flex-shrink: 0 !important;
+        }
+
+        .logo-text {
+            position: relative !important;
+            min-width: 0 !important;
+            overflow: visible !important;
+        }
+
+        .logo-text h1 {
+            font-family: 'Fraunces', serif !important;
+            font-size: 1.3rem !important;
+            font-weight: 800 !important;
+            color: white !important;
+            letter-spacing: -0.3px !important;
+            line-height: 1.05 !important;
+            margin: 0 !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+        }
+
+        .logo-text p {
+            font-size: 0.55rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.1em !important;
+            text-transform: uppercase !important;
+            color: rgba(255,255,255,0.5) !important;
+            margin-top: 0.25rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        .horizon-logo-wrap {
+            position: relative !important;
+            display: inline-block !important;
+            margin-left: 0.05rem !important;
+            color: var(--gold) !important;
+            overflow: visible !important;
+        }
+
+        .horizon-word {
+            position: relative !important;
+            display: inline-block !important;
+            color: var(--gold) !important;
+            z-index: 2 !important;
+        }
+
+        .sun-rays {
+            position: absolute !important;
+            left: 50% !important;
+            top: -1.48rem !important;
+            width: 108px !important;
+            height: 36px !important;
+            transform: translateX(-50%) !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+            overflow: visible !important;
+        }
+
+        .sun-rays::after {
+            content: "" !important;
+            position: absolute !important;
+            left: 50% !important;
+            bottom: -2px !important;
+            width: 62px !important;
+            height: 18px !important;
+            transform: translateX(-50%) !important;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 15, 0.30), transparent 72%) !important;
+            border-radius: 999px !important;
+        }
+
+        .sun-rays .ray {
+            position: absolute !important;
+            left: 50% !important;
+            bottom: 0 !important;
+            width: 2px !important;
+            border-radius: 999px !important;
+            background: linear-gradient(
+                to top,
+                rgba(255, 215, 15, 0.95) 0%,
+                rgba(255, 215, 15, 0.55) 42%,
+                rgba(255, 215, 15, 0.00) 100%
+            ) !important;
+            transform-origin: bottom center !important;
+            filter: drop-shadow(0 -1px 3px rgba(255, 215, 15, 0.18)) !important;
+        }
+
+        .sun-rays .ray-1 { height: 20px !important; opacity: 0.45 !important; transform: translateX(-50%) rotate(-64deg) !important; }
+        .sun-rays .ray-2 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(-48deg) !important; }
+        .sun-rays .ray-3 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(-32deg) !important; }
+        .sun-rays .ray-4 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(-16deg) !important; }
+        .sun-rays .ray-5 { height: 34px; opacity: 1 !important; width: 2.5px !important; transform: translateX(-50%) rotate(0deg) !important; }
+        .sun-rays .ray-6 { height: 31px; opacity: 0.82 !important; transform: translateX(-50%) rotate(16deg) !important; }
+        .sun-rays .ray-7 { height: 28px; opacity: 0.70 !important; transform: translateX(-50%) rotate(32deg) !important; }
+        .sun-rays .ray-8 { height: 24px; opacity: 0.58 !important; transform: translateX(-50%) rotate(48deg) !important; }
+        .sun-rays .ray-9 { height: 20px; opacity: 0.45 !important; transform: translateX(-50%) rotate(64deg) !important; }
+
+        /* LOCKED SIDEBAR AND MAIN CONTENT LAYOUT */
+        .sidebar {
+            background-color: var(--blue-deep) !important;
+            width: 280px !important;
+            min-width: 280px !important;
+            max-width: 280px !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100% !important;
+            z-index: 40 !important;
+            transition: transform 0.3s ease !important;
+            display: flex !important;
+            flex-direction: column !important;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08) !important;
+            box-sizing: border-box !important;
+        }
+
+        .main-content {
+            margin-left: 280px !important;
+            transition: margin-left 0.3s ease !important;
+            min-height: 100vh !important;
+            box-sizing: border-box !important;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%) !important;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0) !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+
+    </style>
 </head>
-<body class="bg-gray-100">
-<div class="min-h-screen flex">
-    <aside class="w-64 bg-indigo-900 text-white fixed h-full overflow-y-auto">
-        <div class="p-6 border-b border-indigo-700">
-            <h1 class="text-2xl font-bold">Nu Clicks LMS</h1>
-            <p class="text-sm text-indigo-200">Admin Portal</p>
-        </div>
-        <nav class="mt-4">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-dashboard-line mr-3"></i>Dashboard</a>
-            <a href="{{ route('admin.users') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-team-line mr-3"></i>Users</a>
-            <a href="{{ route('admin.faculty') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-user-star-line mr-3"></i>Faculty</a>
-            <a href="{{ route('admin.subjects') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-book-open-line mr-3"></i>Subjects</a>
-            <a href="{{ route('admin.faculty-evaluations') }}" class="flex items-center px-6 py-3 bg-indigo-700"><i class="ri-star-smile-line mr-3"></i>Faculty Evaluation</a>
-            <a href="{{ route('admin.folder-files') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-folder-3-line mr-3"></i>Folder & Files</a>
-            <a href="{{ route('admin.analytics') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-bar-chart-line mr-3"></i>Analytics</a>
-            <a href="{{ route('admin.logs') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-history-line mr-3"></i>Activity Logs</a>
-            <a href="{{ route('admin.settings') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-settings-line mr-3"></i>Settings</a>
-            <a href="{{ route('admin.profile') }}" class="flex items-center px-6 py-3 hover:bg-indigo-700"><i class="ri-user-line mr-3"></i>My Profile</a>
-        </nav>
-    </aside>
+<body>
+<aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+        <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img" onerror="this.src='https://placehold.co/45x45/0A1F44/FFD70F?text=NU'">
 
-    <main class="flex-1 ml-64">
-        <div class="bg-white shadow px-6 py-4 flex justify-between items-center">
-            <div>
-                <h2 class="text-xl font-bold text-gray-800">Faculty Evaluation</h2>
-                <p class="text-sm text-gray-500">Oversee faculty performance based on student feedback.</p>
-            </div>
-            <div>
-                <button onclick="openSettingsModal()" class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-lg text-sm font-semibold flex items-center shadow transition-colors">
-                    <i class="ri-settings-3-line mr-2"></i> Evaluation Settings
-                </button>
-            </div>
-        </div>
+        <div class="logo-text">
+            <h1>
+                NU
+                <span class="horizon-logo-wrap">
+                    <span class="sun-rays" aria-hidden="true">
+                        <span class="ray ray-1"></span>
+                        <span class="ray ray-2"></span>
+                        <span class="ray ray-3"></span>
+                        <span class="ray ray-4"></span>
+                        <span class="ray ray-5"></span>
+                        <span class="ray ray-6"></span>
+                        <span class="ray ray-7"></span>
+                        <span class="ray ray-8"></span>
+                        <span class="ray ray-9"></span>
+                    </span>
 
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                <div class="bg-white rounded-xl shadow p-5">
-                    <p class="text-gray-500 text-sm">Total Evaluations</p>
-                    <p class="text-3xl font-bold text-indigo-700">{{ number_format($totalEvaluations) }}</p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-5">
-                    <p class="text-gray-500 text-sm">Average Rating</p>
-                    <p class="text-3xl font-bold text-yellow-600">{{ number_format($averageRating, 2) }}/5</p>
-                </div>
-                <div class="bg-white rounded-xl shadow p-5">
-                    <p class="text-gray-500 text-sm">Faculty With Feedback</p>
-                    <p class="text-3xl font-bold text-green-600">{{ $faculty->where('faculty_evaluations_received_count', '>', 0)->count() }}</p>
-                </div>
-            </div>
+                    <span class="horizon-word">HORIZON</span>
+                </span>
+            </h1>
 
-            <div class="bg-white rounded-xl shadow mb-6 overflow-hidden">
-                <div class="px-6 py-4 border-b">
-                    <h3 class="font-bold text-gray-800">Top 5 Performing Faculty</h3>
-                </div>
-                <div class="p-6">
-                    @if($topFaculty->count() > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            @foreach($topFaculty as $index => $member)
-                                <div class="border rounded-xl p-4 bg-gray-50">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="font-bold text-indigo-700">#{{ $index + 1 }}</span>
-                                        <span class="font-bold text-yellow-600">{{ number_format($member->faculty_evaluations_received_avg_rating ?? 0, 2) }}/5</span>
-                                    </div>
-                                    <p class="font-semibold text-gray-800 truncate">{{ $member->name }}</p>
-                                    <p class="text-xs text-gray-500">{{ $member->faculty_evaluations_received_count }} evaluation(s)</p>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-gray-500 text-center">No faculty evaluations yet.</p>
-                    @endif
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow overflow-hidden mb-6">
-                <div class="px-6 py-4 border-b">
-                    <h3 class="font-bold text-gray-800">Faculty Performance Summary</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Faculty</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Average Rating</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Evaluations</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Performance</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @foreach($faculty as $member)
-                                @php $rating = $member->faculty_evaluations_received_avg_rating ?? 0; @endphp
-                                <tr>
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-gray-800">{{ $member->name }}</p>
-                                        <p class="text-sm text-gray-500">{{ $member->email }}</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-yellow-600">{{ number_format($rating, 2) }}/5</td>
-                                    <td class="px-6 py-4">{{ $member->faculty_evaluations_received_count }}</td>
-                                    <td class="px-6 py-4">
-                                        @if($rating >= 4.5)
-                                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-sm font-semibold">Excellent</span>
-                                        @elseif($rating >= 3.5)
-                                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">Good</span>
-                                        @elseif($rating > 0)
-                                            <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-sm font-semibold">Needs Support</span>
-                                        @else
-                                            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold">No Data</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-6 py-4 border-b">
-                    <h3 class="font-bold text-gray-800">Recent Student Feedback</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Faculty</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Course</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Rating</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Comment</th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @forelse($evaluations as $evaluation)
-                                <tr>
-                                    <td class="px-6 py-4 font-semibold">{{ $evaluation->faculty->name ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4">{{ $evaluation->course->name ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 font-bold text-yellow-600">{{ number_format($evaluation->rating, 2) }}/5</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ $evaluation->comment ?: 'No comment' }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-500">{{ $evaluation->created_at->format('M d, Y') }}</td>
-                                </tr>
-                            @empty
-                                <tr><td colspan="5" class="px-6 py-8 text-center text-gray-500">No feedback submitted yet.</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            <div class="p-4">{{ $evaluations->links() }}</div>
+            <p>Admin Portal</p>
         </div>
     </div>
-</main>
+        <div style="flex:1; overflow-y: auto;">
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <i class="ri-dashboard-line"></i> Dashboard
+            </a>
+            <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
+                <i class="ri-user-add-line"></i> Account Creation
+            </a>
+            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                <i class="ri-team-line"></i> Users
+            </a>
+            <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
+                <i class="ri-user-star-line"></i> Faculty
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Academic</div>
+            <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
+                <i class="ri-building-2-line"></i> Departments
+            </a>
+            <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
+                <i class="ri-graduation-cap-line"></i> Programs/Courses
+            </a>
+            <a href="{{ route('admin.sections') }}" class="nav-item {{ request()->routeIs('admin.sections*') ? 'active' : '' }}">
+                <i class="ri-layout-grid-line"></i> Sections
+            </a>
+            <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
+                <i class="ri-book-open-line"></i> Subjects
+            </a>
+            <a href="{{ route('admin.faculty-assignments') }}" class="nav-item {{ request()->routeIs('admin.faculty-assignments*') ? 'active' : '' }}">
+                <i class="ri-user-settings-line"></i> Faculty Assignments
+            </a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
+                <i class="ri-star-smile-line"></i> Faculty Evaluation
+            </a>
+            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
+                <i class="ri-folder-3-line"></i> Folder & Files
+            </a>
+            <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
+                <i class="ri-bar-chart-line"></i> Analytics
+            </a>
+            <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
+                <i class="ri-history-line"></i> Activity Logs
+            </a>
+            <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                <i class="ri-settings-line"></i> Settings
+            </a>
+        </div>
+    </div>
+    <div class="sidebar-footer"><a href="{{ route('admin.profile') }}" style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;text-decoration:none;"><div style="width:42px;height:42px;background:rgba(255,215,15,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);"><i class="ri-user-line"></i></div><div><p style="color:white;font-weight:600;font-size:.85rem;margin:0;">{{ Auth::user()->name ?? 'Admin User' }}</p><span style="color:rgba(255,255,255,.6);font-size:.7rem;display:block;">{{ Auth::user()->email ?? 'admin@nuclicks.edu' }}</span></div></a><button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Logout</button></div>
+</aside>
 
-<!-- Evaluation Settings Modal -->
-<div id="settingsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-indigo-50">
-            <h3 class="text-lg font-bold text-indigo-900 flex items-center">
-                <i class="ri-calendar-check-line mr-2"></i> Evaluation Period
-            </h3>
-            <button onclick="closeSettingsModal()" class="text-gray-500 hover:text-gray-700">
-                <i class="ri-close-line text-xl"></i>
+<div class="main-content" id="mainContent">
+    <div class="top-bar">
+        <button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button>
+        <div>
+            <h2 style="font-weight:700;color:var(--blue-deep);font-size:1.1rem;">Faculty Evaluation</h2>
+            <p class="text-sm text-gray-500 hidden md:block">Oversee faculty performance based on student feedback.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            @if(View::exists('admin.partials.notification-bell')) 
+                @include('admin.partials.notification-bell') 
+            @endif
+            <button onclick="openSettingsModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition shadow-sm" style="background:var(--blue-deep);color:white;">
+                <i class="ri-settings-3-line"></i> Evaluation Settings
             </button>
         </div>
-        <form action="{{ route('admin.faculty-evaluations.settings') }}" method="POST" class="p-6">
-            @csrf
-            <div class="mb-5">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                <div class="flex items-center space-x-6">
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="status" value="open" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus !== 'closed' ? 'checked' : '' }}>
-                        <span class="ml-2 text-gray-700">Open</span>
-                    </label>
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input type="radio" name="status" value="closed" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus === 'closed' ? 'checked' : '' }}>
-                        <span class="ml-2 text-gray-700">Closed</span>
-                    </label>
+    </div>
+
+    <div class="p-4 md:p-6">
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded-xl mb-6 shadow-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-xl mb-6 shadow-sm">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-1">Total Evaluations</p>
+                    <p class="text-3xl font-extrabold" style="color:var(--blue-deep);">{{ number_format($totalEvaluations) }}</p>
+                </div>
+                <div style="background:rgba(10,31,68,.06);color:var(--blue-deep);" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                    <i class="ri-star-smile-line"></i>
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
-                <input type="datetime-local" name="start_date" value="{{ $evalStart }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-1">Average Rating</p>
+                    <p class="text-3xl font-extrabold text-yellow-600">{{ number_format($averageRating, 2) }}/5</p>
+                </div>
+                <div style="background:rgba(255,215,15,.15);color:#d4a017;" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                    <i class="ri-star-fill"></i>
+                </div>
             </div>
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
-                <input type="datetime-local" name="end_date" value="{{ $evalEnd }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-1">Faculty with Feedback</p>
+                    <p class="text-3xl font-extrabold text-green-600">{{ $faculty->where('faculty_evaluations_received_count', '>', 0)->count() }}</p>
+                </div>
+                <div style="background:rgba(21,128,61,.08);color:#15803d;" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl">
+                    <i class="ri-team-line"></i>
+                </div>
             </div>
-            <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white rounded-lg font-medium text-sm transition shadow">Save Settings</button>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <h3 class="font-extrabold text-gray-800 flex items-center gap-2" style="color:var(--blue-deep);"><i class="ri-trophy-line text-yellow-500"></i> Top Performing Faculty</h3>
             </div>
-        </form>
+            <div class="p-6">
+                @if($topFaculty->count() > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+                        @foreach($topFaculty as $index => $member)
+                            <div class="border border-gray-100 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-50 transition shadow-sm flex flex-col justify-between h-full relative overflow-hidden">
+                                <div class="absolute -top-1 -right-1 w-10 h-10 flex items-center justify-center font-black text-slate-200/50 text-4xl select-none">
+                                    #{{ $index + 1 }}
+                                </div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="font-extrabold text-xs px-2 py-0.5 rounded-full" style="background:rgba(10,31,68,.08);color:var(--blue-deep);">RANK {{ $index + 1 }}</span>
+                                    <div class="flex items-center gap-1 text-yellow-600 font-extrabold text-sm">
+                                        <i class="ri-star-fill text-yellow-500"></i> {{ number_format($member->faculty_evaluations_received_avg_rating ?? 0, 2) }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-gray-800 truncate mb-1" style="font-size:0.9rem;">{{ $member->name }}</p>
+                                    <p class="text-xs text-gray-500 flex items-center gap-1"><i class="ri-feedback-line"></i> {{ $member->faculty_evaluations_received_count }} response(s)</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="ri-inbox-line text-4xl block mb-2 opacity-50"></i>
+                        No faculty evaluations yet.
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <h3 class="font-extrabold text-gray-800 flex items-center gap-2" style="color:var(--blue-deep);"><i class="ri-file-chart-line text-blue-500"></i> Faculty Performance Summary</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Faculty</th>
+                            <th>Average Rating</th>
+                            <th>Evaluations</th>
+                            <th>Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($faculty as $member)
+                            @php $rating = $member->faculty_evaluations_received_avg_rating ?? 0; @endphp
+                            <tr>
+                                <td>
+                                    <div class="font-bold text-gray-900">{{ $member->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $member->email }}</div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-1 text-yellow-600 font-extrabold">
+                                        <i class="ri-star-fill text-yellow-500"></i> {{ number_format($rating, 2) }}/5
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-navy">{{ $member->faculty_evaluations_received_count }} responses</span>
+                                </td>
+                                <td>
+                                    @if($rating >= 4.5)
+                                        <span class="badge badge-green"><i class="ri-checkbox-circle-fill mr-1"></i> Excellent</span>
+                                    @elseif($rating >= 3.5)
+                                        <span class="badge badge-blue"><i class="ri-checkbox-circle-line mr-1"></i> Good</span>
+                                    @elseif($rating > 0)
+                                        <span class="badge badge-gold"><i class="ri-error-warning-line mr-1"></i> Needs Support</span>
+                                    @else
+                                        <span class="badge badge-navy">No Data</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
+                <h3 class="font-extrabold text-gray-800 flex items-center gap-2" style="color:var(--blue-deep);"><i class="ri-chat-smile-line text-emerald-500"></i> Recent Student Feedback</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Faculty</th>
+                            <th>Subject/Course</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($evaluations as $evaluation)
+                            <tr>
+                                <td><div class="font-bold text-gray-900">{{ $evaluation->faculty->name ?? 'N/A' }}</div></td>
+                                <td><div class="text-sm font-semibold text-gray-800">{{ $evaluation->course->name ?? 'N/A' }}</div></td>
+                                <td>
+                                    <div class="flex items-center gap-1 text-yellow-600 font-extrabold">
+                                        <i class="ri-star-fill text-yellow-500"></i> {{ number_format($evaluation->rating, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-sm text-gray-600 max-w-md break-words font-medium italic">"{{ $evaluation->comment ?: 'No comment' }}"</div>
+                                </td>
+                                <td>
+                                    <div class="text-xs text-gray-500 font-semibold">{{ $evaluation->created_at->format('M d, Y') }}</div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="px-6 py-12 text-center text-gray-500"><i class="ri-chat-delete-line text-5xl text-gray-300 block mb-3"></i>No feedback submitted yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-4 border-t border-gray-100">{{ $evaluations->links() }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Evaluation Settings Modal -->
+<div id="settingsModal" class="modal-overlay">
+    <div class="modal-box" style="max-width:500px;">
+        <div class="modal-header">
+            <h3><i class="ri-calendar-check-line text-gold"></i><span>Evaluation Settings</span></h3>
+            <button class="modal-close" onclick="closeSettingsModal()">&times;</button>
+        </div>
+        <div class="p-6">
+            <form action="{{ route('admin.faculty-evaluations.settings') }}" method="POST">
+                @csrf
+                <div class="mb-5">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Evaluation Status</label>
+                    <div class="flex items-center space-x-6 bg-slate-50 p-3 rounded-xl border border-gray-200">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="status" value="open" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus !== 'closed' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm font-bold text-gray-700">Open</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="status" value="closed" class="form-radio text-indigo-600 w-4 h-4" {{ $evalStatus === 'closed' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm font-bold text-gray-700">Closed</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Start Date & Time</label>
+                    <input type="datetime-local" name="start_date" value="{{ $evalStart }}" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-white">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">End Date & Time</label>
+                    <input type="datetime-local" name="end_date" value="{{ $evalEnd }}" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition bg-white">
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeSettingsModal()" class="px-5 py-2.5 border border-gray-300 rounded-xl font-semibold text-sm transition">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl font-bold text-sm text-white transition shadow" style="background:var(--blue-deep);">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="logoutModal" class="modal-overlay">
+    <div class="modal-box" style="max-width:450px;">
+        <div class="modal-header">
+            <h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3>
+            <button class="modal-close" onclick="closeLogoutModal()">&times;</button>
+        </div>
+        <div style="padding:1.8rem 1.5rem;text-align:center;">
+            <p>Are you sure you want to sign out?</p>
+            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p>
+        </div>
+        <div style="padding:1rem 1.5rem 1.5rem;display:flex;gap:.75rem;justify-content:flex-end;background:#f9fafb;border-top:1px solid var(--gray-border);">
+            <button onclick="closeLogoutModal()" style="padding:.6rem 1.25rem;border-radius:40px;background:#eef2ff;color:#1e293b;border:none;font-weight:600;cursor:pointer;">Cancel</button>
+            <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                @csrf
+                <button type="submit" style="padding:.6rem 1.25rem;border-radius:40px;background:#dc2626;color:white;border:none;font-weight:600;cursor:pointer;">Yes, Sign Out</button>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
+    const menuToggle=document.getElementById('menuToggle'),sidebar=document.getElementById('sidebar');
+    if(menuToggle){
+        menuToggle.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'))
+    }
+    document.addEventListener('click',e=>{
+        const m=window.innerWidth<=1024;
+        if(m&&sidebar&&sidebar.classList.contains('mobile-open')&&!sidebar.contains(e.target)&&!menuToggle.contains(e.target)){
+            sidebar.classList.remove('mobile-open')
+        }
+    });
+
     function openSettingsModal() {
-        document.getElementById('settingsModal').classList.remove('hidden');
-        document.getElementById('settingsModal').classList.add('flex');
+        document.getElementById('settingsModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
     
     function closeSettingsModal() {
-        document.getElementById('settingsModal').classList.add('hidden');
-        document.getElementById('settingsModal').classList.remove('flex');
+        document.getElementById('settingsModal').classList.remove('active');
+        document.body.style.overflow = '';
     }
-</script>
 
-</div>
+    function openLogoutModal(){
+        document.getElementById('logoutModal').classList.add('active');
+        document.body.style.overflow='hidden'
+    }
+    function closeLogoutModal(){
+        document.getElementById('logoutModal').classList.remove('active');
+        document.body.style.overflow=''
+    }
+    document.addEventListener('keydown',e=>{
+        if(e.key==='Escape'){
+            document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));
+            document.body.style.overflow=''
+        }
+    });
+
+    document.getElementById('settingsModal').addEventListener('click',e=>{
+        if(e.target.id==='settingsModal') closeSettingsModal()
+    });
+</script>
 </body>
 </html>
