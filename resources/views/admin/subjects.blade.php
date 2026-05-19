@@ -1,9 +1,390 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Department Management - NU Clicks LMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Student Dashboard - NU Clicks LMS</title>
+    
+    <!-- Google Fonts + Remix Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            corePlugins: { preflight: false },
+        }
+    </script>
+
     <style>
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#F5F7FB;overflow-x:hidden}:root{--blue-deep:#0A1F44;--gold:#FFD70F;--gray-border:#E9EDF2;--danger-red:#dc2626;--transition:all .25s ease}@media(max-width:1024px){.sidebar.mobile-open{transform:translateX(0)}}.logo-text h1 span{color:var(--gold)}.nav-section{padding:0 1rem;margin-top:1.5rem}.nav-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,215,15,.6);margin-bottom:.75rem;font-weight:600}.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1rem;border-radius:12px;color:rgba(255,255,255,.85);transition:var(--transition);margin-bottom:.25rem;font-weight:500;text-decoration:none}.nav-item i{font-size:1.2rem;width:1.5rem}.nav-item:hover{background:rgba(255,215,15,.15);color:white}.nav-item.active{background:var(--gold);color:var(--blue-deep)}.sidebar-footer{margin-top:auto;padding:1.2rem;border-top:1px solid rgba(255,215,15,.2)}.logout-btn{width:100%;background:rgba(220,38,38,.15);border:none;padding:.6rem;border-radius:40px;color:#fca5a5;font-weight:600;display:flex;align-items:center;justify-content:center;gap:.5rem;cursor:pointer}.logout-btn:hover{background:var(--danger-red);color:white}.top-bar{background:white;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,.03);border-bottom:1px solid var(--gray-border);position:sticky;top:0;z-index:20}.menu-toggle{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--blue-deep)}@media(max-width:1024px){.menu-toggle{display:block}}.btn-icon{transition:var(--transition)}.btn-icon:hover{transform:translateY(-1px)}.table-card{background:white;border-radius:1rem;box-shadow:0 8px 20px rgba(10,31,68,.05);border:1px solid #e5e7eb;overflow:hidden}.data-table{width:100%;border-collapse:collapse}.data-table thead{background:#f9fafb}.data-table th{padding:1rem 1.5rem;text-align:left;font-size:.75rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #e5e7eb;white-space:nowrap}.data-table td{padding:1rem 1.5rem;border-bottom:1px solid #f1f5f9;vertical-align:middle}.data-table tbody tr:hover{background:#f8fafc}.badge{display:inline-flex;align-items:center;padding:.32rem .8rem;border-radius:999px;font-size:.75rem;font-weight:800;white-space:nowrap}.badge-navy{background:rgba(10,31,68,.1);color:var(--blue-deep)}.badge-blue{background:#dbeafe;color:#1d4ed8}.badge-green{background:#dcfce7;color:#15803d}.badge-gold{background:rgba(255,215,15,.18);color:#a16207}.modal-overlay{position:fixed;inset:0;background:rgba(10,31,68,.75);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;visibility:hidden;opacity:0;transition:all .2s ease}.modal-overlay.active{visibility:visible;opacity:1}.modal-box{background:white;width:90%;max-width:650px;border-radius:1.5rem;box-shadow:0 25px 40px rgba(0,0,0,.2);overflow:hidden;transform:scale(.95);transition:transform .2s cubic-bezier(.2,.9,.4,1.1)}.modal-overlay.active .modal-box{transform:scale(1)}.modal-header{background:var(--blue-deep);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}.modal-header h3{font-size:1.1rem;font-weight:700;color:white;display:flex;align-items:center;gap:.5rem}.modal-header h3 i{color:var(--gold)}.modal-close{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.6rem;cursor:pointer}input:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,215,15,.2)}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #F8F6F1;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --navy: #0A1F44;
+            --navy-mid: #1F3A6D;
+            --navy-lite: #3D5FA0;
+            --navy-pale: #EEF3FB;
+            --gold: #FFD70F;
+            --gold-d: #C49A00;
+            --gold-mid: #F5C800;
+            --gold-pale: #FFFBEA;
+            --bg: #F8F6F1;
+            --bg-2: #F2EEE5;
+            --white: #FFFFFF;
+            --txt-1: #0A1F44;
+            --txt-2: #2C3E5C;
+            --txt-3: #637089;
+            --bdr: rgba(10,31,68,0.09);
+            --bdr-gold: rgba(196,154,0,0.28);
+            --card-shadow: 0 8px 20px rgba(10,31,68,0.05);
+            --transition: all 0.25s ease;
+            --danger-red: #dc2626;
+            --danger-dark: #b91c1c;
+            --blue-deep: #0A1F44;
+        }
+
+        /* Sidebar - Same as before */
+        
+
+        @media (max-width: 1024px) {
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+        }
+
+        
+        
+        
+        
+        
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-top: 1.5rem;
+        }
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,215,15,0.6);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            border-radius: 12px;
+            color: rgba(255,255,255,0.85);
+            transition: var(--transition);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .nav-item i {
+            font-size: 1.2rem;
+            width: 1.5rem;
+        }
+        .nav-item:hover {
+            background: rgba(255,215,15,0.15);
+            color: white;
+        }
+        .nav-item.active {
+            background: var(--gold);
+            color: var(--navy);
+        }
+        .nav-item.active i {
+            color: var(--navy);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 1.2rem;
+            border-top: 1px solid rgba(255,215,15,0.2);
+        }
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .avatar {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,215,15,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
+        .profile-details p {
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .profile-details span {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.7rem;
+        }
+
+        /* Red Logout Button (matching Faculty/Admin) */
+        .logout-btn {
+            width: 100%;
+            background: rgba(220, 38, 38, 0.15);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 40px;
+            color: #fca5a5;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .logout-btn:hover {
+            background: var(--danger-red);
+            color: white;
+            box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Main Content */
+        .top-bar {
+            background: white;
+            padding: 0.75rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-bottom: 1px solid var(--bdr);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--navy);
+        }
+        .page-title {
+            font-weight: 700;
+            color: var(--navy);
+            font-family: 'Fraunces', serif;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .header-avatar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .header-avatar:hover {
+            background: #F5F7FB;
+        }
+        .header-avatar-img {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+        }
+        .header-avatar-info {
+            text-align: right;
+        }
+        .header-avatar-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--navy);
+        }
+        .header-avatar-role {
+            font-size: 0.65rem;
+            color: var(--txt-3);
+        }
+
+        @media (max-width: 1024px) {
+            .menu-toggle {
+                display: block;
+            }
+            .header-avatar-info {
+                display: none;
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--bdr);
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(10,31,68,0.08);
+        }
+        .dashboard-card {
+            background: white;
+            border-radius: 1.2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--bdr);
+            overflow: hidden;
+        }
+
+        /* Premium Welcome Header */
+        .welcome-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+            border-radius: 1.5rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.8rem;
+            color: white;
+        }
+        .welcome-badge {
+            background: rgba(255,215,15,0.18);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+        .activity-item {
+            transition: var(--transition);
+        }
+        .activity-item:hover {
+            background: #F8FAFF;
+        }
+
+        /* Logout Confirmation Modal - Same as Faculty */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(10, 31, 68, 0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .confirmation-modal {
+            background: white;
+            max-width: 450px;
+            width: 90%;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .modal-overlay.active .confirmation-modal {
+            transform: scale(1);
+        }
+        .modal-header {
+            background: var(--navy);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+        }
+        .modal-header h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .modal-header h3 i {
+            color: var(--gold);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: var(--gold);
+        }
+        .modal-body {
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+        }
+        .modal-footer {
+            padding: 1rem 1.5rem 1.5rem;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            background: #f9fafb;
+            border-top: 1px solid var(--gray-border);
+        }
+        .modal-btn {
+            padding: 0.6rem 1.25rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+        .modal-btn-cancel {
+            background: #eef2ff;
+            color: #1e293b;
+        }
+        .modal-btn-cancel:hover {
+            background: #e2e8f0;
+        }
+        .modal-btn-confirm {
+            background: var(--danger-red);
+            color: white;
+        }
+        .modal-btn-confirm:hover {
+            background: var(--danger-dark);
+        }
     
         
 
@@ -150,7 +531,7 @@
 
         /* LOCKED SIDEBAR AND MAIN CONTENT LAYOUT */
         .sidebar {
-            background-color: var(--blue-deep) !important;
+            background-color: var(--navy) !important;
             width: 280px !important;
             min-width: 280px !important;
             max-width: 280px !important;
@@ -186,7 +567,10 @@
         }
 
     </style>
-</head><body>
+</head>
+<body>
+
+<!-- ========== SIDEBAR (STUDENT VERSION) ========== -->
 <aside class="sidebar" id="sidebar">
         <div class="sidebar-logo">
         <img src="/logo/NatU.png" alt="NU Logo" class="sidebar-logo-img" onerror="this.src='https://placehold.co/45x45/0A1F44/FFD70F?text=NU'">
@@ -211,73 +595,387 @@
                 </span>
             </h1>
 
-            <p>Admin Portal</p>
+            <p>Student Portal</p>
         </div>
     </div>
-        <div style="flex:1; overflow-y: auto;">
+
+    <div style="flex:1; overflow-y: auto;">
         <div class="nav-section">
             <div class="nav-section-title">Main</div>
-            <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('student.dashboard') }}" class="nav-item {{ request()->routeIs('student.dashboard') ? 'active' : '' }}">
                 <i class="ri-dashboard-line"></i> Dashboard
             </a>
-            <a href="{{ route('admin.users.create') }}" class="nav-item {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                <i class="ri-user-add-line"></i> Account Creation
+            <a href="{{ route('student.courses') }}" class="nav-item {{ request()->routeIs('student.courses*') ? 'active' : '' }}">
+                <i class="ri-book-line"></i> My Courses
             </a>
-            <a href="{{ route('admin.users') }}" class="nav-item {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                <i class="ri-team-line"></i> Users
+            <a href="{{ route('student.progress') }}" class="nav-item {{ request()->routeIs('student.progress*') ? 'active' : '' }}">
+                <i class="ri-bar-chart-line"></i> Progress
             </a>
-            <a href="{{ route('admin.faculty') }}" class="nav-item {{ request()->routeIs('admin.faculty*') ? 'active' : '' }}">
-                <i class="ri-user-star-line"></i> Faculty
+            <a href="{{ route('student.announcements') }}" class="nav-item {{ request()->routeIs('student.announcements*') ? 'active' : '' }}">
+                <i class="ri-megaphone-line"></i> Announcements
             </a>
-        </div>
-        <div class="nav-section">
-            <div class="nav-section-title">Academic</div>
-            <a href="{{ route('admin.departments') }}" class="nav-item {{ request()->routeIs('admin.departments*') ? 'active' : '' }}">
-                <i class="ri-building-2-line"></i> Departments
+            <a href="{{ route('student.notifications') }}" class="nav-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
+                <i class="ri-notification-line"></i> Notifications
+                @if(isset($unreadNotifications) && $unreadNotifications > 0)
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $unreadNotifications }}</span>
+                @endif
             </a>
-            <a href="{{ route('admin.programs') }}" class="nav-item {{ request()->routeIs('admin.programs*') ? 'active' : '' }}">
-                <i class="ri-graduation-cap-line"></i> Programs/Courses
-            </a>
-            <a href="{{ route('admin.sections') }}" class="nav-item {{ request()->routeIs('admin.sections*') ? 'active' : '' }}">
-                <i class="ri-layout-grid-line"></i> Sections
-            </a>
-            <a href="{{ route('admin.subjects') }}" class="nav-item {{ request()->routeIs('admin.subjects*') || request()->routeIs('admin.courses*') ? 'active' : '' }}">
-                <i class="ri-book-open-line"></i> Subjects
-            </a>
-            <a href="{{ route('admin.faculty-assignments') }}" class="nav-item {{ request()->routeIs('admin.faculty-assignments*') ? 'active' : '' }}">
-                <i class="ri-user-settings-line"></i> Faculty Assignments
+            <a href="{{ route('student.faculty.evaluation') }}" class="nav-item {{ request()->routeIs('student.faculty.evaluation') ? 'active' : '' }}">
+                <i class="ri-star-line"></i> Faculty Evaluation
             </a>
         </div>
+
         <div class="nav-section">
-            <div class="nav-section-title">Management</div>
-            <a href="{{ route('admin.faculty-evaluations') }}" class="nav-item {{ request()->routeIs('admin.faculty-evaluations*') ? 'active' : '' }}">
-                <i class="ri-star-smile-line"></i> Faculty Evaluation
-            </a>
-            <a href="{{ route('admin.folder-files') }}" class="nav-item {{ request()->routeIs('admin.folder-files*') ? 'active' : '' }}">
-                <i class="ri-folder-3-line"></i> Folder & Files
-            </a>
-            <a href="{{ route('admin.analytics') }}" class="nav-item {{ request()->routeIs('admin.analytics*') ? 'active' : '' }}">
-                <i class="ri-bar-chart-line"></i> Analytics
-            </a>
-            <a href="{{ route('admin.logs') }}" class="nav-item {{ request()->routeIs('admin.logs*') ? 'active' : '' }}">
-                <i class="ri-history-line"></i> Activity Logs
-            </a>
-            <a href="{{ route('admin.settings') }}" class="nav-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
-                <i class="ri-settings-line"></i> Settings
+            <div class="nav-section-title">Account</div>
+            <a href="{{ route('student.profile') }}" class="nav-item">
+                <i class="ri-user-line"></i> Profile
             </a>
         </div>
     </div>
-    <div class="sidebar-footer"><a href="{{ route('admin.profile') }}" style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;text-decoration:none;"><div style="width:42px;height:42px;background:rgba(255,215,15,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);"><i class="ri-user-line"></i></div><div><p style="color:white;font-weight:600;font-size:.85rem;margin:0;">{{ Auth::user()->name ?? 'Admin User' }}</p><span style="color:rgba(255,255,255,.6);font-size:.7rem;display:block;">{{ Auth::user()->email ?? 'admin@nuclicks.edu' }}</span></div></a><button onclick="openLogoutModal()" class="logout-btn"><i class="ri-logout-box-line"></i> Logout</button></div>
+
+    <div class="sidebar-footer">
+        <a href="{{ route('student.profile') }}" class="profile-info" style="text-decoration: none;">
+            <div class="avatar">
+                <i class="ri-user-line"></i>
+            </div>
+            <div class="profile-details">
+                <p>{{ Auth::user()->name }}</p>
+                <span>Student</span>
+            </div>
+        </a>
+        
+        <!-- Logout Button with Confirmation -->
+        <button onclick="openLogoutModal()" class="logout-btn">
+            <i class="ri-logout-box-r-line"></i> Sign Out
+        </button>
+    </div>
 </aside>
 
+<!-- ========== MAIN CONTENT ========== -->
+<div class="main-content" id="mainContent">
+    <div class="top-bar">
+        <button class="menu-toggle" id="menuToggle">
+            <i class="ri-menu-line"></i>
+        </button>
+        <h2 class="page-title text-lg md:text-xl">Dashboard</h2>
+        
+        <div class="header-profile">
+            <a href="{{ route('student.profile') }}" class="header-avatar">
+                <div class="header-avatar-img">
+                    <i class="ri-user-line"></i>
+                </div>
+                <div class="header-avatar-info">
+                    <div class="header-avatar-name">{{ Auth::user()->name }}</div>
+                    <div class="header-avatar-role">Student Portal</div>
+                </div>
+            </a>
+        </div>
+    </div>
 
-<div class="main-content" id="mainContent"><div class="top-bar"><button class="menu-toggle" id="menuToggle"><i class="ri-menu-line"></i></button><div><h2 style="font-weight:700;color:var(--blue-deep);font-size:1.1rem;">Subject Management</h2><p class="text-sm text-gray-500 hidden md:block">Subjects are assigned to Program/Course and Section</p></div><div class="flex items-center gap-3">@if(View::exists('admin.partials.notification-bell')) @include('admin.partials.notification-bell') @endif<button onclick="openCreateModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold" style="background:var(--blue-deep);color:white;"><i class="ri-add-line"></i>Add Subject</button></div></div><div class="p-4 md:p-6"><div class="table-card"><div class="overflow-x-auto"><table class="data-table"><thead><tr><th>Code</th><th>Subject Name</th><th>Department</th><th>Program/Course</th><th>Section</th><th>Faculty</th><th>Quizzes</th><th>Actions</th></tr></thead><tbody>@forelse($courses as $course)<tr><td><span class="badge badge-navy">{{ $course->code }}</span></td><td><div class="font-semibold">{{ $course->name }}</div><div class="text-xs text-gray-500">{{ Str::limit($course->description, 45) }}</div></td><td>@if($course->program && $course->program->department)<span class="badge badge-gold">{{ $course->program->department->code }}</span>@else<span class="text-red-500 text-sm">No department</span>@endif</td><td><div class="font-semibold">{{ $course->program->code ?? '—' }}</div><div class="text-xs text-gray-500">{{ $course->program->name ?? '' }}</div></td><td><span class="badge badge-blue">{{ $course->sectionRecord->name ?? $course->section ?? '—' }}</span></td><td><div class="font-semibold text-sm">{{ $course->faculty->name ?? 'Not assigned' }}</div></td><td><span class="badge badge-green">{{ $course->quizzes_count ?? 0 }}</span></td><td><div class="flex gap-3"><button onclick="editSubject({{ $course->id }})" class="text-yellow-600"><i class="ri-edit-line text-lg"></i></button><button onclick="deleteSubject({{ $course->id }}, '{{ addslashes($course->name) }}')" class="text-red-600"><i class="ri-delete-bin-line text-lg"></i></button></div></td></tr>@empty<tr><td colspan="8" class="text-center py-12 text-gray-500">No subjects yet.</td></tr>@endforelse</tbody></table></div></div><div class="mt-4">{{ $courses->links() }}</div></div></div>
-<div id="subjectModal" class="modal-overlay"><div class="modal-box"><div class="modal-header"><h3><i class="ri-book-open-line"></i><span id="modalTitle">Add Subject</span></h3><button class="modal-close" onclick="closeModal()">&times;</button></div><div class="p-6"><form id="subjectForm">@csrf<input type="hidden" id="subjectId"><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label class="block text-sm font-semibold mb-2">Program/Course *</label><select id="programId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Program/Course</option>@foreach($programs as $program)<option value="{{ $program->id }}">{{ $program->code }} - {{ $program->name }} @if($program->department) ({{ $program->department->code }}) @endif</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Section *</label><select id="sectionId" required class="w-full border rounded-xl px-4 py-2.5"><option value="">Select Section</option>@foreach($sections as $section)<option value="{{ $section->id }}" data-program="{{ $section->program_id }}">{{ $section->name }} - {{ $section->program->code ?? '' }}</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Subject Code *</label><input id="subjectCode" required maxlength="50" class="w-full border rounded-xl px-4 py-2.5 uppercase" placeholder="IT101"></div><div><label class="block text-sm font-semibold mb-2">Subject Name *</label><input id="subjectName" required class="w-full border rounded-xl px-4 py-2.5" placeholder="Introduction to Computing"></div><div><label class="block text-sm font-semibold mb-2">Faculty</label><select id="facultyId" class="w-full border rounded-xl px-4 py-2.5"><option value="">Not assigned</option>@foreach($faculties as $faculty)<option value="{{ $faculty->id }}">{{ $faculty->name }} @if($faculty->department_id || $faculty->department) ({{ $faculty->department_id ? ($faculty->departmentRel->code ?? 'N/A') : $faculty->department }}) @endif</option>@endforeach</select></div><div><label class="block text-sm font-semibold mb-2">Credits/Units *</label><input type="number" id="credits" value="3" min="1" max="6" required class="w-full border rounded-xl px-4 py-2.5"></div></div><div class="mb-6"><label class="block text-sm font-semibold mb-2">Description</label><textarea id="subjectDesc" rows="3" class="w-full border rounded-xl px-4 py-2.5"></textarea></div><div class="flex justify-end gap-3 pt-4 border-t"><button type="button" onclick="closeModal()" class="px-5 py-2.5 border rounded-xl">Cancel</button><button type="submit" id="submitBtn" class="px-6 py-2.5 rounded-xl font-semibold" style="background:var(--blue-deep);color:white;">Save Subject</button></div></form></div></div></div>
+    <div class="p-4 md:p-6">
+        <!-- Welcome Header -->
+        <div class="welcome-header">
+            <span class="welcome-badge">Welcome back</span>
+            <h1 class="welcome-title text-2xl md:text-3xl font-bold mt-2 mb-1" style="font-family: 'Fraunces', serif;">
+                Hello, {{ Auth::user()->name }}! 👋
+            </h1>
+            <p class="text-sm text-gray-300">Here's what's happening in your courses today.</p>
+        </div>
+
+        <!-- Stats Cards Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Enrolled Courses</p>
+                        <p class="text-3xl font-bold" style="color: var(--navy);">{{ $enrolledCourses->count() }}</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="ri-book-line text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Completed Quizzes</p>
+                        <p class="text-3xl font-bold text-green-600">{{ $completedQuizzes }}</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="ri-checkbox-circle-line text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Average Score</p>
+                        <p class="text-3xl font-bold text-purple-600">{{ $averageScore }}%</p>
+                    </div>
+                    <div class="bg-purple-100 p-3 rounded-full">
+                        <i class="ri-bar-chart-line text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">Pending Quizzes</p>
+                        <p class="text-3xl font-bold text-orange-600">{{ $pendingQuizzes }}</p>
+                    </div>
+                    <div class="bg-orange-100 p-3 rounded-full">
+                        <i class="ri-time-line text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- My Enrolled Courses -->
+            <div class="lg:col-span-2 dashboard-card">
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <h3 class="text-lg font-bold flex items-center gap-2" style="font-family: 'Fraunces', serif; color: var(--navy);">
+                        <i class="ri-book-line" style="color: var(--gold);"></i> My Enrolled Courses
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if($enrolledCourses->count() > 0)
+                        <div class="space-y-6">
+                            @foreach($enrolledCourses as $enrollment)
+                                <div class="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-3 mb-3">
+                                                <span class="bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1 rounded-xl">
+                                                    {{ $enrollment->course->code }}
+                                                </span>
+                                                <span class="text-xs text-gray-500">{{ $enrollment->course->credits ?? 'N/A' }} credits</span>
+                                            </div>
+                                            <h4 class="font-semibold text-lg text-gray-800" style="color: var(--navy);">{{ $enrollment->course->name }}</h4>
+                                            <p class="text-sm text-gray-600 mt-1 line-clamp-2">
+                                                {{ Str::limit($enrollment->course->description ?? 'No description available', 120) }}
+                                            </p>
+                                        </div>
+                                        <a href="{{ route('student.course.details', $enrollment->course->id) }}" 
+                                           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl text-sm font-medium transition" style="background-color: var(--navy); border-color: var(--navy);">
+                                            View Course
+                                        </a>
+                                    </div>
+
+                                    <div class="mt-5">
+                                        <div class="flex justify-between text-sm mb-1.5 text-gray-600">
+                                            <span>Progress</span>
+                                            <span class="font-medium">{{ $enrollment->progress ?? 0 }}%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div class="bg-green-500 rounded-full h-2.5 transition-all" 
+                                                 style="width: {{ $enrollment->progress ?? 0 }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-16">
+                            <i class="ri-book-line text-7xl text-gray-300 mb-4"></i>
+                            <p class="text-gray-500">You haven't enrolled in any courses yet.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Upcoming Quizzes -->
+            <div class="dashboard-card">
+                <div class="px-6 py-5 border-b border-gray-100">
+                    <h3 class="text-lg font-bold flex items-center gap-2" style="font-family: 'Fraunces', serif; color: var(--navy);">
+                        <i class="ri-quiz-line" style="color: var(--gold);"></i> Upcoming Quizzes
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if($upcomingQuizzes->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($upcomingQuizzes as $quiz)
+                                <div class="border border-gray-100 rounded-2xl p-5">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="bg-amber-100 text-amber-700 text-xs px-3 py-1 rounded-xl font-medium">Upcoming</span>
+                                        <span class="text-xs text-gray-500">{{ $quiz->questions->count() }} questions</span>
+                                    </div>
+                                    <h4 class="font-semibold">{{ $quiz->title }}</h4>
+                                    <p class="text-sm text-gray-600">{{ $quiz->course->name }}</p>
+                                    
+                                    <div class="mt-4 space-y-2 text-sm text-gray-600">
+                                        @if($quiz->start_date)
+                                        <div class="flex items-center gap-2">
+                                            <i class="ri-calendar-line"></i>
+                                            <span>{{ \Carbon\Carbon::parse($quiz->start_date)->format('M d, Y h:i A') }}</span>
+                                        </div>
+                                        @endif
+                                        <div class="flex items-center gap-2">
+                                            <i class="ri-time-line"></i>
+                                            <span>{{ $quiz->duration_minutes ?? 'N/A' }} minutes</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="ri-star-line"></i>
+                                            <span>{{ $quiz->total_points }} points</span>
+                                        </div>
+                                    </div>
+
+                                    <a href="{{ route('student.quiz.take', $quiz->id) }}" 
+                                       class="block mt-5 text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-2xl font-medium transition">
+                                        Take Quiz
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12">
+                            <i class="ri-quiz-line text-6xl text-gray-300 mb-4 block"></i>
+                            <p class="text-gray-500">No upcoming quizzes at the moment.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Notifications (Messages from Faculty) -->
+        <div class="mt-8 dashboard-card">
+            <div class="px-6 py-5 border-b border-gray-100">
+                <h3 class="text-lg font-bold flex items-center gap-2" style="font-family: 'Fraunces', serif; color: var(--navy);">
+                    <i class="ri-notification-3-line" style="color: var(--gold);"></i> Recent Notifications
+                </h3>
+            </div>
+            <div class="p-6">
+                @if($recentNotifications->count() > 0)
+                    <div class="space-y-4">
+                        @foreach($recentNotifications as $notification)
+                            <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
+                                <div class="bg-blue-100 p-2 rounded-lg">
+                                    @if($notification->type === 'message')
+                                        <i class="ri-mail-line text-blue-600"></i>
+                                    @elseif($notification->type === 'quiz')
+                                        <i class="ri-file-list-3-line text-blue-600"></i>
+                                    @else
+                                        <i class="ri-notification-line text-blue-600"></i>
+                                    @endif
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start">
+                                        <h4 class="text-sm font-semibold text-gray-800" style="color: var(--navy);">{{ $notification->title }}</h4>
+                                        <span class="text-[10px] text-gray-400">{{ $notification->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $notification->message }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('student.notifications') }}" class="text-xs font-semibold text-blue-600 hover:underline">View All Notifications</a>
+                    </div>
+                @else
+                    <div class="text-center py-6">
+                        <p class="text-gray-500 text-sm">No recent notifications.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Recent Announcements -->
+        <div class="mt-8 dashboard-card">
+            <div class="px-6 py-5 border-b border-gray-100">
+                <h3 class="text-lg font-bold flex items-center gap-2" style="font-family: 'Fraunces', serif; color: var(--navy);">
+                    <i class="ri-megaphone-line" style="color: var(--gold);"></i> Recent Announcements
+                </h3>
+            </div>
+            <div class="p-6">
+                @if($announcements->count() > 0)
+                    <div class="space-y-5">
+                        @foreach($announcements as $announcement)
+                            <div class="border-l-4 border-gold pl-5 py-1">
+                                <div class="flex justify-between">
+                                    <h4 class="font-semibold text-gray-800">{{ $announcement->title }}</h4>
+                                    <span class="text-xs text-gray-400">{{ $announcement->created_at->diffForHumans() }}</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">{{ $announcement->content }}</p>
+                                <p class="text-xs text-gray-500 mt-2">Course: {{ $announcement->course->name }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-gray-500 text-center py-8">No recent announcements.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================= LOGOUT CONFIRMATION MODAL ======================= -->
+<div id="logoutModal" class="modal-overlay">
+    <div class="confirmation-modal">
+        <div class="modal-header">
+            <h3>
+                <i class="ri-logout-box-r-line"></i> 
+                Confirm Sign Out
+            </h3>
+            <button class="modal-close" onclick="closeLogoutModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Are you sure you want to sign out of your account?</p>
+            <p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                @csrf
+                <button type="submit" class="modal-btn modal-btn-confirm">Yes, Sign Out</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
-function filterSections(){const p=programId.value;[...sectionId.options].forEach(o=>{if(!o.value)return;o.hidden=p&&o.dataset.program!==p})}function openCreateModal(){subjectForm.reset();subjectId.value='';credits.value=3;modalTitle.innerText='Add Subject';submitBtn.innerText='Save Subject';subjectModal.classList.add('active');document.body.style.overflow='hidden';filterSections()}function closeModal(){subjectModal.classList.remove('active');document.body.style.overflow=''}programId.addEventListener('change',()=>{sectionId.value='';filterSections()});function editSubject(id){fetch(`/admin/courses/${id}/edit-data`,{headers:{Accept:'application/json','X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success){modalTitle.innerText='Edit Subject';subjectId.value=d.course.id;programId.value=d.course.program_id||'';filterSections();sectionId.value=d.course.section_id||'';subjectCode.value=d.course.code||'';subjectName.value=d.course.name||'';subjectDesc.value=d.course.description||'';facultyId.value=d.course.faculty_id||'';credits.value=d.course.credits||3;submitBtn.innerText='Update Subject';subjectModal.classList.add('active');document.body.style.overflow='hidden'}else alert(d.message||'Failed to load subject')})}function deleteSubject(id,name){if(!confirm(`Delete subject "${name}"?`))return;fetch(`/admin/courses/${id}`,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}',Accept:'application/json','X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||'Error deleting subject')})}subjectForm.addEventListener('submit',e=>{e.preventDefault();const id=subjectId.value,url=id?`/admin/courses/${id}`:'/admin/courses',fd=new FormData();fd.append('_token','{{ csrf_token() }}');if(id)fd.append('_method','PUT');fd.append('program_id',programId.value);fd.append('section_id',sectionId.value);fd.append('code',subjectCode.value.trim().toUpperCase());fd.append('name',subjectName.value.trim());fd.append('description',subjectDesc.value.trim());fd.append('faculty_id',facultyId.value);fd.append('credits',credits.value);fetch(url,{method:'POST',body:fd,headers:{'X-Requested-With':'XMLHttpRequest'}}).then(r=>r.json()).then(d=>{if(d.success)location.reload();else alert(d.message||(d.errors?Object.values(d.errors).flat().join('\n'):'Error saving subject'))})});subjectCode.addEventListener('input',function(){this.value=this.value.toUpperCase()});subjectModal.addEventListener('click',e=>{if(e.target.id==='subjectModal')closeModal()});
+    // Mobile Sidebar Toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('mobile-open')) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+    });
+
+    // Logout Modal Functions
+    function openLogoutModal() {
+        document.getElementById('logoutModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLogoutModal() {
+        document.getElementById('logoutModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('logoutModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLogoutModal();
+        }
+    });
+
+    // ESC key support
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLogoutModal();
+        }
+    });
 </script>
-<div id="logoutModal" class="modal-overlay"><div class="modal-box" style="max-width:450px;"><div class="modal-header"><h3><i class="ri-logout-box-r-line"></i> Confirm Sign Out</h3><button class="modal-close" onclick="closeLogoutModal()">&times;</button></div><div style="padding:1.8rem 1.5rem;text-align:center;"><p>Are you sure you want to sign out?</p><p class="text-xs text-gray-500 mt-2">You will be redirected to the login page.</p></div><div style="padding:1rem 1.5rem 1.5rem;display:flex;gap:.75rem;justify-content:flex-end;background:#f9fafb;border-top:1px solid var(--gray-border);"><button onclick="closeLogoutModal()" style="padding:.6rem 1.25rem;border-radius:40px;background:#eef2ff;color:#1e293b;border:none;font-weight:600;cursor:pointer;">Cancel</button><form method="POST" action="{{ route('logout') }}" style="margin:0;">@csrf<button type="submit" style="padding:.6rem 1.25rem;border-radius:40px;background:#dc2626;color:white;border:none;font-weight:600;cursor:pointer;">Yes, Sign Out</button></form></div></div></div>
-<script>
-const menuToggle=document.getElementById('menuToggle'),sidebar=document.getElementById('sidebar');if(menuToggle){menuToggle.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'))}document.addEventListener('click',e=>{const m=window.innerWidth<=1024;if(m&&sidebar&&sidebar.classList.contains('mobile-open')&&!sidebar.contains(e.target)&&!menuToggle.contains(e.target)){sidebar.classList.remove('mobile-open')}});function openLogoutModal(){document.getElementById('logoutModal').classList.add('active');document.body.style.overflow='hidden'}function closeLogoutModal(){document.getElementById('logoutModal').classList.remove('active');document.body.style.overflow=''}document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));document.body.style.overflow=''}});
-</script>
-</body></html>
+</body>
+</html>
